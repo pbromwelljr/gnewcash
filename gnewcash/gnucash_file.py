@@ -9,6 +9,9 @@ from account import Account, AccountType
 
 
 class GnuCashFile:
+    """
+    Class representing a GnuCash file on disk.
+    """
     namespace_data = {
         'gnc': 'http://www.gnucash.org/XML/gnc',
         'act': 'http://www.gnucash.org/XML/act',
@@ -59,6 +62,12 @@ class GnuCashFile:
 
     @classmethod
     def read_file(cls, source_file):
+        """
+        Reads the specified .gnucash file and loads it into memory
+
+        :param source_file: Full or relative path to the .gnucash file.
+        :return: New GnuCashFile object
+        """
         logger = getLogger()
         built_file = GnuCashFile(None)
         built_file.file_name = source_file
@@ -171,6 +180,11 @@ class GnuCashFile:
         return built_file
 
     def build_file(self, target_file):
+        """
+        Writes the contents of the GnuCashFile object out to a .gnucash file on disk
+
+        :param target_file: Full or relative path to the target file
+        """
         namespace_info = self.namespace_data
         root_node = ElementTree.Element('gnc-v2', {'xmlns:' + identifier: value
                                                    for identifier, value in namespace_info.items()})
@@ -182,6 +196,9 @@ class GnuCashFile:
 
 
 class Book:
+    """
+    Represents a Book in GnuCash
+    """
     def __init__(self, root_account=None, transactions=None, commodity=None):
         self.root_account = root_account
         self.transactions = transactions or TransactionManager()
@@ -189,6 +206,11 @@ class Book:
 
     @property
     def as_xml(self):
+        """
+        Returns the current book as GnuCash-compatible XML
+
+        :return: List of ElementTree.Element objects
+        """
         book_node = ElementTree.Element('gnc:book', {'version': '2.0.0'})
         book_node.append(self.commodity.as_xml)
 
@@ -201,6 +223,15 @@ class Book:
         return book_node
 
     def get_account(self, *paths_to_account, current_level=None):
+        """
+        Retrieves an account based on a path of account names
+
+        :param paths_to_account: Names of accounts that indicate the path\n
+        :param current_level:
+        :return: Account object if found, otherwise None
+
+        Example: ``get_account('Assets', 'Current Assets', 'Checking Account')``
+        """
         if current_level is None:
             current_level = self.root_account
         paths_to_account = list(paths_to_account)
@@ -213,6 +244,12 @@ class Book:
         return None
 
     def get_account_balance(self, account):
+        """
+        Retrieves the balance for a specified account based on the transactions in the Book.
+
+        :param account: Account object to retrieve the balance of.
+        :return: Account balance if applicable transactions found, otherwise 0.
+        """
         account_balance = 0
         account_transactions = [x for x in self.transactions if account in [x.from_account, x.to_account]]
         for transaction in account_transactions:
@@ -232,12 +269,20 @@ class Book:
 
 
 class Commodity:
+    """
+    Represents a Commodity in GnuCash
+    """
     def __init__(self, commodity_id, space):
         self.id = commodity_id
         self.space = space
 
     @property
     def as_xml(self):
+        """
+        Returns the current commodity as GnuCash-compatible XML
+
+        :return: ElementTree.Element object
+        """
         commodity_node = ElementTree.Element('gnc:commodity', {'version': '2.0.0'})
         ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
         ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.id
@@ -247,6 +292,11 @@ class Commodity:
         return commodity_node
 
     def as_short_xml(self, node_tag):
+        """
+        Returns the current commodity as GnuCash-compatible XML (short version used for accounts)
+
+        :return: ElementTree.Element object
+        """
         commodity_node = ElementTree.Element(node_tag)
         ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
         ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.id

@@ -10,6 +10,7 @@ Welcome to gnewcash's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Account <account>
+   account
+   gnucash_file
 
 .. :ref: account
