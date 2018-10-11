@@ -4,8 +4,8 @@ from datetime import datetime
 from logging import getLogger
 from xml.etree import ElementTree
 
-from gnewcash.transaction import Split, Transaction, TransactionManager
-from gnewcash.account import Account, AccountType
+from transaction import Split, Transaction, TransactionManager
+from account import Account, AccountType
 
 
 class GnuCashFile:

@@ -1,16 +1,27 @@
+"""
+.. module:: account
+   :synopsis:
+.. moduleauthor: Paul Bromwell Jr.
+"""
 import re
 from datetime import datetime, timedelta
 from decimal import Decimal
 from xml.etree import ElementTree
 from collections import namedtuple
 
-from gnewcash.guid_object import GuidObject
+from guid_object import GuidObject
 
 
+"""
+Class representing the loan status at a given date.
+"""
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 
 
 class AccountType:
+    """
+    Enumeration class to indicate the types of accounts available in GnuCash.
+    """
     ROOT = 'ROOT'
     BANK = 'BANK'
     INCOME = 'INCOME'
@@ -22,6 +33,9 @@ class AccountType:
 
 
 class Account(GuidObject):
+    """
+    Represents an account in GnuCash.
+    """
     def __init__(self):
         super(Account, self).__init__()
         self.name = ''
@@ -50,6 +64,12 @@ class Account(GuidObject):
         return hash(self.guid)
 
     def get_starting_balance(self, transactions):
+        """
+        Retrieves the starting balance for the current account, given the list of transactions.
+
+        :param transactions: List of transactions or TransactionManager
+        :return: First transaction amount if the account has transactions, otherwise 0.
+        """
         account_transactions = [x for x in transactions if x.to_account == self]
         if account_transactions:
             amount = account_transactions[0].amount
@@ -58,6 +78,14 @@ class Account(GuidObject):
         return amount
 
     def get_balance_at_date(self, transactions, date=None):
+        """
+        Retrieves the account balance for the current account at a certain date, given the list of transactions.
+        If the provided date is None, it will retrieve the ending balance.
+
+        :param transactions: List of transactions or TransactionManager
+        :param date: Last date to consider when determining the account balance.
+        :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
+        """
         balance = 0
         applicable_transactions = [x for x in transactions if self in [x.from_account, x.to_account]]
 
@@ -76,12 +104,26 @@ class Account(GuidObject):
         return balance
 
     def get_ending_balance(self, transactions):
+        """
+        Retrieves the ending balance for the current account, given the list of transactions.
+
+        :param transactions: List of transactions or TransactionManager
+        :return: Ending balance if the account has transactions, otherwise 0.
+        """
         return self.get_balance_at_date(transactions)
 
     def minimum_balance_past_date(self, transactions, start_date):
+        """
+        Gets the minimum balance for the account after a certain date, given the list of transactions.
+
+        :param transactions: List of transactions or TransactionManager
+        :param start_date: datetime object representing the date you want to find the minimum balance for.
+        :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
+        """
         minimum_balance = None
         minimum_balance_date = None
         iterator_date = start_date
+        # TODO: FIX - This only goes to the end of the year. We want to go to the end of the transaction list.
         while iterator_date < datetime(start_date.year + 1, 1, 1):
             iterator_date += timedelta(days=1)
             current_balance = self.get_balance_at_date(transactions, iterator_date)
@@ -91,6 +133,12 @@ class Account(GuidObject):
 
     @property
     def as_xml(self):
+        """
+        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML
+
+        :return: List of ElementTree.Element objects
+        :raises: ValueError if no commodity found.
+        """
         node_and_children = list()
         account_node = ElementTree.Element('gnc:account', {'version': '2.0.0'})
         ElementTree.SubElement(account_node, 'act:name').text = self.name
@@ -116,6 +164,13 @@ class Account(GuidObject):
         return node_and_children
 
     def as_dict(self, account_hierarchy=None, path_to_self='/'):
+        """
+        Retrieves the current account hierarchy as a dictionary.
+
+        :param account_hierarchy: Existing account hierarchy. If None is provided, assumes a new dictionary.
+        :param path_to_self: Dictionary key for the current account.
+        :return: Dictionary containing current account and all subaccounts.
+        """
         if account_hierarchy is None:
             account_hierarchy = dict()
         account_hierarchy[path_to_self] = self
@@ -128,6 +183,13 @@ class Account(GuidObject):
 
     @property
     def dict_entry_name(self):
+        """
+        Retrieves the dictionary entry based on account name.
+
+        Only alpha-numeric and underscore characters allowed. Spaces and slashes (/) are converted to underscores.
+
+        :return: String with the dictionary entry name.
+        """
         non_alphanumeric_underscore = re.compile('[^a-zA-Z0-9_]')
         dict_entry_name = self.name
         dict_entry_name = dict_entry_name.replace(' ', '_')
@@ -137,6 +199,13 @@ class Account(GuidObject):
         return dict_entry_name
 
     def get_parent_commodity(self):
+        """
+        Retrieves the commodity for the account.
+
+        If none is provided, it will look at it's parent (and ancestors recursively) to find it.
+
+        :return: Commodity object, or None if no commodity was found in the ancestry chain.
+        """
         if self.commodity:
             return self.commodity
         elif self.parent:
@@ -145,51 +214,88 @@ class Account(GuidObject):
 
 
 class BankAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.BANK
+    """
     def __init__(self):
         super(BankAccount, self).__init__()
         self.type = AccountType.BANK
 
 
 class IncomeAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.INCOME
+    """
     def __init__(self):
         super(IncomeAccount, self).__init__()
         self.type = AccountType.INCOME
 
 
 class AssetAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.ASSET
+    """
     def __init__(self):
         super(AssetAccount, self).__init__()
         self.type = AccountType.ASSET
 
 
 class CreditAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.CREDIT
+    """
     def __init__(self):
         super(CreditAccount, self).__init__()
         self.type = AccountType.CREDIT
 
 
 class ExpenseAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.EXPENSE
+    """
     def __init__(self):
         super(ExpenseAccount, self).__init__()
         self.type = AccountType.EXPENSE
 
 
 class EquityAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.EQUITY
+    """
     def __init__(self):
         super(EquityAccount, self).__init__()
         self.type = AccountType.EQUITY
 
 
 class LiabilityAccount(Account):
+    """
+    Shortcut class to create an account with the type set to AccountType.LIABILITY
+    """
     def __init__(self):
         super(LiabilityAccount, self).__init__()
         self.type = AccountType.LIABILITY
 
 
 class InterestAccount:
+    """
+    Class used to calculate interest balances.
+    """
     def __init__(self, starting_balance, starting_date, interest_percentage, payment_amount, *,
                  additional_payments=None, skip_payment_dates=None, interest_start_date=None,
                  subaccounts=None):
+        """
+        Class initializer.
+
+        :param starting_balance: Starting balance for the interest account.
+        :param starting_date: datetime object indicating the date of the starting balance.
+        :param interest_percentage: Percentage to interest on the loan.
+        :param payment_amount: Payment amount on the loan.
+        :param additional_payments: List of dictionaries containing a "payment" key for additional amount paid,
+            and "payment_date" for the date the additional amount was paid.
+        :param skip_payment_dates: List of datetime objects that the loan payment should be skipped
+        :param interest_start_date: datetime object that interest starts on
+        :param subaccounts: List of InterestAccount objects that are subaccounts of this InterestAccount
+        """
         if additional_payments is None:
             additional_payments = []
         if skip_payment_dates is None:
@@ -213,6 +319,13 @@ class InterestAccount:
 
     @property
     def starting_date(self):
+        """
+        Retrieves the starting date for the account.
+
+        If there are subaccounts specified, the minimum starting date of the subaccounts is used.
+
+        :return: Minimum starting date, or current InterestAccount's starting date.
+        """
         if self.subaccounts is None:
             return self.__starting_date
         return min([x.starting_date for x in self.subaccounts])
@@ -223,12 +336,26 @@ class InterestAccount:
 
     @property
     def interest_percentage(self):
+        """
+        Retrieves the interest percentage for the account.
+
+        If there are subaccounts specified, the sum of the subaccounts' interest percentage is used.
+
+        :return: Sum of interest percentages, or current InterestAccount object's percentage.
+        """
         if self.subaccounts is None:
             return self.__interest_percentage
         return sum([x.interest_percentage for x in self.subaccounts])
 
     @property
     def payment_amount(self):
+        """
+        Retrieves the payment amount for the account.
+
+        If there are subaccounts specified, the sum of the subaccounts' payment amount is used.
+
+        :return: Sum of the payment amounts, or current InterestAccount object's payment amount.
+        """
         if self.subaccounts is None:
             return self.__payment_amount
         return sum([x.payment_amount for x in self.subaccounts])
@@ -243,6 +370,13 @@ class InterestAccount:
 
     @property
     def starting_balance(self):
+        """
+        Retrieves the starting balance for the account.
+
+        If there are subaccounts specified, the sum of the subaccounts' starting balance is used.
+
+        :return: Sum of the starting balances, or current InterestAccount object's starting balance.
+        """
         if self.subaccounts is None:
             return self.__starting_balance
         return sum([x.starting_balance for x in self.subaccounts])
@@ -252,6 +386,13 @@ class InterestAccount:
         self.__starting_balance = new_starting_balance
 
     def get_info_at_date(self, date):
+        """
+        Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified)
+
+        :param date: datetime object indicating the date you want the loan status of
+        :return: LoanStatus object
+        """
+
         if self.subaccounts is None:
             return self.__get_info_at_date_single_account(date)
         return self.__get_info_at_date_subaccounts(date)
@@ -305,6 +446,12 @@ class InterestAccount:
         return LoanStatus(iterator_balance, iterator_date, interest, amount_to_capital)
 
     def get_all_payments(self, skip_additional_payments=False):
+        """
+        Retrieves a list of tuples that show all payments for the loan plan.
+
+        :param skip_additional_payments: Skips additional payments if True.
+        :return: List of tuples with the date (index 0), balance (index 1) and amount to capital (index 2)
+        """
         if self.subaccounts is None:
             return self.__get_all_payments_single_account(skip_additional_payments)
         return self.__get_all_payments_subaccounts(skip_additional_payments)

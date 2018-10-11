@@ -1,7 +1,7 @@
 from datetime import datetime
 from xml.etree import ElementTree
 
-from gnewcash.guid_object import GuidObject
+from guid_object import GuidObject
 
 
 class Transaction(GuidObject):
