@@ -68,7 +68,9 @@ class Account(GuidObject):
         Retrieves the starting balance for the current account, given the list of transactions.
 
         :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
         :return: First transaction amount if the account has transactions, otherwise 0.
+        :rtype: int or decimal.Decimal
         """
         account_transactions = [x for x in transactions if x.to_account == self]
         if account_transactions:
@@ -83,8 +85,11 @@ class Account(GuidObject):
         If the provided date is None, it will retrieve the ending balance.
 
         :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
         :param date: Last date to consider when determining the account balance.
+        :type date: datetime.datetime
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
+        :rtype: int or decimal.Decimal
         """
         balance = 0
         applicable_transactions = [x for x in transactions if self in [x.from_account, x.to_account]]
@@ -108,7 +113,9 @@ class Account(GuidObject):
         Retrieves the ending balance for the current account, given the list of transactions.
 
         :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
         :return: Ending balance if the account has transactions, otherwise 0.
+        :rtype: int or decimal.Decimal
         """
         return self.get_balance_at_date(transactions)
 
@@ -117,8 +124,11 @@ class Account(GuidObject):
         Gets the minimum balance for the account after a certain date, given the list of transactions.
 
         :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
         :param start_date: datetime object representing the date you want to find the minimum balance for.
+        :type start_date: datetime.datetime
         :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
+        :rtype: tuple
         """
         minimum_balance = None
         minimum_balance_date = None
@@ -137,6 +147,7 @@ class Account(GuidObject):
         Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML
 
         :return: List of ElementTree.Element objects
+        :rtype: list[xml.etree.ElementTree.Element]
         :raises: ValueError if no commodity found.
         """
         node_and_children = list()
@@ -168,8 +179,11 @@ class Account(GuidObject):
         Retrieves the current account hierarchy as a dictionary.
 
         :param account_hierarchy: Existing account hierarchy. If None is provided, assumes a new dictionary.
+        :type account_hierarchy: dict
         :param path_to_self: Dictionary key for the current account.
+        :type path_to_self: str
         :return: Dictionary containing current account and all subaccounts.
+        :rtype: dict
         """
         if account_hierarchy is None:
             account_hierarchy = dict()
@@ -189,6 +203,7 @@ class Account(GuidObject):
         Only alpha-numeric and underscore characters allowed. Spaces and slashes (/) are converted to underscores.
 
         :return: String with the dictionary entry name.
+        :rtype: str
         """
         non_alphanumeric_underscore = re.compile('[^a-zA-Z0-9_]')
         dict_entry_name = self.name
@@ -205,6 +220,7 @@ class Account(GuidObject):
         If none is provided, it will look at it's parent (and ancestors recursively) to find it.
 
         :return: Commodity object, or None if no commodity was found in the ancestry chain.
+        :rtype: Commodity
         """
         if self.commodity:
             return self.commodity
@@ -287,14 +303,22 @@ class InterestAccount:
         Class initializer.
 
         :param starting_balance: Starting balance for the interest account.
+        :type starting_balance: decimal.Decimal
         :param starting_date: datetime object indicating the date of the starting balance.
+        :type starting_date: datetime.datetime
         :param interest_percentage: Percentage to interest on the loan.
+        :type interest_percentage: decimal.Decimal
         :param payment_amount: Payment amount on the loan.
+        :type payment_amount: decimal.Decimal
         :param additional_payments: List of dictionaries containing a "payment" key for additional amount paid,
             and "payment_date" for the date the additional amount was paid.
+        :type additional_payments: list[dict]
         :param skip_payment_dates: List of datetime objects that the loan payment should be skipped
+        :type skip_payment_dates: list[datetime.datetime]
         :param interest_start_date: datetime object that interest starts on
+        :type interest_start_date: datetime.datetime
         :param subaccounts: List of InterestAccount objects that are subaccounts of this InterestAccount
+        :type subaccounts: list[InterestAccount]
         """
         if additional_payments is None:
             additional_payments = []
@@ -325,6 +349,7 @@ class InterestAccount:
         If there are subaccounts specified, the minimum starting date of the subaccounts is used.
 
         :return: Minimum starting date, or current InterestAccount's starting date.
+        :rtype: datetime.datetime
         """
         if self.subaccounts is None:
             return self.__starting_date
@@ -342,6 +367,7 @@ class InterestAccount:
         If there are subaccounts specified, the sum of the subaccounts' interest percentage is used.
 
         :return: Sum of interest percentages, or current InterestAccount object's percentage.
+        :rtype: decimal.Decimal
         """
         if self.subaccounts is None:
             return self.__interest_percentage
@@ -355,6 +381,7 @@ class InterestAccount:
         If there are subaccounts specified, the sum of the subaccounts' payment amount is used.
 
         :return: Sum of the payment amounts, or current InterestAccount object's payment amount.
+        :rtype: decimal.Decimal
         """
         if self.subaccounts is None:
             return self.__payment_amount
@@ -376,6 +403,7 @@ class InterestAccount:
         If there are subaccounts specified, the sum of the subaccounts' starting balance is used.
 
         :return: Sum of the starting balances, or current InterestAccount object's starting balance.
+        :rtype: decimal.Decimal
         """
         if self.subaccounts is None:
             return self.__starting_balance
@@ -390,9 +418,10 @@ class InterestAccount:
         Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified)
 
         :param date: datetime object indicating the date you want the loan status of
+        :type date: datetime.datetime
         :return: LoanStatus object
+        :rtype: LoanStatus
         """
-
         if self.subaccounts is None:
             return self.__get_info_at_date_single_account(date)
         return self.__get_info_at_date_subaccounts(date)
@@ -450,7 +479,9 @@ class InterestAccount:
         Retrieves a list of tuples that show all payments for the loan plan.
 
         :param skip_additional_payments: Skips additional payments if True.
+        :type skip_additional_payments: bool
         :return: List of tuples with the date (index 0), balance (index 1) and amount to capital (index 2)
+        :rtype: list[tuple]
         """
         if self.subaccounts is None:
             return self.__get_all_payments_single_account(skip_additional_payments)
