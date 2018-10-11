@@ -1,0 +1,422 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>gnucash_file &#8212; gnewcash 1.0alpha documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gnucash_file</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+
+<span class="kn">from</span> <span class="nn">transaction</span> <span class="k">import</span> <span class="n">Split</span><span class="p">,</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span>
+<span class="kn">from</span> <span class="nn">account</span> <span class="k">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span>
+
+
+<div class="viewcode-block" id="GnuCashFile"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a><span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class representing a GnuCash file on disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">namespace_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;gnc&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/gnc&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/act&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;book&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/book&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;cd&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/cd&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;cmdty&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/cmdty&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;price&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/price&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;slot&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/slot&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;split&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/split&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sx&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/sx&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;trn&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/trn&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ts&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/ts&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fs&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/fs&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;bgt&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/bgt&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;recurrence&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/recurrence&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;lot&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/lot&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;addr&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/addr&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/owner&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;billterm&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/billterm&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;bt-days&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/bt-days&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;bt-prox&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/bt-prox&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;cust&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/cust&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;employee&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/employee&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;entry&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/entry&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;invoice&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/invoice&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;job&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/job&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/order&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;taxtable&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/taxtable&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;tte&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/tte&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;vendor&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/vendor&#39;</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">books</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">books</span><span class="p">:</span>
+            <span class="n">books</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">books</span> <span class="o">=</span> <span class="n">books</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">as_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">:</span>
+            <span class="n">as_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
+        <span class="n">as_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> books&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">as_string</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GnuCashFile.read_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.read_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the specified .gnucash file and loads it into memory</span>
+
+<span class="sd">        :param source_file: Full or relative path to the .gnucash file.</span>
+<span class="sd">        :type source_file: str</span>
+<span class="sd">        :return: New GnuCashFile object</span>
+<span class="sd">        :rtype: GnuCashFile</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">()</span>
+        <span class="n">built_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source_file</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">xml_tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source_file</span><span class="p">)</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">xml_tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzipped_file</span><span class="p">:</span>
+                    <span class="n">contents</span> <span class="o">=</span> <span class="n">gzipped_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="n">xml_tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">xml_tree</span>
+            <span class="n">namespaces</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">namespace_data</span>
+
+            <span class="n">books</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:book&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+                <span class="n">new_book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">()</span>
+                <span class="n">accounts</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                <span class="n">transactions</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:transaction&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+
+                <span class="n">commodity</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gnc:commodity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                <span class="n">new_book</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="p">(</span><span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                                               <span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+                <span class="n">account_objects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                <span class="n">transaction_manager</span> <span class="o">=</span> <span class="n">TransactionManager</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">accounts</span><span class="p">:</span>
+                    <span class="c1"># Bring in the XML data</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">account_id</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">account_type</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:type&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+                    <span class="n">parent</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:parent&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">text</span>
+
+                    <span class="n">account_object</span> <span class="o">=</span> <span class="n">Account</span><span class="p">()</span>
+                    <span class="n">account_object</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">account_id</span>
+                    <span class="n">account_object</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+                    <span class="n">account_object</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">account_type</span>
+
+                    <span class="n">commodity</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                    <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="p">(</span><span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                                                         <span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">parent_account</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">parent</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
+                            <span class="n">account_object</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent_account</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">new_book</span><span class="o">.</span><span class="n">root_account</span> <span class="o">=</span> <span class="n">account_object</span>
+                    <span class="n">account_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">account_object</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">transactions</span><span class="p">:</span>
+                    <span class="n">date_entered</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-entered&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">date_posted</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-posted&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">splits</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:splits&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                    <span class="n">from_account</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">to_account</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">amount</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">from_account_reconciled</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
+                    <span class="n">to_account_reconciled</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
+                    <span class="n">memo</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:num&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">memo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">memo</span> <span class="o">=</span> <span class="n">memo</span><span class="o">.</span><span class="n">text</span>
+
+                    <span class="n">date_entered</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_entered</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span><span class="p">)</span>
+                    <span class="n">date_posted</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_posted</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">splits</span><span class="p">):</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                        <span class="n">account</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                        <span class="n">reconciled</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+                        <span class="n">account</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">account</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[:</span><span class="n">value</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)])</span> <span class="o">/</span> <span class="mi">100</span>
+
+                        <span class="k">if</span> <span class="n">amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">amount</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">from_account</span> <span class="o">=</span> <span class="n">account</span>
+                            <span class="n">from_account_reconciled</span> <span class="o">=</span> <span class="n">reconciled</span>
+                        <span class="k">elif</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">to_account</span> <span class="o">=</span> <span class="n">account</span>
+                            <span class="n">to_account_reconciled</span> <span class="o">=</span> <span class="n">reconciled</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">from_account</span> <span class="o">=</span> <span class="n">account</span>
+                            <span class="n">to_account</span> <span class="o">=</span> <span class="n">account</span>
+
+                    <span class="n">transaction</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">()</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">date_entered</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">date_posted</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">from_account</span> <span class="o">=</span> <span class="n">from_account</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">to_account</span> <span class="o">=</span> <span class="n">to_account</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Split</span><span class="p">(</span><span class="n">from_account</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">from_account_reconciled</span><span class="p">))</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Split</span><span class="p">(</span><span class="n">to_account</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">amount</span><span class="p">),</span> <span class="n">to_account_reconciled</span><span class="p">))</span>
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="n">memo</span>
+
+                    <span class="n">transaction_manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+
+                <span class="n">new_book</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transaction_manager</span>
+                <span class="n">built_file</span><span class="o">.</span><span class="n">books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_book</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">built_file</span></div>
+
+<div class="viewcode-block" id="GnuCashFile.build_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.build_file">[docs]</a>    <span class="k">def</span> <span class="nf">build_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the contents of the GnuCashFile object out to a .gnucash file on disk</span>
+
+<span class="sd">        :param target_file: Full or relative path to the target file</span>
+<span class="sd">        :type target_file: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">namespace_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace_data</span>
+        <span class="n">root_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc-v2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;xmlns:&#39;</span> <span class="o">+</span> <span class="n">identifier</span><span class="p">:</span> <span class="n">value</span>
+                                                   <span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">namespace_info</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span>
+            <span class="n">root_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="n">element_tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">ElementTree</span><span class="p">(</span><span class="n">root_node</span><span class="p">)</span>
+        <span class="n">element_tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">xml_declaration</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Book"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a><span class="k">class</span> <span class="nc">Book</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Book in GnuCash</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">commodity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span> <span class="o">=</span> <span class="n">root_account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transactions</span> <span class="ow">or</span> <span class="n">TransactionManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">commodity</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current book as GnuCash-compatible XML</span>
+
+<span class="sd">        :return: List of ElementTree.Element objects</span>
+<span class="sd">        :rtype: list[xml.etree.ElementTree.Element]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">book_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:book&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commodity</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="o">.</span><span class="n">as_xml</span><span class="p">:</span>
+            <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
+            <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">book_node</span>
+
+<div class="viewcode-block" id="Book.get_account"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths_to_account</span><span class="p">,</span> <span class="n">current_level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves an account based on a path of account names</span>
+
+<span class="sd">        :param paths_to_account: Names of accounts that indicate the path</span>
+<span class="sd">        :param current_level: Account to start the search at (None indicates to start at the root account)</span>
+<span class="sd">        :type current_level: Account</span>
+<span class="sd">        :return: Account object if found, otherwise None</span>
+<span class="sd">        :rtype: Account</span>
+
+<span class="sd">        Example: ``get_account(&#39;Assets&#39;, &#39;Current Assets&#39;, &#39;Checking Account&#39;)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">current_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span>
+        <span class="n">paths_to_account</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths_to_account</span><span class="p">)</span>
+        <span class="n">next_level</span> <span class="o">=</span> <span class="n">paths_to_account</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">current_level</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">next_level</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">paths_to_account</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">account</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="o">*</span><span class="n">paths_to_account</span><span class="p">,</span> <span class="n">current_level</span><span class="o">=</span><span class="n">account</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Book.get_account_balance"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the balance for a specified account based on the transactions in the Book.</span>
+
+<span class="sd">        :param account: Account object to retrieve the balance of.</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :return: Account balance if applicable transactions found, otherwise 0.</span>
+<span class="sd">        :rtype: decimal.Decimal or int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">account_balance</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">account_transactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="k">if</span> <span class="n">account</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">from_account</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">to_account</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">account_transactions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span><span class="p">:</span>
+                <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">transaction</span><span class="o">.</span><span class="n">from_account</span> <span class="o">==</span> <span class="n">account</span><span class="p">:</span>
+                <span class="n">account_balance</span> <span class="o">-=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span>
+            <span class="k">elif</span> <span class="n">transaction</span><span class="o">.</span><span class="n">to_account</span> <span class="o">==</span> <span class="n">account</span><span class="p">:</span>
+                <span class="n">account_balance</span> <span class="o">+=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span>
+        <span class="k">return</span> <span class="n">account_balance</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> transactions&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Commodity in GnuCash</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">commodity_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current commodity as GnuCash-compatible XML</span>
+
+<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">commodity_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:commodity&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:getquotes&#39;</span><span class="p">)</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:quote_source&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;currency&#39;</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:quote_tz&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">commodity_node</span>
+
+<div class="viewcode-block" id="Commodity.as_short_xml"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Commodity.as_short_xml">[docs]</a>    <span class="k">def</span> <span class="nf">as_short_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tag</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current commodity as GnuCash-compatible XML (short version used for accounts)</span>
+
+<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">commodity_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">node_tag</span><span class="p">)</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="n">commodity_node</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">gnewcash</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../account.html">Account</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guid_object.html">GUID Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transaction.html">Transaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Paul Bromwell Jr..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

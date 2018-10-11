@@ -1,0 +1,344 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>transaction &#8212; gnewcash 1.0alpha documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for transaction</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+
+<span class="kn">from</span> <span class="nn">guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
+
+
+<div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a transaction in GnuCash.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currency</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current transaction as GnuCash-compatible XML</span>
+
+<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">date_format</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> 00:00:00 %z&#39;</span>
+        <span class="n">timestamp_format</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span>
+
+        <span class="n">transaction_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:transaction&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
+
+        <span class="n">transaction_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currency</span><span class="o">.</span><span class="n">as_short_xml</span><span class="p">(</span><span class="s1">&#39;trn:currency&#39;</span><span class="p">))</span>
+
+        <span class="n">date_posted_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:date-posted&#39;</span><span class="p">)</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">date_posted_node</span><span class="p">,</span> <span class="s1">&#39;ts:date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">,</span> <span class="n">date_format</span><span class="p">)</span>
+        <span class="n">date_entered_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:date-entered&#39;</span><span class="p">)</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">date_entered_node</span><span class="p">,</span> <span class="s1">&#39;ts:date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span><span class="p">,</span>
+                                                                                      <span class="n">timestamp_format</span><span class="p">)</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:num&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
+            <span class="n">splits_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:splits&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
+                <span class="n">splits_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">split</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">transaction_node</span>
+
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if all splits in the transaction are cleared.</span>
+
+<span class="sd">        :return: Boolean indicating if all splits in the transaction are cleared.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="k">if</span> <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Transaction.mark_transaction_cleared"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.mark_transaction_cleared">[docs]</a>    <span class="k">def</span> <span class="nf">mark_transaction_cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Marks all splits in the transaction as cleared (reconciled_state = &#39;c&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
+            <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Split"><a class="viewcode-back" href="../transaction.html#transaction.Split">[docs]</a><span class="k">class</span> <span class="nc">Split</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a split in GnuCash.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">reconciled_state</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Split</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="n">reconciled_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">account</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current split as GnuCash-compatible XML</span>
+
+<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">split_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;trn:split&#39;</span><span class="p">)</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/100&#39;</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:quantity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/100&#39;</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span>
+        <span class="k">return</span> <span class="n">split_node</span></div>
+
+
+<div class="viewcode-block" id="TransactionManager"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager">[docs]</a><span class="k">class</span> <span class="nc">TransactionManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used to add/remove transactions while maintaining a chronological order based on transaction posted date.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TransactionManager.add"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a transaction to the transaction manager</span>
+
+<span class="sd">        :param new_transaction: Transaction to add</span>
+<span class="sd">        :type new_transaction: Transaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Inserting transactions in order</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&gt;</span> <span class="n">new_transaction</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">==</span> <span class="n">new_transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">and</span> <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span> <span class="o">&lt;</span> <span class="n">new_transaction</span><span class="o">.</span><span class="n">amount</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_transaction</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TransactionManager.delete"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a transaction from the transaction manager</span>
+
+<span class="sd">        :param transaction: Transaction to remove</span>
+<span class="sd">        :type transaction: Transaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We&#39;re looking up by GUID here because a simple list remove doesn&#39;t work</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">iter_transaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">iter_transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="TransactionManager.get_transactions"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_transactions">[docs]</a>    <span class="k">def</span> <span class="nf">get_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">from_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_account</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generator function that gets transactions based on a from account and/or to account for the transaction</span>
+
+<span class="sd">        :param from_account: Account that the money should be coming from</span>
+<span class="sd">        :type from_account: Account</span>
+<span class="sd">        :param to_account: Account that they money should be going to</span>
+<span class="sd">        :type to_account: Account</span>
+<span class="sd">        :return: Generator that produces transactions based on the given from account and/or to account</span>
+<span class="sd">        :rtype: Iterator[Transaction]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Refactor this. Transactions don&#39;t have a from_account or to_account anymore.</span>
+
+        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">transaction</span><span class="o">.</span><span class="n">from_account</span> <span class="o">==</span> <span class="n">from_account</span> <span class="ow">or</span> <span class="n">transaction</span><span class="o">.</span><span class="n">to_account</span> <span class="o">==</span> <span class="n">to_account</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">transaction</span></div>
+
+<div class="viewcode-block" id="TransactionManager.get_account_starting_balance"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_account_starting_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the starting balance for the provided account given the list of transactions in the manager.</span>
+
+<span class="sd">        :param account: Account to get the starting balance for</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :return: Account starting balance</span>
+<span class="sd">        :rtype: decimal.Decimal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">get_starting_balance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">(</span><span class="n">from_account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span>
+                                                                       <span class="n">to_account</span><span class="o">=</span><span class="n">account</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="TransactionManager.get_account_ending_balance"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_account_ending_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_ending_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the ending balance for the provided account given the list of transactions in the manager.</span>
+
+<span class="sd">        :param account: Account to get the ending balance for</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :return: Account starting balance</span>
+<span class="sd">        :rtype: decimal.Decimal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">get_ending_balance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">(</span><span class="n">from_account</span><span class="o">=</span><span class="n">account</span><span class="p">,</span>
+                                                                     <span class="n">to_account</span><span class="o">=</span><span class="n">account</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="TransactionManager.minimum_balance_past_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.minimum_balance_past_date">[docs]</a>    <span class="k">def</span> <span class="nf">minimum_balance_past_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the minimum balance past a certain date for the given account.</span>
+
+<span class="sd">        :param account: Account to get the minimum balance for</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :param date: datetime object representing the date you want to find the minimum balance for.</span>
+<span class="sd">        :type date: datetime.datetime</span>
+<span class="sd">        :return: Tuple containing the minimum balance (element 0) and the date it&#39;s at that balance (element 1)</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">minimum_balance_past_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TransactionManager.get_balance_at_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_balance_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the account balance for the specified account at a certain date.</span>
+<span class="sd">        If the provided date is None, it will retrieve the ending balance.</span>
+
+<span class="sd">        :param account: List of transactions or TransactionManager</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :param date: Last date to consider when determining the account balance.</span>
+<span class="sd">        :type date: datetime.datetime</span>
+<span class="sd">        :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</span>
+<span class="sd">        :rtype: decimal.Decimal or int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span></div>
+
+    <span class="c1"># Making TransactionManager iterable</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">my_transaction</span><span class="p">,</span> <span class="n">other_transaction</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">my_transaction</span> <span class="o">!=</span> <span class="n">other_transaction</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">gnewcash</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../account.html">Account</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guid_object.html">GUID Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transaction.html">Transaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Paul Bromwell Jr..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

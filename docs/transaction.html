@@ -1,0 +1,325 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Transaction &#8212; gnewcash 1.0alpha documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="GUID Object" href="guid_object.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-transaction">
+<span id="transaction"></span><h1>Transaction<a class="headerlink" href="#module-transaction" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="transaction.Transaction">
+<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">Transaction</code><a class="reference internal" href="_modules/transaction.html#Transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a transaction in GnuCash.</p>
+<dl class="attribute">
+<dt id="transaction.Transaction.as_xml">
+<code class="descname">as_xml</code><a class="headerlink" href="#transaction.Transaction.as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current transaction as GnuCash-compatible XML</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ElementTree.Element object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.Transaction.cleared">
+<code class="descname">cleared</code><a class="headerlink" href="#transaction.Transaction.cleared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if all splits in the transaction are cleared.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean indicating if all splits in the transaction are cleared.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.Transaction.mark_transaction_cleared">
+<code class="descname">mark_transaction_cleared</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.mark_transaction_cleared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.mark_transaction_cleared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marks all splits in the transaction as cleared (reconciled_state = ‘c’)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="transaction.Split">
+<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">Split</code><span class="sig-paren">(</span><em>account</em>, <em>amount</em>, <em>reconciled_state='n'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a split in GnuCash.</p>
+<dl class="attribute">
+<dt id="transaction.Split.as_xml">
+<code class="descname">as_xml</code><a class="headerlink" href="#transaction.Split.as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current split as GnuCash-compatible XML</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ElementTree.Element object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="transaction.TransactionManager">
+<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">TransactionManager</code><a class="reference internal" href="_modules/transaction.html#TransactionManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class used to add/remove transactions while maintaining a chronological order based on transaction posted date.</p>
+<dl class="method">
+<dt id="transaction.TransactionManager.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>new_transaction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a transaction to the transaction manager</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_transaction</strong> (<a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a>) – Transaction to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.TransactionManager.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>transaction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a transaction from the transaction manager</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transaction</strong> (<a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a>) – Transaction to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.TransactionManager.get_account_ending_balance">
+<code class="descname">get_account_ending_balance</code><span class="sig-paren">(</span><em>account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_account_ending_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_account_ending_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the ending balance for the provided account given the list of transactions in the manager.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the ending balance for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Account starting balance</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.TransactionManager.get_account_starting_balance">
+<code class="descname">get_account_starting_balance</code><span class="sig-paren">(</span><em>account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_account_starting_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_account_starting_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the starting balance for the provided account given the list of transactions in the manager.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the starting balance for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Account starting balance</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.TransactionManager.get_balance_at_date">
+<code class="descname">get_balance_at_date</code><span class="sig-paren">(</span><em>account</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_balance_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_balance_at_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the account balance for the specified account at a certain date.
+If the provided date is None, it will retrieve the ending balance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – List of transactions or TransactionManager</li>
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – Last date to consider when determining the account balance.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.TransactionManager.get_transactions">
+<code class="descname">get_transactions</code><span class="sig-paren">(</span><em>*</em>, <em>from_account=None</em>, <em>to_account=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_transactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_transactions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator function that gets transactions based on a from account and/or to account for the transaction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account that the money should be coming from</li>
+<li><strong>to_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account that they money should be going to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Generator that produces transactions based on the given from account and/or to account</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Iterator[<a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.TransactionManager.minimum_balance_past_date">
+<code class="descname">minimum_balance_past_date</code><span class="sig-paren">(</span><em>account</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.minimum_balance_past_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.minimum_balance_past_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the minimum balance past a certain date for the given account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the minimum balance for</li>
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tuple containing the minimum balance (element 0) and the date it’s at that balance (element 1)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">gnewcash</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Transaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="guid_object.html" title="previous chapter">GUID Object</a></li>
+      <li>Next: <a href="utils.html" title="next chapter">Utils</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Paul Bromwell Jr..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/transaction.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
