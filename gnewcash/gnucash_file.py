@@ -224,6 +224,12 @@ class Book:
                 account_balance += transaction.amount
         return account_balance
 
+    def __str__(self):
+        return '{} transactions'.format(len(self.transactions))
+
+    def __repr__(self):
+        return str(self)
+
 
 class Commodity:
     def __init__(self, commodity_id, space):
