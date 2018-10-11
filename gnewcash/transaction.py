@@ -29,6 +29,7 @@ class Transaction(GuidObject):
         Returns the current transaction as GnuCash-compatible XML
 
         :return: ElementTree.Element object
+        :rtype: xml.etree.ElementTree.Element
         """
         date_format = '%Y-%m-%d 00:00:00 %z'
         timestamp_format = '%Y-%m-%d %H:%M:%S %z'
@@ -101,6 +102,7 @@ class Split(GuidObject):
         Returns the current split as GnuCash-compatible XML
 
         :return: ElementTree.Element object
+        :rtype: xml.etree.ElementTree.Element
         """
         split_node = ElementTree.Element('trn:split')
         ElementTree.SubElement(split_node, 'split:id', {'type': 'guid'}).text = self.guid
@@ -123,7 +125,7 @@ class TransactionManager:
         Adds a transaction to the transaction manager
 
         :param new_transaction: Transaction to add
-        :type: Transaction
+        :type new_transaction: Transaction
         """
         # Inserting transactions in order
         for index, transaction in enumerate(self.transactions):
@@ -141,7 +143,7 @@ class TransactionManager:
         Removes a transaction from the transaction manager
 
         :param transaction: Transaction to remove
-        :type: Transaction
+        :type transaction: Transaction
         """
         # We're looking up by GUID here because a simple list remove doesn't work
         for index, iter_transaction in enumerate(self.transactions):
@@ -153,11 +155,15 @@ class TransactionManager:
         """
         Generator function that gets transactions based on a from account and/or to account for the transaction
 
-        :param from_account:
-        :param to_account:
+        :param from_account: Account that the money should be coming from
+        :type from_account: Account
+        :param to_account: Account that they money should be going to
+        :type to_account: Account
         :return: Generator that produces transactions based on the given from account and/or to account
         :rtype: Iterator[Transaction]
         """
+        # TODO: Refactor this. Transactions don't have a from_account or to_account anymore.
+
         for transaction in self.transactions:
             if transaction.from_account == from_account or transaction.to_account == to_account:
                 yield transaction
@@ -167,8 +173,9 @@ class TransactionManager:
         Retrieves the starting balance for the provided account given the list of transactions in the manager.
 
         :param account: Account to get the starting balance for
-        :type: Account
+        :type account: Account
         :return: Account starting balance
+        :rtype: decimal.Decimal
         """
         return account.get_starting_balance(list(self.get_transactions(from_account=account,
                                                                        to_account=account)))
@@ -178,8 +185,9 @@ class TransactionManager:
         Retrieves the ending balance for the provided account given the list of transactions in the manager.
 
         :param account: Account to get the ending balance for
-        :type: Account
+        :type account: Account
         :return: Account starting balance
+        :rtype: decimal.Decimal
         """
         return account.get_ending_balance(list(self.get_transactions(from_account=account,
                                                                      to_account=account)))
@@ -193,6 +201,7 @@ class TransactionManager:
         :param date: datetime object representing the date you want to find the minimum balance for.
         :type date: datetime.datetime
         :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
+        :rtype: tuple
         """
         return account.minimum_balance_past_date(self, date)
 
@@ -206,6 +215,7 @@ class TransactionManager:
         :param date: Last date to consider when determining the account balance.
         :type date: datetime.datetime
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
+        :rtype: decimal.Decimal or int
         """
         return account.get_balance_at_date(self, date)
 

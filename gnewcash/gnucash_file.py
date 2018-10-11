@@ -66,7 +66,9 @@ class GnuCashFile:
         Reads the specified .gnucash file and loads it into memory
 
         :param source_file: Full or relative path to the .gnucash file.
+        :type source_file: str
         :return: New GnuCashFile object
+        :rtype: GnuCashFile
         """
         logger = getLogger()
         built_file = GnuCashFile(None)
@@ -184,6 +186,7 @@ class GnuCashFile:
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk
 
         :param target_file: Full or relative path to the target file
+        :type target_file: str
         """
         namespace_info = self.namespace_data
         root_node = ElementTree.Element('gnc-v2', {'xmlns:' + identifier: value
@@ -210,6 +213,7 @@ class Book:
         Returns the current book as GnuCash-compatible XML
 
         :return: List of ElementTree.Element objects
+        :rtype: list[xml.etree.ElementTree.Element]
         """
         book_node = ElementTree.Element('gnc:book', {'version': '2.0.0'})
         book_node.append(self.commodity.as_xml)
@@ -226,9 +230,11 @@ class Book:
         """
         Retrieves an account based on a path of account names
 
-        :param paths_to_account: Names of accounts that indicate the path\n
-        :param current_level:
+        :param paths_to_account: Names of accounts that indicate the path
+        :param current_level: Account to start the search at (None indicates to start at the root account)
+        :type current_level: Account
         :return: Account object if found, otherwise None
+        :rtype: Account
 
         Example: ``get_account('Assets', 'Current Assets', 'Checking Account')``
         """
@@ -248,7 +254,9 @@ class Book:
         Retrieves the balance for a specified account based on the transactions in the Book.
 
         :param account: Account object to retrieve the balance of.
+        :type account: Account
         :return: Account balance if applicable transactions found, otherwise 0.
+        :rtype: decimal.Decimal or int
         """
         account_balance = 0
         account_transactions = [x for x in self.transactions if account in [x.from_account, x.to_account]]
@@ -282,6 +290,7 @@ class Commodity:
         Returns the current commodity as GnuCash-compatible XML
 
         :return: ElementTree.Element object
+        :rtype: xml.etree.ElementTree.Element
         """
         commodity_node = ElementTree.Element('gnc:commodity', {'version': '2.0.0'})
         ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
@@ -296,6 +305,7 @@ class Commodity:
         Returns the current commodity as GnuCash-compatible XML (short version used for accounts)
 
         :return: ElementTree.Element object
+        :rtype: xml.etree.ElementTree.Element
         """
         commodity_node = ElementTree.Element(node_tag)
         ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
