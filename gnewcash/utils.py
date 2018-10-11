@@ -9,6 +9,7 @@ def delete_log_files(gnucash_file_path):
     Deletes log files at the specified directory.
 
     :param gnucash_file_path: Directory to delete log files
+    :type gnucash_file_path: str
     """
     backup_file_format = re.compile(r'.*[0-9]{14}\.gnucash$')
     for file in [x for x in listdir(gnucash_file_path) if isfile(join(gnucash_file_path, x))]:
