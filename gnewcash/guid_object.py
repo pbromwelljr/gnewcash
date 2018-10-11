@@ -2,6 +2,9 @@ import uuid
 
 
 class GuidObject:
+    """
+    Class used to generate unique GUIDs for various GNewCash objects.
+    """
     used_guids = []
 
     def __init__(self):
@@ -15,6 +18,12 @@ class GuidObject:
 
     @classmethod
     def get_guid(cls):
+        """
+        Retrieves a unique GUID and returns it
+
+        :return: New unique GUID
+        :rtype: str
+        """
         while True:
             random_uuid = uuid.uuid4()
             new_guid = str(random_uuid).replace('-', '').lower()

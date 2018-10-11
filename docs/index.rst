@@ -12,5 +12,6 @@ Welcome to gnewcash's documentation!
 
    account
    gnucash_file
+   guid_object
 
 .. :ref: account
