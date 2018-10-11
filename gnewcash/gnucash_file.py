@@ -184,7 +184,7 @@ class GnuCashFile:
 class Book:
     def __init__(self, root_account=None, transactions=None, commodity=None):
         self.root_account = root_account
-        self.transactions = transactions
+        self.transactions = transactions or TransactionManager()
         self.commodity = commodity
 
     @property
