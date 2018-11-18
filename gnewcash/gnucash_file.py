@@ -3,9 +3,12 @@ import os.path
 from datetime import datetime
 from logging import getLogger
 from xml.etree import ElementTree
+from xml.dom import minidom
 
-from transaction import Split, Transaction, TransactionManager
-from account import Account, AccountType
+from gnewcash.guid_object import GuidObject
+from gnewcash.transaction import Split, Transaction, TransactionManager
+from gnewcash.account import Account, AccountType
+from gnewcash.commodity import Commodity
 
 
 class GnuCashFile:
@@ -71,7 +74,7 @@ class GnuCashFile:
         :rtype: GnuCashFile
         """
         logger = getLogger()
-        built_file = GnuCashFile(None)
+        built_file = cls()
         built_file.file_name = source_file
         if os.path.exists(source_file):
             try:
@@ -86,96 +89,7 @@ class GnuCashFile:
 
             books = root.findall('gnc:book', namespaces)
             for book in books:
-                new_book = Book()
-                accounts = book.findall('gnc:account', namespaces)
-                transactions = book.findall('gnc:transaction', namespaces)
-
-                commodity = book.find('gnc:commodity', namespaces)
-                new_book.commodity = Commodity(commodity.find('cmdty:id').text,
-                                               commodity.find('cmty:space').text)
-
-                account_objects = list()
-                transaction_manager = TransactionManager()
-
-                for account in accounts:
-                    # Bring in the XML data
-                    name = account.find('act:name', namespaces).text
-                    account_id = account.find('act:id', namespaces).text
-                    account_type = account.find('act:type', namespaces).text
-
-                    parent = account.find('act:parent', namespaces)
-                    if parent is not None:
-                        parent = parent.text
-
-                    account_object = Account()
-                    account_object.guid = account_id
-                    account_object.name = name
-                    account_object.type = account_type
-
-                    commodity = account.find('act:commodity', namespaces)
-                    account_object.commodity = Commodity(commodity.find('cmdty:id').text,
-                                                         commodity.find('cmdty:space').text)
-
-                    if parent is not None:
-                        parent_account = [x for x in account_objects if x.guid == parent]
-                        if parent:
-                            account_object.parent = parent_account[0]
-                    else:
-                        new_book.root_account = account_object
-                    account_objects.append(account_object)
-
-                for transaction in transactions:
-                    date_entered = transaction.find('trn:date-entered', namespaces).find('ts:date', namespaces).text
-                    date_posted = transaction.find('trn:date-posted', namespaces).find('ts:date', namespaces).text
-                    description = transaction.find('trn:description', namespaces).text
-                    splits = transaction.find('trn:splits', namespaces)
-                    from_account = None
-                    to_account = None
-                    amount = None
-                    from_account_reconciled = 'n'
-                    to_account_reconciled = 'n'
-                    memo = transaction.find('trn:num', namespaces)
-                    if memo is not None:
-                        memo = memo.text
-
-                    date_entered = datetime.strptime(date_entered, '%Y-%m-%d %H:%M:%S %z')
-                    date_posted = datetime.strptime(date_posted, '%Y-%m-%d %H:%M:%S %z')
-
-                    for split in list(splits):
-                        value = split.find('split:value', namespaces).text
-                        account = split.find('split:account', namespaces).text
-                        reconciled = split.find('split:reconciled-state', namespaces).text
-
-                        account = [x for x in account_objects if x.guid == account][0]
-                        value = float(value[:value.find('/')]) / 100
-
-                        if amount is None:
-                            amount = abs(value)
-
-                        if value < 0:
-                            from_account = account
-                            from_account_reconciled = reconciled
-                        elif value > 0:
-                            to_account = account
-                            to_account_reconciled = reconciled
-                        else:
-                            from_account = account
-                            to_account = account
-
-                    transaction = Transaction()
-                    transaction.date_entered = date_entered
-                    transaction.date_posted = date_posted
-                    transaction.description = description
-                    transaction.amount = amount
-                    transaction.from_account = from_account
-                    transaction.to_account = to_account
-                    transaction.splits.append(Split(from_account, abs(amount) * -1, from_account_reconciled))
-                    transaction.splits.append(Split(to_account, abs(amount), to_account_reconciled))
-                    transaction.memo = memo
-
-                    transaction_manager.add(transaction)
-
-                new_book.transactions = transaction_manager
+                new_book = Book.from_xml(book, namespaces)
                 built_file.books.append(new_book)
         else:
             logger.warning('Could not find %s', source_file)
@@ -191,21 +105,33 @@ class GnuCashFile:
         namespace_info = self.namespace_data
         root_node = ElementTree.Element('gnc-v2', {'xmlns:' + identifier: value
                                                    for identifier, value in namespace_info.items()})
+        book_count_node = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
+        book_count_node.text = str(len(self.books))
+        root_node.append(book_count_node)
+
         for book in self.books:
             root_node.append(book.as_xml)
 
         element_tree = ElementTree.ElementTree(root_node)
         element_tree.write(target_file, encoding='utf-8', xml_declaration=True)
 
+        # Making our resulting XML pretty
+        xml = minidom.parse(target_file)
+        with open(target_file, 'w', encoding='utf-8') as target_file_handle:
+            target_file_handle.write(xml.toprettyxml(encoding='utf-8').decode('utf-8'))
 
-class Book:
+        # TODO: Add support for writing in gzip compression
+
+
+class Book(GuidObject):
     """
     Represents a Book in GnuCash
     """
-    def __init__(self, root_account=None, transactions=None, commodity=None):
+    def __init__(self, root_account=None, transactions=None, commodities=None):
+        super(Book, self).__init__()
         self.root_account = root_account
         self.transactions = transactions or TransactionManager()
-        self.commodity = commodity
+        self.commodities = commodities or []
 
     @property
     def as_xml(self):
@@ -216,15 +142,56 @@ class Book:
         :rtype: list[xml.etree.ElementTree.Element]
         """
         book_node = ElementTree.Element('gnc:book', {'version': '2.0.0'})
-        book_node.append(self.commodity.as_xml)
+        book_id_node = ElementTree.SubElement(book_node, 'book:id', {'type': 'guid'})
+        book_id_node.text = self.guid
 
-        for account in self.root_account.as_xml:
+        accounts_xml = self.root_account.as_xml
+
+        commodity_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'commodity'})
+        commodity_count_node.text = str(len(list(filter(lambda x: x.id != 'template', self.commodities))))
+
+        account_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'account'})
+        account_count_node.text = str(len(accounts_xml))
+
+        transaction_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'transaction'})
+        transaction_count_node.text = str(len(self.transactions))
+
+        for commodity in self.commodities:
+            book_node.append(commodity.as_xml)
+
+        for account in accounts_xml:
             book_node.append(account)
 
         for transaction in self.transactions:
             book_node.append(transaction.as_xml)
 
         return book_node
+
+    @classmethod
+    def from_xml(cls, book_node, namespaces):
+        new_book = Book()
+        new_book.guid = book_node.find('book:id', namespaces).text
+        accounts = book_node.findall('gnc:account', namespaces)
+        transactions = book_node.findall('gnc:transaction', namespaces)
+
+        commodities = book_node.findall('gnc:commodity', namespaces)
+        for commodity in commodities:
+            new_book.commodities.append(Commodity.from_xml(commodity, namespaces))
+
+        account_objects = list()
+        transaction_manager = TransactionManager()
+        transaction_manager.disable_sort = True
+
+        for account in accounts:
+            account_objects.append(Account.from_xml(account, namespaces, account_objects))
+
+        for transaction in transactions:
+            transaction_manager.add(Transaction.from_xml(transaction, namespaces, account_objects))
+
+        new_book.root_account = [x for x in account_objects if x.type == 'ROOT'][0]
+        new_book.transactions = transaction_manager
+
+        return new_book
 
     def get_account(self, *paths_to_account, current_level=None):
         """
@@ -275,39 +242,3 @@ class Book:
     def __repr__(self):
         return str(self)
 
-
-class Commodity:
-    """
-    Represents a Commodity in GnuCash
-    """
-    def __init__(self, commodity_id, space):
-        self.id = commodity_id
-        self.space = space
-
-    @property
-    def as_xml(self):
-        """
-        Returns the current commodity as GnuCash-compatible XML
-
-        :return: ElementTree.Element object
-        :rtype: xml.etree.ElementTree.Element
-        """
-        commodity_node = ElementTree.Element('gnc:commodity', {'version': '2.0.0'})
-        ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
-        ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.id
-        ElementTree.SubElement(commodity_node, 'cmdty:getquotes')
-        ElementTree.SubElement(commodity_node, 'cmdty:quote_source').text = 'currency'
-        ElementTree.SubElement(commodity_node, 'cmdty:quote_tz')
-        return commodity_node
-
-    def as_short_xml(self, node_tag):
-        """
-        Returns the current commodity as GnuCash-compatible XML (short version used for accounts)
-
-        :return: ElementTree.Element object
-        :rtype: xml.etree.ElementTree.Element
-        """
-        commodity_node = ElementTree.Element(node_tag)
-        ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
-        ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.id
-        return commodity_node

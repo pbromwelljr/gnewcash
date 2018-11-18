@@ -1,7 +1,10 @@
 from datetime import datetime
+from decimal import Decimal
 from xml.etree import ElementTree
 
-from guid_object import GuidObject
+from gnewcash.commodity import Commodity
+from gnewcash.guid_object import GuidObject
+from gnewcash.slot import Slot
 
 
 class Transaction(GuidObject):
@@ -15,6 +18,7 @@ class Transaction(GuidObject):
         self.date_entered = None
         self.description = ''
         self.splits = []
+        self.slots = []
         self.memo = None
 
     def __str__(self):
@@ -31,16 +35,16 @@ class Transaction(GuidObject):
         :return: ElementTree.Element object
         :rtype: xml.etree.ElementTree.Element
         """
-        date_format = '%Y-%m-%d 00:00:00 %z'
         timestamp_format = '%Y-%m-%d %H:%M:%S %z'
 
         transaction_node = ElementTree.Element('gnc:transaction', {'version': '2.0.0'})
         ElementTree.SubElement(transaction_node, 'trn:id', {'type': 'guid'}).text = self.guid
 
-        transaction_node.append(self.currency.as_short_xml('trn:currency'))
+        if self.currency:
+            transaction_node.append(self.currency.as_short_xml('trn:currency'))
 
         date_posted_node = ElementTree.SubElement(transaction_node, 'trn:date-posted')
-        ElementTree.SubElement(date_posted_node, 'ts:date').text = datetime.strftime(self.date_posted, date_format)
+        ElementTree.SubElement(date_posted_node, 'ts:date').text = datetime.strftime(self.date_posted, timestamp_format)
         date_entered_node = ElementTree.SubElement(transaction_node, 'trn:date-entered')
         ElementTree.SubElement(date_entered_node, 'ts:date').text = datetime.strftime(self.date_entered,
                                                                                       timestamp_format)
@@ -49,12 +53,49 @@ class Transaction(GuidObject):
         if self.memo:
             ElementTree.SubElement(transaction_node, 'trn:num').text = self.memo
 
+        if self.slots:
+            slots_node = ElementTree.SubElement(transaction_node, 'trn:slots')
+            for slot in self.slots:
+                slots_node.append(slot.as_xml)
+
         if self.splits:
             splits_node = ElementTree.SubElement(transaction_node, 'trn:splits')
             for split in self.splits:
                 splits_node.append(split.as_xml)
 
         return transaction_node
+
+    @classmethod
+    def from_xml(cls, transaction_node, namespaces, account_objects):
+        transaction = cls()
+        transaction.guid = transaction_node.find('trn:id', namespaces).text
+        transaction.date_entered = datetime.strptime(transaction_node.find('trn:date-entered', namespaces)
+                                                                     .find('ts:date', namespaces).text,
+                                                     '%Y-%m-%d %H:%M:%S %z')
+        transaction.date_posted = datetime.strptime(transaction_node.find('trn:date-posted', namespaces)
+                                                                    .find('ts:date', namespaces).text,
+                                                    '%Y-%m-%d %H:%M:%S %z')
+        transaction.description = transaction_node.find('trn:description', namespaces).text
+
+        memo = transaction_node.find('trn:num', namespaces)
+        if memo is not None:
+            transaction.memo = memo.text
+
+        currency_node = transaction_node.find('trn:currency', namespaces)
+        if currency_node is not None:
+            transaction.currency = Commodity(currency_node.find('cmdty:id', namespaces).text,
+                                             currency_node.find('cmdty:space', namespaces).text)
+
+        slots = transaction_node.find('trn:slots', namespaces)
+        if slots:
+            for slot in slots.findall('slot', namespaces):
+                transaction.slots.append(Slot.from_xml(slot, namespaces))
+
+        splits = transaction_node.find('trn:splits', namespaces)
+        for split in list(splits):
+            transaction.splits.append(Split.from_xml(split, namespaces, account_objects))
+
+        return transaction
 
     def __lt__(self, other):
         return self.date_posted < other.date_posted
@@ -112,6 +153,19 @@ class Split(GuidObject):
         ElementTree.SubElement(split_node, 'split:account', {'type': 'guid'}).text = self.account.guid
         return split_node
 
+    @classmethod
+    def from_xml(cls, split_node, namespaces, account_objects):
+        account = split_node.find('split:account', namespaces).text
+
+        value = split_node.find('split:value', namespaces).text
+        value = Decimal(value[:value.find('/')]) / Decimal(100)
+
+        new_split = cls([x for x in account_objects if x.guid == account][0],
+                        value, split_node.find('split:reconciled-state', namespaces).text)
+        new_split.guid = split_node.find('split:id', namespaces).text
+
+        return new_split
+
 
 class TransactionManager:
     """
@@ -119,6 +173,7 @@ class TransactionManager:
     """
     def __init__(self):
         self.transactions = list()
+        self.disable_sort = False
 
     def add(self, new_transaction):
         """
@@ -127,14 +182,17 @@ class TransactionManager:
         :param new_transaction: Transaction to add
         :type new_transaction: Transaction
         """
-        # Inserting transactions in order
-        for index, transaction in enumerate(self.transactions):
-            if transaction.date_posted > new_transaction.date_posted:
-                self.transactions.insert(index, new_transaction)
-                break
-            elif transaction.date_posted == new_transaction.date_posted and transaction.amount < new_transaction.amount:
-                self.transactions.insert(index, new_transaction)
-                break
+        if not self.disable_sort:
+            # Inserting transactions in order
+            for index, transaction in enumerate(self.transactions):
+                if transaction.date_posted > new_transaction.date_posted:
+                    self.transactions.insert(index, new_transaction)
+                    break
+                elif transaction.date_posted == new_transaction.date_posted:
+                    self.transactions.insert(index, new_transaction)
+                    break
+            else:
+                self.transactions.append(new_transaction)
         else:
             self.transactions.append(new_transaction)
 

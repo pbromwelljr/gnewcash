@@ -105,3 +105,6 @@ venv.bak/
 
 # Sphinx builds
 sphinx/_build
+
+# Test result files
+tests/test_files/*testresult*

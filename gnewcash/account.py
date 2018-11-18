@@ -9,7 +9,9 @@ from decimal import Decimal
 from xml.etree import ElementTree
 from collections import namedtuple
 
-from guid_object import GuidObject
+from gnewcash.commodity import Commodity
+from gnewcash.guid_object import GuidObject
+from gnewcash.slot import Slot
 
 
 """
@@ -40,10 +42,11 @@ class Account(GuidObject):
         super(Account, self).__init__()
         self.name = ''
         self.type = None
-        self.commodity_scu = 100
+        self.commodity_scu = None
         self.parent = None
         self.children = []
         self.commodity = None
+        self.slots = []
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.type)
@@ -161,8 +164,14 @@ class Account(GuidObject):
             parent_commodity = self.get_parent_commodity()
             if parent_commodity:
                 account_node.append(parent_commodity.as_short_xml('act:commodity'))
-            else:
-                raise ValueError('No commodity found for account {} or any of its ancestors'.format(self.name))
+
+        if self.commodity_scu:
+            ElementTree.SubElement(account_node, 'act:commodity-scu').text = str(self.commodity_scu)
+
+        if self.slots:
+            slots_node = ElementTree.SubElement(account_node, 'act:slots')
+            for slot in self.slots:
+                slots_node.append(slot.as_xml)
 
         if self.parent is not None:
             ElementTree.SubElement(account_node, 'act:parent', {'type': 'guid'}).text = self.parent.guid
@@ -173,6 +182,34 @@ class Account(GuidObject):
                 node_and_children += child.as_xml
 
         return node_and_children
+
+    @classmethod
+    def from_xml(cls, account_node, namespaces, account_objects):
+        account_object = cls()
+        account_object.guid = account_node.find('act:id', namespaces).text
+        account_object.name = account_node.find('act:name', namespaces).text
+        account_object.type = account_node.find('act:type', namespaces).text
+
+        commodity = account_node.find('act:commodity', namespaces)
+        if commodity and commodity.find('cmdty:id', namespaces) is not None:
+            account_object.commodity = Commodity.from_xml(commodity, namespaces)
+        else:
+            account_object.commodity = None
+
+        commodity_scu = account_node.find('act:commodity-scu', namespaces)
+        if commodity_scu is not None:
+            account_object.commodity_scu = commodity_scu.text
+
+        slots = account_node.find('act:slots', namespaces)
+        if slots:
+            for slot in slots.findall('slot', namespaces):
+                account_object.slots.append(Slot.from_xml(slot, namespaces))
+
+        parent = account_node.find('act:parent', namespaces)
+        if parent is not None:
+            account_object.parent = [x for x in account_objects if x.guid == parent.text][0]
+
+        return account_object
 
     def as_dict(self, account_hierarchy=None, path_to_self='/'):
         """
