@@ -1,13 +1,12 @@
 import gzip
 import os.path
-from datetime import datetime
 from logging import getLogger
 from xml.etree import ElementTree
 from xml.dom import minidom
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.transaction import Split, Transaction, TransactionManager
-from gnewcash.account import Account, AccountType
+from gnewcash.transaction import Transaction, TransactionManager
+from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 
 
@@ -226,14 +225,11 @@ class Book(GuidObject):
         :rtype: decimal.Decimal or int
         """
         account_balance = 0
-        account_transactions = [x for x in self.transactions if account in [x.from_account, x.to_account]]
+        account_transactions = list(filter(lambda x: account in [y.account for y in x.splits], self.transactions))
+        # account_transactions = [x for x in self.transactions if account in [x.from_account, x.to_account]]
         for transaction in account_transactions:
-            if account.type == AccountType.CREDIT:
-                transaction.amount *= -1
-            if transaction.from_account == account:
-                account_balance -= transaction.amount
-            elif transaction.to_account == account:
-                account_balance += transaction.amount
+            split = next(filter(lambda x: x.account == account, transaction.splits))
+            account_balance += split.amount
         return account_balance
 
     def __str__(self):

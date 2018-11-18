@@ -61,7 +61,7 @@ class Account(GuidObject):
         self.__dict__[key] = value
 
     def __eq__(self, other):
-        return self.guid == other.guid
+        return self.guid == getattr(other, 'guid', None)
 
     def __hash__(self):
         return hash(self.guid)
