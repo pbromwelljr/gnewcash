@@ -75,9 +75,10 @@ class Account(GuidObject):
         :return: First transaction amount if the account has transactions, otherwise 0.
         :rtype: int or decimal.Decimal
         """
-        account_transactions = [x for x in transactions if x.to_account == self]
+        account_transactions = [x for x in transactions if self in [y.account for y in x.splits if y.amount >= 0]]
         if account_transactions:
-            amount = account_transactions[0].amount
+            first_transaction = account_transactions[0]
+            amount = next(filter(lambda x: x.account == self and x.amount >= 0, first_transaction.splits)).amount
         else:
             amount = 0
         return amount
