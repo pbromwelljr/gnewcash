@@ -209,21 +209,17 @@ class TransactionManager:
                 del self.transactions[index]
                 break
 
-    def get_transactions(self, *, from_account=None, to_account=None):
+    def get_transactions(self, account=None):
         """
         Generator function that gets transactions based on a from account and/or to account for the transaction
 
-        :param from_account: Account that the money should be coming from
-        :type from_account: Account
-        :param to_account: Account that they money should be going to
-        :type to_account: Account
+        :param account: Account to retrieve transactions for (default None, all transactions)
+        :type account: Account
         :return: Generator that produces transactions based on the given from account and/or to account
         :rtype: Iterator[Transaction]
         """
-        # TODO: Refactor this. Transactions don't have a from_account or to_account anymore.
-
         for transaction in self.transactions:
-            if transaction.from_account == from_account or transaction.to_account == to_account:
+            if account is None or account in list(map(lambda x: x.account, transaction.splits)):
                 yield transaction
 
     def get_account_starting_balance(self, account):
@@ -235,8 +231,7 @@ class TransactionManager:
         :return: Account starting balance
         :rtype: decimal.Decimal
         """
-        return account.get_starting_balance(list(self.get_transactions(from_account=account,
-                                                                       to_account=account)))
+        return account.get_starting_balance(list(self.get_transactions(account)))
 
     def get_account_ending_balance(self, account):
         """
@@ -247,8 +242,7 @@ class TransactionManager:
         :return: Account starting balance
         :rtype: decimal.Decimal
         """
-        return account.get_ending_balance(list(self.get_transactions(from_account=account,
-                                                                     to_account=account)))
+        return account.get_ending_balance(list(self.get_transactions(account)))
 
     def minimum_balance_past_date(self, account, date):
         """

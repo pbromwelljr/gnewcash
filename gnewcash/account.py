@@ -348,7 +348,7 @@ class InterestAccount:
         :type interest_percentage: decimal.Decimal
         :param payment_amount: Payment amount on the loan.
         :type payment_amount: decimal.Decimal
-        :param additional_payments: List of dictionaries containing a "payment" key for additional amount paid,
+        :param additional_payments: List of dictionaries containing an "amount" key for additional amount paid,
             and "payment_date" for the date the additional amount was paid.
         :type additional_payments: list[dict]
         :param skip_payment_dates: List of datetime objects that the loan payment should be skipped
@@ -491,11 +491,23 @@ class InterestAccount:
             if self.interest_start_date is None or iterator_date >= self.interest_start_date:
                 interest = Decimal(interest_rate / 12 * iterator_balance).quantize(Decimal('.01'), rounding=ROUND_UP)
                 amount_to_capital = self.payment_amount - interest
-                new_balance = iterator_balance - amount_to_capital
-                iterator_balance = new_balance
             else:
                 interest = 0
                 amount_to_capital = self.payment_amount
+            new_balance = iterator_balance - amount_to_capital
+            if new_balance < 0:
+                new_balance = 0
+            iterator_balance = new_balance
+
+            if iterator_balance == 0:
+                break
+
+        # Zero out if we're still before the requested date (debt has been fully paid already)
+        if iterator_date < date:
+            iterator_balance = 0
+            iterator_date = date
+            interest = 0
+            amount_to_capital = 0
 
         return LoanStatus(iterator_balance, iterator_date, interest, amount_to_capital)
 
