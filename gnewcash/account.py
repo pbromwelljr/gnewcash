@@ -5,7 +5,7 @@
 """
 import re
 from datetime import datetime, timedelta
-from decimal import Decimal
+from decimal import Decimal, ROUND_UP
 from xml.etree import ElementTree
 from collections import namedtuple
 
@@ -96,20 +96,18 @@ class Account(GuidObject):
         :rtype: int or decimal.Decimal
         """
         balance = 0
-        applicable_transactions = [x for x in transactions if self in [x.from_account, x.to_account]]
+        applicable_transactions = [x for x in transactions if self in map(lambda y: y.account, x.splits)]
 
         if date is not None:
             applicable_transactions = filter(lambda x: x.date_posted <= date, applicable_transactions)
 
         for transaction in applicable_transactions:
             if date is None or transaction.date_posted <= date:
-                amount = transaction.amount
+                applicable_split = next(filter(lambda x: x.account == self, transaction.splits))
+                amount = applicable_split.amount
                 if self.type == AccountType.CREDIT:
-                    amount = transaction.amount * -1
-                if transaction.from_account == self:
-                    balance -= abs(amount)
-                elif transaction.to_account == self:
-                    balance += abs(amount)
+                    amount = amount * -1
+                balance += amount
         return balance
 
     def get_ending_balance(self, transactions):
@@ -137,12 +135,14 @@ class Account(GuidObject):
         minimum_balance = None
         minimum_balance_date = None
         iterator_date = start_date
-        # TODO: FIX - This only goes to the end of the year. We want to go to the end of the transaction list.
-        while iterator_date < datetime(start_date.year + 1, 1, 1):
+        end_date = max(map(lambda x: x.date_posted, transactions))
+        while iterator_date < end_date:
             iterator_date += timedelta(days=1)
             current_balance = self.get_balance_at_date(transactions, iterator_date)
             if minimum_balance is None or current_balance < minimum_balance:
                 minimum_balance, minimum_balance_date = current_balance, iterator_date
+        if minimum_balance_date and minimum_balance_date > end_date:
+            minimum_balance_date = end_date
         return minimum_balance, minimum_balance_date
 
     @property
@@ -489,7 +489,7 @@ class InterestAccount:
                 continue
 
             if self.interest_start_date is None or iterator_date >= self.interest_start_date:
-                interest = Decimal(interest_rate / 12 * iterator_balance)
+                interest = Decimal(interest_rate / 12 * iterator_balance).quantize(Decimal('.01'), rounding=ROUND_UP)
                 amount_to_capital = self.payment_amount - interest
                 new_balance = iterator_balance - amount_to_capital
                 iterator_balance = new_balance
@@ -547,7 +547,7 @@ class InterestAccount:
             if iterator_date in self.skip_payment_dates:
                 continue
 
-            interest = Decimal(interest_rate / 12 * iterator_balance)
+            interest = Decimal(interest_rate / 12 * iterator_balance).quantize(Decimal('.01'), rounding=ROUND_UP)
             amount_to_capital = self.payment_amount - interest
             payments.append((iterator_date, iterator_balance, amount_to_capital))
             new_balance = iterator_balance - amount_to_capital

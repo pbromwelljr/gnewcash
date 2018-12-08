@@ -1714,6 +1714,7 @@
     <cmdty:space>ISO4217</cmdty:space>
     <cmdty:id>USD</cmdty:id>
   </trn:currency>
+  <trn:num>test</trn:num>
   <trn:date-posted>
     <ts:date>2019-12-31 05:59:00 -0500</ts:date>
   </trn:date-posted>

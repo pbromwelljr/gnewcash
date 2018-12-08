@@ -43,15 +43,15 @@ class Transaction(GuidObject):
         if self.currency:
             transaction_node.append(self.currency.as_short_xml('trn:currency'))
 
+        if self.memo:
+            ElementTree.SubElement(transaction_node, 'trn:num').text = self.memo
+
         date_posted_node = ElementTree.SubElement(transaction_node, 'trn:date-posted')
         ElementTree.SubElement(date_posted_node, 'ts:date').text = datetime.strftime(self.date_posted, timestamp_format)
         date_entered_node = ElementTree.SubElement(transaction_node, 'trn:date-entered')
         ElementTree.SubElement(date_entered_node, 'ts:date').text = datetime.strftime(self.date_entered,
                                                                                       timestamp_format)
         ElementTree.SubElement(transaction_node, 'trn:description').text = self.description
-
-        if self.memo:
-            ElementTree.SubElement(transaction_node, 'trn:num').text = self.memo
 
         if self.slots:
             slots_node = ElementTree.SubElement(transaction_node, 'trn:slots')
