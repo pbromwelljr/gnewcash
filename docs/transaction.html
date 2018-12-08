@@ -312,23 +312,17 @@ If the provided date is None, it will retrieve the ending balance.</p>
 
 <dl class="method">
 <dt id="transaction.TransactionManager.get_transactions">
-<code class="descname">get_transactions</code><span class="sig-paren">(</span><em>*</em>, <em>from_account=None</em>, <em>to_account=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_transactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_transactions" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_transactions</code><span class="sig-paren">(</span><em>account=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_transactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator function that gets transactions based on a from account and/or to account for the transaction</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>from_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account that the money should be coming from</li>
-<li><strong>to_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account that they money should be going to</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to retrieve transactions for (default None, all transactions)</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Generator that produces transactions based on the given from account and/or to account</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Generator that produces transactions based on the given from account and/or to account</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Iterator[<a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a>]</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Iterator[<a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a>]</td>
 </tr>
 </tbody>
 </table>

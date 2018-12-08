@@ -153,11 +153,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">ROUND_UP</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 
+<span class="kn">from</span> <span class="nn">commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
 <span class="kn">from</span> <span class="nn">guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
+<span class="kn">from</span> <span class="nn">slot</span> <span class="k">import</span> <span class="n">Slot</span>
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -188,10 +190,11 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
@@ -206,7 +209,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">guid</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
@@ -220,9 +223,10 @@
 <span class="sd">        :return: First transaction amount if the account has transactions, otherwise 0.</span>
 <span class="sd">        :rtype: int or decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">account_transactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transactions</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">to_account</span> <span class="o">==</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="n">account_transactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transactions</span> <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y</span><span class="o">.</span><span class="n">account</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">splits</span> <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]]</span>
         <span class="k">if</span> <span class="n">account_transactions</span><span class="p">:</span>
-            <span class="n">amount</span> <span class="o">=</span> <span class="n">account_transactions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">amount</span>
+            <span class="n">first_transaction</span> <span class="o">=</span> <span class="n">account_transactions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">amount</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="bp">self</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">first_transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span><span class="o">.</span><span class="n">amount</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">amount</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">amount</span></div>
@@ -240,20 +244,18 @@
 <span class="sd">        :rtype: int or decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">balance</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">applicable_transactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transactions</span> <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">from_account</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">to_account</span><span class="p">]]</span>
+        <span class="n">applicable_transactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transactions</span> <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">splits</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">applicable_transactions</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">,</span> <span class="n">applicable_transactions</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">applicable_transactions</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">:</span>
-                <span class="n">amount</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span>
+                <span class="n">applicable_split</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+                <span class="n">amount</span> <span class="o">=</span> <span class="n">applicable_split</span><span class="o">.</span><span class="n">amount</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span><span class="p">:</span>
-                    <span class="n">amount</span> <span class="o">=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="k">if</span> <span class="n">transaction</span><span class="o">.</span><span class="n">from_account</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
-                    <span class="n">balance</span> <span class="o">-=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">transaction</span><span class="o">.</span><span class="n">to_account</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
-                    <span class="n">balance</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+                    <span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span>
         <span class="k">return</span> <span class="n">balance</span></div>
 
 <div class="viewcode-block" id="Account.get_ending_balance"><a class="viewcode-back" href="../account.html#account.Account.get_ending_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_ending_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transactions</span><span class="p">):</span>
@@ -281,12 +283,14 @@
         <span class="n">minimum_balance</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">minimum_balance_date</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">start_date</span>
-        <span class="c1"># TODO: FIX - This only goes to the end of the year. We want to go to the end of the transaction list.</span>
-        <span class="k">while</span> <span class="n">iterator_date</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="p">(</span><span class="n">start_date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date_posted</span><span class="p">,</span> <span class="n">transactions</span><span class="p">))</span>
+        <span class="k">while</span> <span class="n">iterator_date</span> <span class="o">&lt;</span> <span class="n">end_date</span><span class="p">:</span>
             <span class="n">iterator_date</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">current_balance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balance_at_date</span><span class="p">(</span><span class="n">transactions</span><span class="p">,</span> <span class="n">iterator_date</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">minimum_balance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current_balance</span> <span class="o">&lt;</span> <span class="n">minimum_balance</span><span class="p">:</span>
                 <span class="n">minimum_balance</span><span class="p">,</span> <span class="n">minimum_balance_date</span> <span class="o">=</span> <span class="n">current_balance</span><span class="p">,</span> <span class="n">iterator_date</span>
+        <span class="k">if</span> <span class="n">minimum_balance_date</span> <span class="ow">and</span> <span class="n">minimum_balance_date</span> <span class="o">&gt;</span> <span class="n">end_date</span><span class="p">:</span>
+            <span class="n">minimum_balance_date</span> <span class="o">=</span> <span class="n">end_date</span>
         <span class="k">return</span> <span class="n">minimum_balance</span><span class="p">,</span> <span class="n">minimum_balance_date</span></div>
 
     <span class="nd">@property</span>
@@ -309,8 +313,14 @@
             <span class="n">parent_commodity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_commodity</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">parent_commodity</span><span class="p">:</span>
                 <span class="n">account_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent_commodity</span><span class="o">.</span><span class="n">as_short_xml</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No commodity found for account </span><span class="si">{}</span><span class="s1"> or any of its ancestors&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:commodity-scu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="n">slots_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:slots&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                <span class="n">slots_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:parent&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">guid</span>
@@ -321,6 +331,34 @@
                 <span class="n">node_and_children</span> <span class="o">+=</span> <span class="n">child</span><span class="o">.</span><span class="n">as_xml</span>
 
         <span class="k">return</span> <span class="n">node_and_children</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+        <span class="n">account_object</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">account_object</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">account_object</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">account_object</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:type&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">commodity</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">commodity</span> <span class="ow">and</span> <span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">commodity</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">commodity_scu</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:commodity-scu&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">commodity_scu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">account_object</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="n">commodity_scu</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">slots</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slots</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+                <span class="n">account_object</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:parent&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">account_object</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">parent</span><span class="o">.</span><span class="n">text</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">account_object</span>
 
 <div class="viewcode-block" id="Account.as_dict"><a class="viewcode-back" href="../account.html#account.Account.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_hierarchy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path_to_self</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -458,7 +496,7 @@
 <span class="sd">        :type interest_percentage: decimal.Decimal</span>
 <span class="sd">        :param payment_amount: Payment amount on the loan.</span>
 <span class="sd">        :type payment_amount: decimal.Decimal</span>
-<span class="sd">        :param additional_payments: List of dictionaries containing a &quot;payment&quot; key for additional amount paid,</span>
+<span class="sd">        :param additional_payments: List of dictionaries containing an &quot;amount&quot; key for additional amount paid,</span>
 <span class="sd">            and &quot;payment_date&quot; for the date the additional amount was paid.</span>
 <span class="sd">        :type additional_payments: list[dict]</span>
 <span class="sd">        :param skip_payment_dates: List of datetime objects that the loan payment should be skipped</span>
@@ -599,13 +637,25 @@
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interest_start_date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">iterator_date</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interest_start_date</span><span class="p">:</span>
-                <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">interest_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">iterator_balance</span><span class="p">)</span>
+                <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">interest_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">iterator_balance</span><span class="p">)</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;.01&#39;</span><span class="p">),</span> <span class="n">rounding</span><span class="o">=</span><span class="n">ROUND_UP</span><span class="p">)</span>
                 <span class="n">amount_to_capital</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">payment_amount</span> <span class="o">-</span> <span class="n">interest</span>
-                <span class="n">new_balance</span> <span class="o">=</span> <span class="n">iterator_balance</span> <span class="o">-</span> <span class="n">amount_to_capital</span>
-                <span class="n">iterator_balance</span> <span class="o">=</span> <span class="n">new_balance</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">interest</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">amount_to_capital</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">payment_amount</span>
+            <span class="n">new_balance</span> <span class="o">=</span> <span class="n">iterator_balance</span> <span class="o">-</span> <span class="n">amount_to_capital</span>
+            <span class="k">if</span> <span class="n">new_balance</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_balance</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">iterator_balance</span> <span class="o">=</span> <span class="n">new_balance</span>
+
+            <span class="k">if</span> <span class="n">iterator_balance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Zero out if we&#39;re still before the requested date (debt has been fully paid already)</span>
+        <span class="k">if</span> <span class="n">iterator_date</span> <span class="o">&lt;</span> <span class="n">date</span><span class="p">:</span>
+            <span class="n">iterator_balance</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">date</span>
+            <span class="n">interest</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">amount_to_capital</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">return</span> <span class="n">LoanStatus</span><span class="p">(</span><span class="n">iterator_balance</span><span class="p">,</span> <span class="n">iterator_date</span><span class="p">,</span> <span class="n">interest</span><span class="p">,</span> <span class="n">amount_to_capital</span><span class="p">)</span>
 
@@ -657,7 +707,7 @@
             <span class="k">if</span> <span class="n">iterator_date</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_payment_dates</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">interest_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">iterator_balance</span><span class="p">)</span>
+            <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">interest_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">iterator_balance</span><span class="p">)</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;.01&#39;</span><span class="p">),</span> <span class="n">rounding</span><span class="o">=</span><span class="n">ROUND_UP</span><span class="p">)</span>
             <span class="n">amount_to_capital</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">payment_amount</span> <span class="o">-</span> <span class="n">interest</span>
             <span class="n">payments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iterator_date</span><span class="p">,</span> <span class="n">iterator_balance</span><span class="p">,</span> <span class="n">amount_to_capital</span><span class="p">))</span>
             <span class="n">new_balance</span> <span class="o">=</span> <span class="n">iterator_balance</span> <span class="o">-</span> <span class="n">amount_to_capital</span>

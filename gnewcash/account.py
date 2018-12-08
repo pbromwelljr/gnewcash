@@ -9,9 +9,9 @@ from decimal import Decimal, ROUND_UP
 from xml.etree import ElementTree
 from collections import namedtuple
 
-from gnewcash.commodity import Commodity
-from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot
+from commodity import Commodity
+from guid_object import GuidObject
+from slot import Slot
 
 
 """

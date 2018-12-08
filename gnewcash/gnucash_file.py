@@ -4,10 +4,10 @@ from logging import getLogger
 from xml.etree import ElementTree
 from xml.dom import minidom
 
-from gnewcash.guid_object import GuidObject
-from gnewcash.transaction import Transaction, TransactionManager
-from gnewcash.account import Account
-from gnewcash.commodity import Commodity
+from guid_object import GuidObject
+from transaction import Transaction, TransactionManager
+from account import Account
+from commodity import Commodity
 
 
 class GnuCashFile:
