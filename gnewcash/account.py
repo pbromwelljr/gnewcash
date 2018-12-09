@@ -189,7 +189,7 @@ class Account(GuidObject):
         :param account_node: XML node for the account
         :type account_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: list[str]
+        :type namespaces: dict[str, str]
         :param account_objects: Account objects already created from XML (used for assigning parent account)
         :type account_objects: list[Account]
         :return: Account object from XML

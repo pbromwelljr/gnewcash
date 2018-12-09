@@ -45,7 +45,7 @@ class Slot:
         :param slot_node: XML node for the slot
         :type slot_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: list[str]
+        :type namespaces: dict[str, str]
         :return: Slot object from XML
         :rtype: Slot
         """

@@ -55,7 +55,7 @@ class Commodity:
         :param commodity_node: XML node for the commodity
         :type commodity_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: list[str]
+        :type namespaces: dict[str, str]
         :return: Commodity object from XML
         :rtype: Commodity
         """

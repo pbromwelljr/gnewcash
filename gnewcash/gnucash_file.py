@@ -187,7 +187,7 @@ class Book(GuidObject):
         :param book_node: XML node for the book
         :type book_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: list[str]
+        :type namespaces: dict[str, str]
         :return: Book object from XML
         :rtype: Book
         """

@@ -79,7 +79,7 @@ class Transaction(GuidObject):
         :param transaction_node: XML node for the transaction
         :type transaction_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: list[str]
+        :type namespaces: dict[str, str]
         :param account_objects: Account objects already created from XML (used for assigning accounts)
         :type account_objects: list[Account]
         :return: Transaction object from XML
@@ -177,7 +177,7 @@ class Split(GuidObject):
         :param split_node: XML node for the split
         :type split_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: list[str]
+        :type namespaces: dict[str, str]
         :param account_objects: Account objects already created from XML (used for assigning parent account)
         :type account_objects: list[Account]
         :return: Split object from XML
