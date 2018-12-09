@@ -100,12 +100,16 @@ class GnuCashFile:
             logger.warning('Could not find %s', source_file)
         return built_file
 
-    def build_file(self, target_file):
+    def build_file(self, target_file, prettify_xml=False, use_gzip=False):
         """
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk
 
         :param target_file: Full or relative path to the target file
         :type target_file: str
+        :param prettify_xml: Prettifies XML before writing to disk. Default False.
+        :type prettify_xml: bool
+        :param use_gzip: Use GZip compression when writing file to disk. Default False.
+        :type use_gzip: bool
         """
         namespace_info = self.namespace_data
         root_node = ElementTree.Element('gnc-v2', {'xmlns:' + identifier: value
@@ -117,15 +121,18 @@ class GnuCashFile:
         for book in self.books:
             root_node.append(book.as_xml)
 
-        element_tree = ElementTree.ElementTree(root_node)
-        element_tree.write(target_file, encoding='utf-8', xml_declaration=True)
+        file_contents = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
 
         # Making our resulting XML pretty
-        xml = minidom.parse(target_file)
-        with open(target_file, 'w', encoding='utf-8') as target_file_handle:
-            target_file_handle.write(xml.toprettyxml(encoding='utf-8').decode('utf-8'))
+        if prettify_xml:
+            file_contents = minidom.parseString(file_contents).toprettyxml(encoding='utf-8')
 
-        # TODO: Add support for writing in gzip compression
+        if use_gzip:
+            with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
+                gzip_file.write(file_contents)
+        else:
+            with open(target_file, 'wb') as target_file_handle:
+                target_file_handle.write(file_contents)
 
 
 class Book(GuidObject):
@@ -153,7 +160,7 @@ class Book(GuidObject):
         accounts_xml = self.root_account.as_xml
 
         commodity_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'commodity'})
-        commodity_count_node.text = str(len(list(filter(lambda x: x.id != 'template', self.commodities))))
+        commodity_count_node.text = str(len(list(filter(lambda x: x.commodity_id != 'template', self.commodities))))
 
         account_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'account'})
         account_count_node.text = str(len(accounts_xml))

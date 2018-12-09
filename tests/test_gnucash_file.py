@@ -1,3 +1,4 @@
+import gzip
 import json
 import unittest
 from xml.etree import ElementTree
@@ -8,7 +9,7 @@ import gnewcash.gnucash_file as gcf
 class TestGnuCashFile(unittest.TestCase):
     def test_read_write(self):
         gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        gnucash_file.build_file('test_files/Test1.testresult.gnucash')
+        gnucash_file.build_file('test_files/Test1.testresult.gnucash', prettify_xml=True)
 
         original_tree = ElementTree.parse(source='test_files/Test1.gnucash')
         original_root = original_tree.getroot()
@@ -62,3 +63,16 @@ class TestGnuCashFile(unittest.TestCase):
         account = book.get_account('Assets', 'Current Assets', 'Credit Card')
         balance = book.get_account_balance(account)
         self.assertEqual(balance, 0)
+
+    def test_gzip_write(self):
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file.build_file('test_files/Test1.testresult.gnucash', prettify_xml=True, use_gzip=True)
+        with gzip.open('test_files/Test1.testresult.gnucash', 'rb') as test_file, \
+                gzip.open('test_files/Test1.gz.gnucash', 'rb') as actual_file:
+            test_file_contents = test_file.read()
+            actual_file_contents = actual_file.read()
+
+            original_root = ElementTree.fromstring(actual_file_contents)
+            test_root = ElementTree.fromstring(test_file_contents)
+
+            self.check_gnucash_elements(original_root, test_root)
