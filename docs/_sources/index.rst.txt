@@ -15,3 +15,5 @@ Welcome to gnewcash's documentation!
    guid_object
    transaction
    utils
+   commodity
+   slot

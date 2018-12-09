@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utils &mdash; gnewcash 1.0alpha documentation</title>
+  <title>Slot &mdash; gnewcash 1.0alpha documentation</title>
   
 
   
@@ -28,8 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Commodity" href="commodity.html" />
-    <link rel="prev" title="Transaction" href="transaction.html" /> 
+    <link rel="prev" title="Commodity" href="commodity.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -84,9 +83,9 @@
 <li class="toctree-l1"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transaction.html">Transaction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commodity.html">Commodity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slot.html">Slot</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Slot</a></li>
 </ul>
 
             
@@ -132,13 +131,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Utils</li>
+      <li>Slot</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/slot.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -151,20 +150,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-utils">
-<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-account"></span><dl class="function">
-<dt id="utils.delete_log_files">
-<code class="descclassname">utils.</code><code class="descname">delete_log_files</code><span class="sig-paren">(</span><em>gnucash_file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#delete_log_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.delete_log_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deletes log files at the specified directory.</p>
+  <div class="section" id="module-slot">
+<span id="slot"></span><h1>Slot<a class="headerlink" href="#module-slot" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="slot.Slot">
+<em class="property">class </em><code class="descclassname">slot.</code><code class="descname">Slot</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>slot_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#Slot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.Slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a slot in GnuCash.</p>
+<dl class="attribute">
+<dt id="slot.Slot.as_xml">
+<code class="descname">as_xml</code><a class="headerlink" href="#slot.Slot.as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current slot as GnuCash-compatible XML</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gnucash_file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory to delete log files</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current slot as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="slot.Slot.from_xml">
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>slot_node</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#Slot.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.Slot.from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Slot object from the GnuCash XML</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>slot_node</strong> (<em>ElementTree.Element</em>) – XML node for the slot</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Slot object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#slot.Slot" title="slot.Slot">Slot</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -177,10 +208,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="commodity.html" class="btn btn-neutral float-right" title="Commodity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="transaction.html" class="btn btn-neutral" title="Transaction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="commodity.html" class="btn btn-neutral" title="Commodity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

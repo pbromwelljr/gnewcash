@@ -83,6 +83,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../guid_object.html">GUID Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../transaction.html">Transaction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commodity.html">Commodity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../slot.html">Slot</a></li>
 </ul>
 
             
@@ -146,7 +148,13 @@
            <div itemprop="articleBody">
             
   <h1>Source code for transaction</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: transaction</span>
+<span class="sd">   :synopsis:</span>
+<span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
@@ -180,7 +188,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current transaction as GnuCash-compatible XML</span>
 
-<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :return: Current transaction as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">timestamp_format</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span>
@@ -213,16 +221,26 @@
 
         <span class="k">return</span> <span class="n">transaction_node</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Transaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Transaction object from the GnuCash XML</span>
+
+<span class="sd">        :param transaction_node: XML node for the transaction</span>
+<span class="sd">        :type transaction_node: ElementTree.Element</span>
+<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :param account_objects: Account objects already created from XML (used for assigning accounts)</span>
+<span class="sd">        :type account_objects: list[Account]</span>
+<span class="sd">        :return: Transaction object from XML</span>
+<span class="sd">        :rtype: Transaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">transaction</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-entered&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-                                                                     <span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
-                                                     <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span><span class="p">)</span>
-        <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-posted&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-                                                                    <span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
-                                                    <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span><span class="p">)</span>
+        <span class="n">date_entered</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-entered&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">date_posted</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-posted&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_entered</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span><span class="p">)</span>
+        <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_posted</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S %z&#39;</span><span class="p">)</span>
         <span class="n">transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">memo</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:num&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
@@ -243,7 +261,7 @@
         <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">splits</span><span class="p">):</span>
             <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Split</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">transaction</span>
+        <span class="k">return</span> <span class="n">transaction</span></div>
 
     <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
@@ -290,7 +308,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current split as GnuCash-compatible XML</span>
 
-<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :return: Current split as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">split_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;trn:split&#39;</span><span class="p">)</span>
@@ -301,8 +319,20 @@
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span>
         <span class="k">return</span> <span class="n">split_node</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Split.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.Split.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">split_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an Split object from the GnuCash XML</span>
+
+<span class="sd">        :param split_node: XML node for the split</span>
+<span class="sd">        :type split_node: ElementTree.Element</span>
+<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :param account_objects: Account objects already created from XML (used for assigning parent account)</span>
+<span class="sd">        :type account_objects: list[Account]</span>
+<span class="sd">        :return: Split object from XML</span>
+<span class="sd">        :rtype: Split</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">account</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
@@ -312,7 +342,7 @@
                         <span class="n">value</span><span class="p">,</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="n">new_split</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="k">return</span> <span class="n">new_split</span></div>
+        <span class="k">return</span> <span class="n">new_split</span></div></div>
 
 
 <div class="viewcode-block" id="TransactionManager"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager">[docs]</a><span class="k">class</span> <span class="nc">TransactionManager</span><span class="p">:</span>
@@ -470,7 +500,6 @@
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

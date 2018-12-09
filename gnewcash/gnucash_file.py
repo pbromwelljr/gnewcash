@@ -150,8 +150,8 @@ class Book(GuidObject):
         """
         Returns the current book as GnuCash-compatible XML
 
-        :return: List of ElementTree.Element objects
-        :rtype: list[xml.etree.ElementTree.Element]
+        :return: ElementTree.Element object
+        :rtype: xml.etree.ElementTree.Element
         """
         book_node = ElementTree.Element('gnc:book', {'version': '2.0.0'})
         book_id_node = ElementTree.SubElement(book_node, 'book:id', {'type': 'guid'})

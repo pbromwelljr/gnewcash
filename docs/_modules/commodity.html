@@ -83,6 +83,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../guid_object.html">GUID Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../transaction.html">Transaction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commodity.html">Commodity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../slot.html">Slot</a></li>
 </ul>
 
             
@@ -146,15 +148,21 @@
            <div itemprop="articleBody">
             
   <h1>Source code for commodity</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: commodity</span>
+<span class="sd">   :synopsis:</span>
+<span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
 
-<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">:</span>
+<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../gnucash_file.html#commodity.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a Commodity in GnuCash</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">commodity_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quote_source</span> <span class="o">=</span> <span class="kc">None</span>
@@ -168,12 +176,12 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current commodity as GnuCash-compatible XML</span>
 
-<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :return: Current commodity as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">commodity_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:commodity&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span><span class="p">:</span>
             <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:get_quotes&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_source</span><span class="p">:</span>
@@ -189,8 +197,18 @@
 
         <span class="k">return</span> <span class="n">commodity_node</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Commodity.from_xml"><a class="viewcode-back" href="../gnucash_file.html#commodity.Commodity.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">commodity_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Commodity object from the GnuCash XML</span>
+
+<span class="sd">        :param commodity_node: XML node for the commodity</span>
+<span class="sd">        :type commodity_node: ElementTree.Element</span>
+<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :return: Commodity object from XML</span>
+<span class="sd">        :rtype: Commodity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
         <span class="n">space</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:space&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
         <span class="n">new_commodity</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
@@ -216,18 +234,18 @@
         <span class="k">if</span> <span class="n">fraction_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_commodity</span><span class="o">.</span><span class="n">fraction</span> <span class="o">=</span> <span class="n">fraction_node</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="k">return</span> <span class="n">new_commodity</span>
+        <span class="k">return</span> <span class="n">new_commodity</span></div>
 
-<div class="viewcode-block" id="Commodity.as_short_xml"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Commodity.as_short_xml">[docs]</a>    <span class="k">def</span> <span class="nf">as_short_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tag</span><span class="p">):</span>
+<div class="viewcode-block" id="Commodity.as_short_xml"><a class="viewcode-back" href="../gnucash_file.html#commodity.Commodity.as_short_xml">[docs]</a>    <span class="k">def</span> <span class="nf">as_short_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tag</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current commodity as GnuCash-compatible XML (short version used for accounts)</span>
 
-<span class="sd">        :return: ElementTree.Element object</span>
+<span class="sd">        :return: Current commodity as short XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">commodity_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">node_tag</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span>
         <span class="k">return</span> <span class="n">commodity_node</span></div></div>
 </pre></div>
 
@@ -266,7 +284,6 @@
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

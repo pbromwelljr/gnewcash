@@ -26,7 +26,7 @@ class Commodity:
         """
         Returns the current commodity as GnuCash-compatible XML
 
-        :return: ElementTree.Element object
+        :return: Current commodity as XML
         :rtype: xml.etree.ElementTree.Element
         """
         commodity_node = ElementTree.Element('gnc:commodity', {'version': '2.0.0'})
@@ -90,7 +90,7 @@ class Commodity:
         """
         Returns the current commodity as GnuCash-compatible XML (short version used for accounts)
 
-        :return: ElementTree.Element object
+        :return: Current commodity as short XML
         :rtype: xml.etree.ElementTree.Element
         """
         commodity_node = ElementTree.Element(node_tag)

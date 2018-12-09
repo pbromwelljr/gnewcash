@@ -147,7 +147,7 @@ class Account(GuidObject):
         """
         Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML
 
-        :return: List of ElementTree.Element objects
+        :return: Current account and children as XML
         :rtype: list[xml.etree.ElementTree.Element]
         :raises: ValueError if no commodity found.
         """

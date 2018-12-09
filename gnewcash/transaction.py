@@ -38,7 +38,7 @@ class Transaction(GuidObject):
         """
         Returns the current transaction as GnuCash-compatible XML
 
-        :return: ElementTree.Element object
+        :return: Current transaction as XML
         :rtype: xml.etree.ElementTree.Element
         """
         timestamp_format = '%Y-%m-%d %H:%M:%S %z'
@@ -158,7 +158,7 @@ class Split(GuidObject):
         """
         Returns the current split as GnuCash-compatible XML
 
-        :return: ElementTree.Element object
+        :return: Current split as XML
         :rtype: xml.etree.ElementTree.Element
         """
         split_node = ElementTree.Element('trn:split')
