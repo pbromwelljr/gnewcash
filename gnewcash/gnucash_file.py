@@ -1,3 +1,9 @@
+"""
+.. module:: gnucash_file
+   :synopsis:
+.. moduleauthor: Paul Bromwell Jr.
+"""
+
 import gzip
 import os.path
 from logging import getLogger
@@ -168,6 +174,16 @@ class Book(GuidObject):
 
     @classmethod
     def from_xml(cls, book_node, namespaces):
+        """
+        Creates a Book object from the GnuCash XML
+
+        :param book_node: XML node for the book
+        :type book_node: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: list[str]
+        :return: Book object from XML
+        :rtype: Book
+        """
         new_book = Book()
         new_book.guid = book_node.find('book:id', namespaces).text
         accounts = book_node.findall('gnc:account', namespaces)
@@ -237,4 +253,3 @@ class Book(GuidObject):
 
     def __repr__(self):
         return str(self)
-

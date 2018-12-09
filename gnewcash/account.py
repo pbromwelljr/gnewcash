@@ -14,9 +14,6 @@ from guid_object import GuidObject
 from slot import Slot
 
 
-"""
-Class representing the loan status at a given date.
-"""
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 
 
@@ -186,6 +183,19 @@ class Account(GuidObject):
 
     @classmethod
     def from_xml(cls, account_node, namespaces, account_objects):
+        """
+        Creates an Account object from the GnuCash XML
+
+        :param account_node: XML node for the account
+        :type account_node: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: list[str]
+        :param account_objects: Account objects already created from XML (used for assigning parent account)
+        :type account_objects: list[Account]
+        :return: Account object from XML
+        :rtype: Account
+        """
+
         account_object = cls()
         account_object.guid = account_node.find('act:id', namespaces).text
         account_object.name = account_node.find('act:name', namespaces).text
@@ -262,7 +272,7 @@ class Account(GuidObject):
         """
         if self.commodity:
             return self.commodity
-        elif self.parent:
+        if self.parent:
             return self.parent.get_parent_commodity()
         return None
 

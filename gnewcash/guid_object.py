@@ -1,3 +1,8 @@
+"""
+.. module:: guid_object
+   :synopsis:
+.. moduleauthor: Paul Bromwell Jr.
+"""
 import uuid
 
 

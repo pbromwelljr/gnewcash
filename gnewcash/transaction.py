@@ -1,3 +1,9 @@
+"""
+.. module:: transaction
+   :synopsis:
+.. moduleauthor: Paul Bromwell Jr.
+"""
+
 from datetime import datetime
 from decimal import Decimal
 from xml.etree import ElementTree
@@ -67,14 +73,24 @@ class Transaction(GuidObject):
 
     @classmethod
     def from_xml(cls, transaction_node, namespaces, account_objects):
+        """
+        Creates a Transaction object from the GnuCash XML
+
+        :param transaction_node: XML node for the transaction
+        :type transaction_node: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: list[str]
+        :param account_objects: Account objects already created from XML (used for assigning accounts)
+        :type account_objects: list[Account]
+        :return: Transaction object from XML
+        :rtype: Transaction
+        """
         transaction = cls()
         transaction.guid = transaction_node.find('trn:id', namespaces).text
-        transaction.date_entered = datetime.strptime(transaction_node.find('trn:date-entered', namespaces)
-                                                                     .find('ts:date', namespaces).text,
-                                                     '%Y-%m-%d %H:%M:%S %z')
-        transaction.date_posted = datetime.strptime(transaction_node.find('trn:date-posted', namespaces)
-                                                                    .find('ts:date', namespaces).text,
-                                                    '%Y-%m-%d %H:%M:%S %z')
+        date_entered = transaction_node.find('trn:date-entered', namespaces).find('ts:date', namespaces).text
+        date_posted = transaction_node.find('trn:date-posted', namespaces).find('ts:date', namespaces).text
+        transaction.date_entered = datetime.strptime(date_entered, '%Y-%m-%d %H:%M:%S %z')
+        transaction.date_posted = datetime.strptime(date_posted, '%Y-%m-%d %H:%M:%S %z')
         transaction.description = transaction_node.find('trn:description', namespaces).text
 
         memo = transaction_node.find('trn:num', namespaces)
@@ -155,6 +171,18 @@ class Split(GuidObject):
 
     @classmethod
     def from_xml(cls, split_node, namespaces, account_objects):
+        """
+        Creates an Split object from the GnuCash XML
+
+        :param split_node: XML node for the split
+        :type split_node: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: list[str]
+        :param account_objects: Account objects already created from XML (used for assigning parent account)
+        :type account_objects: list[Account]
+        :return: Split object from XML
+        :rtype: Split
+        """
         account = split_node.find('split:account', namespaces).text
 
         value = split_node.find('split:value', namespaces).text

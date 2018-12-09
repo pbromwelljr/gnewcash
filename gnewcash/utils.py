@@ -1,3 +1,8 @@
+"""
+.. module:: account
+   :synopsis:
+.. moduleauthor: Paul Bromwell Jr.
+"""
 import re
 from genericpath import isfile, exists
 from os import listdir, remove
