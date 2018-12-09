@@ -80,13 +80,18 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="account.html">Account</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">GnuCash File</a></li>
-<li class="toctree-l1"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transaction.html">Transaction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commodity.html">Commodity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="slot.html">Slot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GnuCash File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -131,6 +136,8 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="code_documentation.html">Code Documentation</a> &raquo;</li>
         
       <li>GnuCash File</li>
     
@@ -287,11 +294,11 @@
 
 <dl class="class">
 <dt id="gnucash_file.Commodity">
-<em class="property">class </em><code class="descclassname">gnucash_file.</code><code class="descname">Commodity</code><span class="sig-paren">(</span><em>commodity_id</em>, <em>space</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnucash_file.Commodity" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gnucash_file.</code><code class="descname">Commodity</code><span class="sig-paren">(</span><em>commodity_id</em>, <em>space</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnewcash/commodity.html#Commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnucash_file.Commodity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a Commodity in GnuCash</p>
 <dl class="method">
 <dt id="gnucash_file.Commodity.as_short_xml">
-<code class="descname">as_short_xml</code><span class="sig-paren">(</span><em>node_tag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity.as_short_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnucash_file.Commodity.as_short_xml" title="Permalink to this definition">¶</a></dt>
+<code class="descname">as_short_xml</code><span class="sig-paren">(</span><em>node_tag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnewcash/commodity.html#Commodity.as_short_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnucash_file.Commodity.as_short_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the current commodity as GnuCash-compatible XML (short version used for accounts)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -323,7 +330,7 @@
 
 <dl class="classmethod">
 <dt id="gnucash_file.Commodity.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>commodity_node</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnucash_file.Commodity.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>commodity_node</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gnewcash/commodity.html#Commodity.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gnucash_file.Commodity.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Commodity object from the GnuCash XML</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

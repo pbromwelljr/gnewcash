@@ -8,9 +8,9 @@ from datetime import datetime
 from decimal import Decimal
 from xml.etree import ElementTree
 
-from commodity import Commodity
-from guid_object import GuidObject
-from slot import Slot
+from gnewcash.commodity import Commodity
+from gnewcash.guid_object import GuidObject
+from gnewcash.slot import Slot
 
 
 class Transaction(GuidObject):

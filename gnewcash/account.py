@@ -9,9 +9,9 @@ from decimal import Decimal, ROUND_UP
 from xml.etree import ElementTree
 from collections import namedtuple
 
-from commodity import Commodity
-from guid_object import GuidObject
-from slot import Slot
+from gnewcash.commodity import Commodity
+from gnewcash.guid_object import GuidObject
+from gnewcash.slot import Slot
 
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])

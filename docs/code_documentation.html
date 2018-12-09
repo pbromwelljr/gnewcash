@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utils &mdash; gnewcash 1.0alpha documentation</title>
+  <title>Code Documentation &mdash; gnewcash 1.0alpha documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Commodity" href="commodity.html" />
-    <link rel="prev" title="Transaction" href="transaction.html" /> 
+    <link rel="next" title="Account" href="account.html" />
+    <link rel="prev" title="Using GNewCash" href="usage.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,12 +82,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 </ul>
@@ -137,15 +137,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="code_documentation.html">Code Documentation</a> &raquo;</li>
-        
-      <li>Utils</li>
+      <li>Code Documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/code_documentation.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -158,22 +156,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-utils">
-<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-account"></span><dl class="function">
-<dt id="utils.delete_log_files">
-<code class="descclassname">utils.</code><code class="descname">delete_log_files</code><span class="sig-paren">(</span><em>gnucash_file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#delete_log_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.delete_log_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deletes log files at the specified directory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gnucash_file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory to delete log files</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+  <div class="section" id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="account.html">Account</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="account.html#standard-accounts">Standard Accounts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account.html#shortcut-accounts">Shortcut Accounts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="account.html#special-accounts">Special Accounts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transaction.html">Transaction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slot.html">Slot</a></li>
+</ul>
+</div>
 </div>
 
 
@@ -184,10 +184,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="commodity.html" class="btn btn-neutral float-right" title="Commodity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="account.html" class="btn btn-neutral float-right" title="Account" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="transaction.html" class="btn btn-neutral" title="Transaction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral" title="Using GNewCash" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

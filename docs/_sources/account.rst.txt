@@ -12,6 +12,10 @@ Standard Accounts
 
 .. autoclass:: AccountType
 
+
+Shortcut Accounts
+-----------------
+
 .. autoclass:: AssetAccount
     :show-inheritance:
 

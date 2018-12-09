@@ -10,10 +10,6 @@ Welcome to gnewcash's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   account
-   gnucash_file
-   guid_object
-   transaction
-   utils
-   commodity
-   slot
+   overview
+   usage
+   code_documentation
