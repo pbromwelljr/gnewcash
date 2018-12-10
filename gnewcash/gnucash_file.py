@@ -69,12 +69,14 @@ class GnuCashFile:
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file):
+    def read_file(cls, source_file, sort_transactions=True):
         """
         Reads the specified .gnucash file and loads it into memory
 
         :param source_file: Full or relative path to the .gnucash file.
         :type source_file: str
+        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
+        :type sort_transactions: bool
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
@@ -94,7 +96,7 @@ class GnuCashFile:
 
             books = root.findall('gnc:book', namespaces)
             for book in books:
-                new_book = Book.from_xml(book, namespaces)
+                new_book = Book.from_xml(book, namespaces, sort_transactions=sort_transactions)
                 built_file.books.append(new_book)
         else:
             logger.warning('Could not find %s', source_file)
@@ -180,7 +182,7 @@ class Book(GuidObject):
         return book_node
 
     @classmethod
-    def from_xml(cls, book_node, namespaces):
+    def from_xml(cls, book_node, namespaces, sort_transactions=True):
         """
         Creates a Book object from the GnuCash XML
 
@@ -188,6 +190,8 @@ class Book(GuidObject):
         :type book_node: ElementTree.Element
         :param namespaces: XML namespaces for GnuCash elements
         :type namespaces: dict[str, str]
+        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
+        :type sort_transactions: bool
         :return: Book object from XML
         :rtype: Book
         """
@@ -202,7 +206,7 @@ class Book(GuidObject):
 
         account_objects = list()
         transaction_manager = TransactionManager()
-        transaction_manager.disable_sort = True
+        transaction_manager.disable_sort = not sort_transactions
 
         for account in accounts:
             account_objects.append(Account.from_xml(account, namespaces, account_objects))

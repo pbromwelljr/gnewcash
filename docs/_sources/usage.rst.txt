@@ -367,3 +367,113 @@ Interest accounts also take the following constructor parameters:
 Transaction
 -----------
 
+`Transaction <transaction.html>`__ is a GnuCash object that represents a real-world transaction; for example, a credit/debit card purchase or a money transfer.
+
+Transactions contain `Splits <transaction.html#transaction.Split>`__ that indicate how much money was added or removed from a particular account for the transaction.
+You can find more information on splits `here <https://www.gnucash.org/docs/v3/C/gnucash-guide/txns-registers-txntypes.html>`__.
+
+By default, all transactions in GNewCash are "split transactions", although there are plans to add a SimpleTransaction class for easier usage.
+
+Retrieving Transactions
+~~~~~~~~~~~~~~~~~~~~~~~
+
+When you load an existing GnuCash file via the :code:`GnuCashFile.read_file` method, the transactions in the document are
+loaded into a `TransactionManager object <transaction.html#transaction.TransactionManager>`__. You can retrieve transactions
+for a given account like so:
+
+.. code:: python
+
+    my_file = GnuCashFile.read_file('/path/to/my/file.gnucash')
+    my_book = my_file.books[0]
+    checking_account = my_book.get_account('Assets', 'Current Assets', 'Checking Account')
+    checking_transactions = list(my_book.transactions.get_transactions(checking_account))
+
+:code:`get_transactions` returns a generator, so you can iterate over transactions in a memory-efficient way.
+
+Creating Transactions
+~~~~~~~~~~~~~~~~~~~~~
+
+Like accounts, transactions can be unwieldy without some sort of loader (which depends on your implementation).
+
+Creating a transaction can be done like so:
+
+.. code:: python
+
+    from datetime import datetime
+    from decimal import Decimal
+
+    from gnewcash import Transaction, Split
+
+    from pytz import timezone
+
+
+    my_new_transaction = Transaction()
+
+    # Date that the transaction takes place
+    my_new_transaction.date_posted = datetime(2019, 7, 5, 0, 0, 0, 0, tzinfo=timezone('US/Eastern'))
+
+    # Date that the transaction was created
+    my_new_transaction.date_entered = datetime.now(tz=timezone('US/Eastern'))
+
+    # Description for the transaction
+    my_new_transaction.description = 'My First Transaction'
+
+    # Memo for the transaction (appears in the "Num" field in GnuCash)
+    my_new_transaction.memo = 'My First Memo'
+
+    # Splits define what amount of money goes where. There should be at least 2 splits in a transaction.
+    my_new_transaction.splits = [
+        Split(checking_account, Decimal('-50.00')),
+        Split(phone_bill, Decimal('50.00')),
+    ]
+
+To add your new transaction to the TransactionManager, simply call:
+
+.. code:: python
+
+    my_book.transactions.add(my_new_transaction)
+
+Transactions have an additional property called :code:`cleared`, which returns a :code:`bool` indicating if all splits
+are in the "cleared" state.
+
+Transactions also have an additional method called :code:`mark_transaction_cleared`, which sets the :code:`reconciled_state`
+of all splits on the transaction to "c" (for cleared).
+
+For more information on reconciliation states, please see the `GnuCash documentation <https://www.gnucash.org/docs/v3/C/gnucash-help/trans-stts.html>`__.
+
+Transaction Manager
+~~~~~~~~~~~~~~~~~~~
+
+The `Transaction Manager <transaction.html#transaction.TransactionManager>`__ is a class used to maintain transactions
+in the GnuCash file.
+
+- :code:`add`
+    Adds the transaction to the manager. By default, the manager will maintain sort order based on :code:`date_posted`.
+    You can disable this functionality by either setting the :code:`disable_sort` property on the manager to
+    :code:`False`, or by passing :code:`sort_transactions=False` when calling :code:`GnuCashFile.read_file`. Some
+    functions inside GNewCash rely on the transactions being sorted, so be careful when turning this setting off.
+- :code:`remove`
+    Removes the transaction from the manager. No magic behind the scenes here.
+- :code:`get_account_ending_balance`
+    Retrieves the final balance for the provided account, based on transactions in the manager.
+- :code:`get_account_starting_balance`
+    Retrieves the starting balance (dollar amount of first transaction by posted date) for the provided account,
+    based on transactions in the manager.
+- :code:`get_balance_at_date`
+    Retrieves the account balance for the specified account at a certain date. If the provided date is None, it will
+    retrieve the ending balance.
+- :code:`get_transactions`
+    Generator function that retrieves transactions for a specified account. If no account is provided, all transactions
+    will be returned by the generator.
+- :code:`minimum_balance_past_date`
+    Retrieves the minimum balance past a certain date for the given account. It returns a tuple of the date that the
+    account is at the minimum balance, and the minimum balance itself.
+
+
+Questions/Comments/Concerns?
+----------------------------
+
+That should be all you need to start using GNewCash. If you have any questions, comments, or concerns with the
+documentation or implementation of GNewCash itself, please submit an issue on our `issue tracker <https://github.com/pbromwelljr/gnewcash/issues>`__.
+
+Happy programming!

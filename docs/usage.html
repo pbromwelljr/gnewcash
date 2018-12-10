@@ -91,7 +91,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#interest-accounts">Interest Accounts</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#transaction">Transaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transaction">Transaction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#retrieving-transactions">Retrieving Transactions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-transactions">Creating Transactions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transaction-manager">Transaction Manager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#questions-comments-concerns">Questions/Comments/Concerns?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code_documentation.html">Code Documentation</a></li>
@@ -532,6 +538,121 @@ they will be derived from their child accounts’ information.</p>
 </div>
 <div class="section" id="transaction">
 <h2>Transaction<a class="headerlink" href="#transaction" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="transaction.html">Transaction</a> is a GnuCash object that represents a real-world transaction; for example, a credit/debit card purchase or a money transfer.</p>
+<p>Transactions contain <a class="reference external" href="transaction.html#transaction.Split">Splits</a> that indicate how much money was added or removed from a particular account for the transaction.
+You can find more information on splits <a class="reference external" href="https://www.gnucash.org/docs/v3/C/gnucash-guide/txns-registers-txntypes.html">here</a>.</p>
+<p>By default, all transactions in GNewCash are “split transactions”, although there are plans to add a SimpleTransaction class for easier usage.</p>
+<div class="section" id="retrieving-transactions">
+<h3>Retrieving Transactions<a class="headerlink" href="#retrieving-transactions" title="Permalink to this headline">¶</a></h3>
+<p>When you load an existing GnuCash file via the <code class="code docutils literal notranslate"><span class="pre">GnuCashFile.read_file</span></code> method, the transactions in the document are
+loaded into a <a class="reference external" href="transaction.html#transaction.TransactionManager">TransactionManager object</a>. You can retrieve transactions
+for a given account like so:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">)</span>
+<span class="n">my_book</span> <span class="o">=</span> <span class="n">my_file</span><span class="o">.</span><span class="n">books</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">checking_account</span> <span class="o">=</span> <span class="n">my_book</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="s1">&#39;Assets&#39;</span><span class="p">,</span> <span class="s1">&#39;Current Assets&#39;</span><span class="p">,</span> <span class="s1">&#39;Checking Account&#39;</span><span class="p">)</span>
+<span class="n">checking_transactions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">my_book</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">(</span><span class="n">checking_account</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><code class="code docutils literal notranslate"><span class="pre">get_transactions</span></code> returns a generator, so you can iterate over transactions in a memory-efficient way.</p>
+</div>
+<div class="section" id="creating-transactions">
+<h3>Creating Transactions<a class="headerlink" href="#creating-transactions" title="Permalink to this headline">¶</a></h3>
+<p>Like accounts, transactions can be unwieldy without some sort of loader (which depends on your implementation).</p>
+<p>Creating a transaction can be done like so:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+
+<span class="kn">from</span> <span class="nn">gnewcash</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">Split</span>
+
+<span class="kn">from</span> <span class="nn">pytz</span> <span class="k">import</span> <span class="n">timezone</span>
+
+
+<span class="n">my_new_transaction</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">()</span>
+
+<span class="c1"># Date that the transaction takes place</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">))</span>
+
+<span class="c1"># Date that the transaction was created</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">))</span>
+
+<span class="c1"># Description for the transaction</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;My First Transaction&#39;</span>
+
+<span class="c1"># Memo for the transaction (appears in the &quot;Num&quot; field in GnuCash)</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="s1">&#39;My First Memo&#39;</span>
+
+<span class="c1"># Splits define what amount of money goes where. There should be at least 2 splits in a transaction.</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Split</span><span class="p">(</span><span class="n">checking_account</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;-50.00&#39;</span><span class="p">)),</span>
+    <span class="n">Split</span><span class="p">(</span><span class="n">phone_bill</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;50.00&#39;</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>To add your new transaction to the TransactionManager, simply call:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_book</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">my_new_transaction</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Transactions have an additional property called <code class="code docutils literal notranslate"><span class="pre">cleared</span></code>, which returns a <code class="code docutils literal notranslate"><span class="pre">bool</span></code> indicating if all splits
+are in the “cleared” state.</p>
+<p>Transactions also have an additional method called <code class="code docutils literal notranslate"><span class="pre">mark_transaction_cleared</span></code>, which sets the <code class="code docutils literal notranslate"><span class="pre">reconciled_state</span></code>
+of all splits on the transaction to “c” (for cleared).</p>
+<p>For more information on reconciliation states, please see the <a class="reference external" href="https://www.gnucash.org/docs/v3/C/gnucash-help/trans-stts.html">GnuCash documentation</a>.</p>
+</div>
+<div class="section" id="transaction-manager">
+<h3>Transaction Manager<a class="headerlink" href="#transaction-manager" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="transaction.html#transaction.TransactionManager">Transaction Manager</a> is a class used to maintain transactions
+in the GnuCash file.</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">add</span></code></dt>
+<dd>Adds the transaction to the manager. By default, the manager will maintain sort order based on <code class="code docutils literal notranslate"><span class="pre">date_posted</span></code>.
+You can disable this functionality by either setting the <code class="code docutils literal notranslate"><span class="pre">disable_sort</span></code> property on the manager to
+<code class="code docutils literal notranslate"><span class="pre">False</span></code>, or by passing <code class="code docutils literal notranslate"><span class="pre">sort_transactions=False</span></code> when calling <code class="code docutils literal notranslate"><span class="pre">GnuCashFile.read_file</span></code>. Some
+functions inside GNewCash rely on the transactions being sorted, so be careful when turning this setting off.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">remove</span></code></dt>
+<dd>Removes the transaction from the manager. No magic behind the scenes here.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">get_account_ending_balance</span></code></dt>
+<dd>Retrieves the final balance for the provided account, based on transactions in the manager.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">get_account_starting_balance</span></code></dt>
+<dd>Retrieves the starting balance (dollar amount of first transaction by posted date) for the provided account,
+based on transactions in the manager.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">get_balance_at_date</span></code></dt>
+<dd>Retrieves the account balance for the specified account at a certain date. If the provided date is None, it will
+retrieve the ending balance.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">get_transactions</span></code></dt>
+<dd>Generator function that retrieves transactions for a specified account. If no account is provided, all transactions
+will be returned by the generator.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="code docutils literal notranslate"><span class="pre">minimum_balance_past_date</span></code></dt>
+<dd>Retrieves the minimum balance past a certain date for the given account. It returns a tuple of the date that the
+account is at the minimum balance, and the minimum balance itself.</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="questions-comments-concerns">
+<h2>Questions/Comments/Concerns?<a class="headerlink" href="#questions-comments-concerns" title="Permalink to this headline">¶</a></h2>
+<p>That should be all you need to start using GNewCash. If you have any questions, comments, or concerns with the
+documentation or implementation of GNewCash itself, please submit an issue on our <a class="reference external" href="https://github.com/pbromwelljr/gnewcash/issues">issue tracker</a>.</p>
+<p>Happy programming!</p>
 </div>
 </div>
 
