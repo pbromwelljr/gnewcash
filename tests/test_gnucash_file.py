@@ -19,16 +19,24 @@ class TestGnuCashFile(unittest.TestCase):
 
         self.check_gnucash_elements(original_root, test_root)
 
-    def check_gnucash_elements(self, original_element, test_element):
-        self.assertEqual(original_element.tag, test_element.tag)
-        self.assertEqual(json.dumps(original_element.attrib), json.dumps(test_element.attrib))
+    def check_gnucash_elements(self, original_element, test_element, original_path=None, test_path=None):
+        if original_path is None:
+            original_path = '/'
+        if test_path is None:
+            test_path = '/'
+        assertion_message = 'Original path: ' + original_path + '\n' + ' Test path: ' + test_path
+        self.assertEqual(original_element.tag, test_element.tag, assertion_message)
+        self.assertEqual(json.dumps(original_element.attrib), json.dumps(test_element.attrib),
+                         assertion_message)
         if original_element.text:
             original_element.text = original_element.text.strip()
         if test_element.text:
             test_element.text = test_element.text.strip()
-        self.assertEqual(original_element.text, test_element.text)
+        self.assertEqual(original_element.text, test_element.text, assertion_message)
         for original_subelement, test_subelement in zip(list(original_element), list(test_element)):
-            self.check_gnucash_elements(original_subelement, test_subelement)
+            self.check_gnucash_elements(original_subelement, test_subelement,
+                                        original_path + original_element.tag + '/',
+                                        test_path + test_element.tag + '/')
 
     def test_file_not_found(self):
         gnucash_file = gcf.GnuCashFile.read_file('test_files/thisfiledoesnotexist.gnucash')
