@@ -97,10 +97,16 @@
     <cmdty:id>USD</cmdty:id>
   </act:commodity>
   <act:commodity-scu>100</act:commodity-scu>
+  <act:code>CHKACCT</act:code>
+  <act:description>This is my checking account</act:description>
   <act:slots>
     <slot>
       <slot:key>color</slot:key>
-      <slot:value type="string">Not Set</slot:value>
+      <slot:value type="string">#ffff000005f6</slot:value>
+    </slot>
+    <slot>
+      <slot:key>notes</slot:key>
+      <slot:value type="string">These are some notes about my account</slot:value>
     </slot>
   </act:slots>
   <act:parent type="guid">aad2278c23baa697d6ad6185426352e5</act:parent>

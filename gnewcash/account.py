@@ -43,6 +43,8 @@ class Account(GuidObject):
         self.parent = None
         self.children = []
         self.commodity = None
+        self.code = None
+        self.description = None
         self.slots = []
 
     def __str__(self):
@@ -166,6 +168,12 @@ class Account(GuidObject):
         if self.commodity_scu:
             ElementTree.SubElement(account_node, 'act:commodity-scu').text = str(self.commodity_scu)
 
+        if self.code:
+            ElementTree.SubElement(account_node, 'act:code').text = str(self.code)
+
+        if self.description:
+            ElementTree.SubElement(account_node, 'act:description').text = str(self.description)
+
         if self.slots:
             slots_node = ElementTree.SubElement(account_node, 'act:slots')
             for slot in self.slots:
@@ -202,7 +210,7 @@ class Account(GuidObject):
         account_object.type = account_node.find('act:type', namespaces).text
 
         commodity = account_node.find('act:commodity', namespaces)
-        if commodity and commodity.find('cmdty:id', namespaces) is not None:
+        if commodity is not None and commodity.find('cmdty:id', namespaces) is not None:
             account_object.commodity = Commodity.from_xml(commodity, namespaces)
         else:
             account_object.commodity = None
@@ -212,9 +220,17 @@ class Account(GuidObject):
             account_object.commodity_scu = commodity_scu.text
 
         slots = account_node.find('act:slots', namespaces)
-        if slots:
+        if slots is not None:
             for slot in slots.findall('slot', namespaces):
                 account_object.slots.append(Slot.from_xml(slot, namespaces))
+
+        code = account_node.find('act:code', namespaces)
+        if code is not None:
+            account_object.code = code.text
+
+        description = account_node.find('act:description', namespaces)
+        if description is not None:
+            account_object.description = description.text
 
         parent = account_node.find('act:parent', namespaces)
         if parent is not None:
