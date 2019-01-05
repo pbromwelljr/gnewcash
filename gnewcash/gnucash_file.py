@@ -14,6 +14,7 @@ from gnewcash.guid_object import GuidObject
 from gnewcash.transaction import Transaction, TransactionManager
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
+from gnewcash.slot import Slot
 
 
 class GnuCashFile:
@@ -141,11 +142,12 @@ class Book(GuidObject):
     """
     Represents a Book in GnuCash
     """
-    def __init__(self, root_account=None, transactions=None, commodities=None):
+    def __init__(self, root_account=None, transactions=None, commodities=None, slots=None):
         super(Book, self).__init__()
         self.root_account = root_account
         self.transactions = transactions or TransactionManager()
         self.commodities = commodities or []
+        self.slots = slots or []
 
     @property
     def as_xml(self):
@@ -160,6 +162,11 @@ class Book(GuidObject):
         book_id_node.text = self.guid
 
         accounts_xml = self.root_account.as_xml
+
+        if self.slots:
+            slot_node = ElementTree.SubElement(book_node, 'book:slots')
+            for slot in self.slots:
+                slot_node.append(slot.as_xml)
 
         commodity_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'commodity'})
         commodity_count_node.text = str(len(list(filter(lambda x: x.commodity_id != 'template', self.commodities))))
@@ -199,6 +206,11 @@ class Book(GuidObject):
         new_book.guid = book_node.find('book:id', namespaces).text
         accounts = book_node.findall('gnc:account', namespaces)
         transactions = book_node.findall('gnc:transaction', namespaces)
+        slots = book_node.find('book:slots', namespaces)
+
+        if slots is not None:
+            for slot in slots.findall('slot'):
+                new_book.slots.append(Slot.from_xml(slot, namespaces))
 
         commodities = book_node.findall('gnc:commodity', namespaces)
         for commodity in commodities:
