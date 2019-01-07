@@ -5,7 +5,6 @@
 """
 from datetime import datetime
 from decimal import Decimal
-from functools import reduce
 from xml.etree import ElementTree
 
 
