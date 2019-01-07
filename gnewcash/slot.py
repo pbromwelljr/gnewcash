@@ -31,7 +31,7 @@ class Slot:
         slot_value_node = ElementTree.SubElement(slot_node, 'slot:value', {'type': self.type})
         if self.type == 'gdate':
             ElementTree.SubElement(slot_value_node, 'gdate').text = datetime.strftime(self.value, '%Y-%m-%d')
-        elif self.type == 'string':
+        elif self.type in ['string', 'guid']:
             slot_value_node.text = self.value
         elif self.type in ['integer', 'double']:
             slot_value_node.text = str(self.value)
@@ -62,7 +62,7 @@ class Slot:
         slot_type = value_node.attrib['type']
         if slot_type == 'gdate':
             value = datetime.strptime(value_node.find('gdate').text, '%Y-%m-%d')
-        elif slot_type == 'string':
+        elif slot_type in ['string', 'guid']:
             value = value_node.text
         elif slot_type == 'integer':
             value = int(value_node.text)

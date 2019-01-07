@@ -203,7 +203,7 @@
 </book:slots>
 <gnc:count-data cd:type="commodity">1</gnc:count-data>
 <gnc:count-data cd:type="account">15</gnc:count-data>
-<gnc:count-data cd:type="transaction">94</gnc:count-data>
+<gnc:count-data cd:type="transaction">95</gnc:count-data>
 <gnc:commodity version="2.0.0">
   <cmdty:space>ISO4217</cmdty:space>
   <cmdty:id>USD</cmdty:id>
@@ -1950,6 +1950,10 @@
       <slot:key>notes</slot:key>
       <slot:value type="string"></slot:value>
     </slot>
+    <slot>
+      <slot:key>reversed-by</slot:key>
+      <slot:value type="guid">3f2875d441562d71ca4fcd5b5649e5cf</slot:value>
+    </slot>
   </trn:slots>
   <trn:splits>
     <trn:split>
@@ -1965,6 +1969,80 @@
       <split:value>-100000/100</split:value>
       <split:quantity>-100000/100</split:quantity>
       <split:account type="guid">98dc3f29ce096088d113f992128736d8</split:account>
+    </trn:split>
+  </trn:splits>
+</gnc:transaction>
+<gnc:transaction version="2.0.0">
+  <trn:id type="guid">5f21436c77fb9746d6b8a89ed5b5a4e7</trn:id>
+  <trn:currency>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </trn:currency>
+  <trn:date-posted>
+    <ts:date>2019-12-31 05:59:00 -0500</ts:date>
+  </trn:date-posted>
+  <trn:date-entered>
+    <ts:date>2019-01-06 19:08:19 -0500</ts:date>
+  </trn:date-entered>
+  <trn:description>Voided Transaction</trn:description>
+  <trn:slots>
+    <slot>
+      <slot:key>date-posted</slot:key>
+      <slot:value type="gdate">
+        <gdate>2019-12-31</gdate>
+      </slot:value>
+    </slot>
+    <slot>
+      <slot:key>notes</slot:key>
+      <slot:value type="string">Voided transaction</slot:value>
+    </slot>
+    <slot>
+      <slot:key>trans-read-only</slot:key>
+      <slot:value type="string">Transaction Voided</slot:value>
+    </slot>
+    <slot>
+      <slot:key>void-reason</slot:key>
+      <slot:value type="string">Voided transaction reason</slot:value>
+    </slot>
+    <slot>
+      <slot:key>void-time</slot:key>
+      <slot:value type="string">2019-01-06 19:08:40.000000 -0500</slot:value>
+    </slot>
+  </trn:slots>
+  <trn:splits>
+    <trn:split>
+      <split:id type="guid">96d1fd89891277f13391190b1b765335</split:id>
+      <split:reconciled-state>v</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/100</split:quantity>
+      <split:account type="guid">1dc6720eb161e7678e744bfe10c560b8</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>void-former-amount</slot:key>
+          <slot:value type="numeric">10000/100</slot:value>
+        </slot>
+        <slot>
+          <slot:key>void-former-value</slot:key>
+          <slot:value type="numeric">10000/100</slot:value>
+        </slot>
+      </split:slots>
+    </trn:split>
+    <trn:split>
+      <split:id type="guid">235204f0d02c8bedc08b87a3586d9819</split:id>
+      <split:reconciled-state>v</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/100</split:quantity>
+      <split:account type="guid">98dc3f29ce096088d113f992128736d8</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>void-former-amount</slot:key>
+          <slot:value type="numeric">-10000/100</slot:value>
+        </slot>
+        <slot>
+          <slot:key>void-former-value</slot:key>
+          <slot:value type="numeric">-10000/100</slot:value>
+        </slot>
+      </split:slots>
     </trn:split>
   </trn:splits>
 </gnc:transaction>
