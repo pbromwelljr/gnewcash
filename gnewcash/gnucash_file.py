@@ -11,7 +11,7 @@ from xml.etree import ElementTree
 from xml.dom import minidom
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.transaction import Transaction, TransactionManager
+from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.slot import Slot
@@ -142,12 +142,16 @@ class Book(GuidObject):
     """
     Represents a Book in GnuCash
     """
-    def __init__(self, root_account=None, transactions=None, commodities=None, slots=None):
+    def __init__(self, root_account=None, transactions=None, commodities=None, slots=None,
+                 template_root_account=None, template_transactions=None, scheduled_transactions=None):
         super(Book, self).__init__()
         self.root_account = root_account
         self.transactions = transactions or TransactionManager()
         self.commodities = commodities or []
         self.slots = slots or []
+        self.template_root_account = template_root_account
+        self.template_transactions = template_transactions or []
+        self.scheduled_transactions = scheduled_transactions or []
 
     @property
     def as_xml(self):
@@ -177,6 +181,11 @@ class Book(GuidObject):
         transaction_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'transaction'})
         transaction_count_node.text = str(len(self.transactions))
 
+        if self.scheduled_transactions:
+            scheduled_transaction_node = ElementTree.SubElement(book_node, 'gnc:count-data',
+                                                                {'cd:type': 'schedxaction'})
+            scheduled_transaction_node.text = str(len(self.scheduled_transactions))
+
         for commodity in self.commodities:
             book_node.append(commodity.as_xml)
 
@@ -186,6 +195,16 @@ class Book(GuidObject):
         for transaction in self.transactions:
             book_node.append(transaction.as_xml)
 
+        if self.template_root_account or self.template_transactions:
+            template_transactions_node = ElementTree.SubElement(book_node, 'gnc:template-transactions')
+            for account in self.template_root_account.as_xml:
+                template_transactions_node.append(account)
+            for transaction in self.template_transactions:
+                template_transactions_node.append(transaction.as_xml)
+
+        for scheduled_transaction in self.scheduled_transactions:
+            book_node.append(scheduled_transaction.as_xml)
+        
         return book_node
 
     @classmethod
@@ -228,6 +247,34 @@ class Book(GuidObject):
 
         new_book.root_account = [x for x in account_objects if x.type == 'ROOT'][0]
         new_book.transactions = transaction_manager
+
+        template_transactions_xml = book_node.findall('gnc:template-transactions', namespaces)
+        if template_transactions_xml is not None:
+            template_accounts = []
+            template_transactions = []
+            for template_transaction in template_transactions_xml:
+                # Process accounts before transactions
+                for subelement in template_transaction:
+                    if not subelement.tag.endswith('account'):
+                        continue
+                    template_accounts.append(Account.from_xml(subelement, namespaces, template_accounts))
+
+                for subelement in template_transaction:
+                    if not subelement.tag.endswith('transaction'):
+                        continue
+                    template_transactions.append(Transaction.from_xml(subelement, namespaces, template_accounts))
+            new_book.template_transactions = template_transactions
+            template_root_accounts = [x for x in template_accounts if x.type == 'ROOT']
+            if template_root_accounts:
+                new_book.template_root_account = template_root_accounts[0]
+
+        scheduled_transactions = book_node.findall('gnc:schedxaction', namespaces)
+        if scheduled_transactions is not None:
+            for scheduled_transaction in scheduled_transactions:
+                new_book.scheduled_transactions.append(
+                    ScheduledTransaction.from_xml(scheduled_transaction,
+                                                  namespaces,
+                                                  new_book.template_root_account))
 
         return new_book
 

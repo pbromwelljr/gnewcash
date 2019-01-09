@@ -203,7 +203,8 @@
 </book:slots>
 <gnc:count-data cd:type="commodity">1</gnc:count-data>
 <gnc:count-data cd:type="account">15</gnc:count-data>
-<gnc:count-data cd:type="transaction">95</gnc:count-data>
+<gnc:count-data cd:type="transaction">96</gnc:count-data>
+<gnc:count-data cd:type="schedxaction">1</gnc:count-data>
 <gnc:commodity version="2.0.0">
   <cmdty:space>ISO4217</cmdty:space>
   <cmdty:id>USD</cmdty:id>
@@ -2043,6 +2044,48 @@
           <slot:value type="numeric">-10000/100</slot:value>
         </slot>
       </split:slots>
+    </trn:split>
+  </trn:splits>
+</gnc:transaction>
+<gnc:transaction version="2.0.0">
+  <trn:id type="guid">deed3e094ae4a2b6b02b4f349261f69c</trn:id>
+  <trn:currency>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </trn:currency>
+  <trn:date-posted>
+    <ts:date>2019-12-31 05:59:00 -0500</ts:date>
+  </trn:date-posted>
+  <trn:date-entered>
+    <ts:date>2019-01-06 19:23:06 -0500</ts:date>
+  </trn:date-entered>
+  <trn:description>Location Transaction</trn:description>
+  <trn:slots>
+    <slot>
+      <slot:key>assoc_uri</slot:key>
+      <slot:value type="string">http://www.google.com</slot:value>
+    </slot>
+    <slot>
+      <slot:key>date-posted</slot:key>
+      <slot:value type="gdate">
+        <gdate>2019-12-31</gdate>
+      </slot:value>
+    </slot>
+  </trn:slots>
+  <trn:splits>
+    <trn:split>
+      <split:id type="guid">71ce18879ca6abe2dc73ba04192af942</split:id>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/100</split:quantity>
+      <split:account type="guid">98dc3f29ce096088d113f992128736d8</split:account>
+    </trn:split>
+    <trn:split>
+      <split:id type="guid">b5acd5e69bd110b40b4dbbac6a649b00</split:id>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/100</split:quantity>
+      <split:account type="guid">1dc6720eb161e7678e744bfe10c560b8</split:account>
     </trn:split>
   </trn:splits>
 </gnc:transaction>
@@ -4474,6 +4517,159 @@
     </trn:split>
   </trn:splits>
 </gnc:transaction>
+<gnc:template-transactions>
+<gnc:account version="2.0.0">
+  <act:name>Template Root</act:name>
+  <act:id type="guid">abc1cd7237a3b9874bdd9a8eb894cfa5</act:id>
+  <act:type>ROOT</act:type>
+  <act:commodity>
+    <cmdty:space>template</cmdty:space>
+    <cmdty:id>template</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>1</act:commodity-scu>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>91a5961936d926a2d1d759507360ffe7</act:name>
+  <act:id type="guid">c10dfad4a68a77003fdadc3dffe7b436</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>template</cmdty:space>
+    <cmdty:id>template</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>1</act:commodity-scu>
+  <act:parent type="guid">abc1cd7237a3b9874bdd9a8eb894cfa5</act:parent>
+</gnc:account>
+<gnc:transaction version="2.0.0">
+  <trn:id type="guid">2fe68d3a519557a4cdd723572612819a</trn:id>
+  <trn:currency>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </trn:currency>
+  <trn:num>12345</trn:num>
+  <trn:date-posted>
+    <ts:date>2019-01-06 05:59:00 -0500</ts:date>
+  </trn:date-posted>
+  <trn:date-entered>
+    <ts:date>2019-01-06 19:28:39 -0500</ts:date>
+  </trn:date-entered>
+  <trn:description>Sample Scheduled Transaction</trn:description>
+  <trn:slots>
+    <slot>
+      <slot:key>date-posted</slot:key>
+      <slot:value type="gdate">
+        <gdate>2019-01-06</gdate>
+      </slot:value>
+    </slot>
+    <slot>
+      <slot:key>notes</slot:key>
+      <slot:value type="string">Sample Scheduled Transaction</slot:value>
+    </slot>
+  </trn:slots>
+  <trn:splits>
+    <trn:split>
+      <split:id type="guid">016bba926c36e897fb4b0d493e3b26de</split:id>
+      <split:memo>Sample Scheduled Transaction Description</split:memo>
+      <split:action>Charge</split:action>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/1</split:quantity>
+      <split:account type="guid">c10dfad4a68a77003fdadc3dffe7b436</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>sched-xaction</slot:key>
+          <slot:value type="frame">
+            <slot>
+              <slot:key>account</slot:key>
+              <slot:value type="guid">98dc3f29ce096088d113f992128736d8</slot:value>
+            </slot>
+            <slot>
+              <slot:key>credit-formula</slot:key>
+              <slot:value type="string">0</slot:value>
+            </slot>
+            <slot>
+              <slot:key>credit-numeric</slot:key>
+              <slot:value type="numeric">0/1</slot:value>
+            </slot>
+            <slot>
+              <slot:key>debit-formula</slot:key>
+              <slot:value type="string">0</slot:value>
+            </slot>
+            <slot>
+              <slot:key>debit-numeric</slot:key>
+              <slot:value type="numeric">0/1</slot:value>
+            </slot>
+          </slot:value>
+        </slot>
+      </split:slots>
+    </trn:split>
+    <trn:split>
+      <split:id type="guid">4a6c2844a412ad139ec0ce150ade8e1c</split:id>
+      <split:memo>Sample Scheduled Transaction Description 2</split:memo>
+      <split:action>Credit</split:action>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/1</split:quantity>
+      <split:account type="guid">c10dfad4a68a77003fdadc3dffe7b436</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>sched-xaction</slot:key>
+          <slot:value type="frame">
+            <slot>
+              <slot:key>account</slot:key>
+              <slot:value type="guid">e56282be51e186e17470dc32bb2b0664</slot:value>
+            </slot>
+            <slot>
+              <slot:key>credit-formula</slot:key>
+              <slot:value type="string">0</slot:value>
+            </slot>
+            <slot>
+              <slot:key>credit-numeric</slot:key>
+              <slot:value type="numeric">0/1</slot:value>
+            </slot>
+            <slot>
+              <slot:key>debit-formula</slot:key>
+              <slot:value type="string">0</slot:value>
+            </slot>
+            <slot>
+              <slot:key>debit-numeric</slot:key>
+              <slot:value type="numeric">0/1</slot:value>
+            </slot>
+          </slot:value>
+        </slot>
+      </split:slots>
+    </trn:split>
+  </trn:splits>
+</gnc:transaction>
+</gnc:template-transactions>
+<gnc:schedxaction version="2.0.0">
+  <sx:id type="guid">91a5961936d926a2d1d759507360ffe7</sx:id>
+  <sx:name>Sample Scheduled Transaction</sx:name>
+  <sx:enabled>y</sx:enabled>
+  <sx:autoCreate>y</sx:autoCreate>
+  <sx:autoCreateNotify>y</sx:autoCreateNotify>
+  <sx:advanceCreateDays>365</sx:advanceCreateDays>
+  <sx:advanceRemindDays>7</sx:advanceRemindDays>
+  <sx:instanceCount>14</sx:instanceCount>
+  <sx:start>
+    <gdate>2019-01-01</gdate>
+  </sx:start>
+  <sx:last>
+    <gdate>2020-01-01</gdate>
+  </sx:last>
+  <sx:end>
+    <gdate>2020-01-01</gdate>
+  </sx:end>
+  <sx:templ-acct type="guid">c10dfad4a68a77003fdadc3dffe7b436</sx:templ-acct>
+  <sx:schedule>
+    <gnc:recurrence version="1.0.0">
+      <recurrence:mult>1</recurrence:mult>
+      <recurrence:period_type>month</recurrence:period_type>
+      <recurrence:start>
+        <gdate>2019-01-05</gdate>
+      </recurrence:start>
+    </gnc:recurrence>
+  </sx:schedule>
+</gnc:schedxaction>
 </gnc:book>
 </gnc-v2>
 

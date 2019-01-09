@@ -292,6 +292,15 @@ class Account(GuidObject):
             return self.parent.get_parent_commodity()
         return None
 
+    def get_subaccount_by_id(self, subaccount_id):
+        if self.guid == subaccount_id:
+            return self
+        for subaccount in self.children:
+            subaccount_result = subaccount.get_subaccount_by_id(subaccount_id)
+            if subaccount_result is not None:
+                return subaccount_result
+        return None
+
 
 class BankAccount(Account):
     """

@@ -146,6 +146,9 @@ class Split(GuidObject):
         self.reconciled_state = reconciled_state
         self.amount = amount
         self.account = account
+        self.action = None
+        self.memo = None
+        self.quantity_denominator = '100'
 
     def __str__(self):
         return '{} - {}'.format(self.account, str(self.amount))
@@ -163,9 +166,16 @@ class Split(GuidObject):
         """
         split_node = ElementTree.Element('trn:split')
         ElementTree.SubElement(split_node, 'split:id', {'type': 'guid'}).text = self.guid
+
+        if self.memo:
+            ElementTree.SubElement(split_node, 'split:memo').text = self.memo
+        if self.action:
+            ElementTree.SubElement(split_node, 'split:action').text = self.action
+
         ElementTree.SubElement(split_node, 'split:reconciled-state').text = self.reconciled_state
         ElementTree.SubElement(split_node, 'split:value').text = str(int(self.amount * 100)) + '/100'
-        ElementTree.SubElement(split_node, 'split:quantity').text = str(int(self.amount * 100)) + '/100'
+        ElementTree.SubElement(split_node, 'split:quantity').text = '/'.join([
+            str(int(self.amount * 100)), self.quantity_denominator])
         ElementTree.SubElement(split_node, 'split:account', {'type': 'guid'}).text = self.account.guid
         return split_node
 
@@ -191,6 +201,22 @@ class Split(GuidObject):
         new_split = cls([x for x in account_objects if x.guid == account][0],
                         value, split_node.find('split:reconciled-state', namespaces).text)
         new_split.guid = split_node.find('split:id', namespaces).text
+
+        split_memo = split_node.find('split:memo', namespaces)
+        if split_memo is not None:
+            new_split.memo = split_memo.text
+
+        split_action = split_node.find('split:action', namespaces)
+        if split_action is not None:
+            new_split.action = split_action.text
+
+        quantity_node = split_node.find('split:quantity', namespaces)
+        if quantity_node is not None:
+            quantity = quantity_node.text
+            if '/' in quantity:
+                new_split.quantity_denominator = quantity.split('/')[1]
+
+
 
         return new_split
 
@@ -313,3 +339,129 @@ class TransactionManager:
             if my_transaction != other_transaction:
                 return False
         return True
+
+
+class ScheduledTransaction(GuidObject):
+    def __init__(self):
+        super(ScheduledTransaction, self).__init__()
+        self.name = None
+        self.enabled = False
+        self.auto_create = False
+        self.auto_create_notify = False
+        self.advance_create_days = -1
+        self.advance_remind_days = -1
+        self.instance_count = 0
+        self.start_date = None
+        self.last_date = None
+        self.end_date = None
+        self.template_account = None
+        self.recurrence_multiplier = 0
+        self.recurrence_period = None
+        self.recurrence_start = None
+
+    @property
+    def as_xml(self):
+        xml_node = ElementTree.Element('gnc:schedxaction', attrib={'version': '2.0.0'})
+        if self.guid:
+            ElementTree.SubElement(xml_node, 'sx:id', attrib={'type': 'guid'}).text = self.guid
+        if self.name:
+            ElementTree.SubElement(xml_node, 'sx:name').text = self.name
+        ElementTree.SubElement(xml_node, 'sx:enabled').text = 'y' if self.enabled else 'n'
+        ElementTree.SubElement(xml_node, 'sx:autoCreate').text = 'y' if self.auto_create else 'n'
+        ElementTree.SubElement(xml_node, 'sx:autoCreateNotify').text = 'y' if self.auto_create_notify else 'n'
+        if self.advance_create_days:
+            ElementTree.SubElement(xml_node, 'sx:advanceCreateDays').text = str(self.advance_create_days)
+        if self.advance_remind_days:
+            ElementTree.SubElement(xml_node, 'sx:advanceRemindDays').text = str(self.advance_remind_days)
+        if self.instance_count:
+            ElementTree.SubElement(xml_node, 'sx:instanceCount').text = str(self.instance_count)
+        if self.start_date:
+            start_node = ElementTree.SubElement(xml_node, 'sx:start')
+            ElementTree.SubElement(start_node, 'gdate').text = self.start_date.strftime('%Y-%m-%d')
+        if self.last_date:
+            last_node = ElementTree.SubElement(xml_node, 'sx:last')
+            ElementTree.SubElement(last_node, 'gdate').text = self.last_date.strftime('%Y-%m-%d')
+        if self.end_date:
+            end_node = ElementTree.SubElement(xml_node, 'sx:end')
+            ElementTree.SubElement(end_node, 'gdate').text = self.end_date.strftime('%Y-%m-%d')
+        if self.template_account:
+            ElementTree.SubElement(xml_node, 'sx:templ-acct', attrib={'type': 'guid'}).text = self.template_account.guid
+        if self.recurrence_multiplier or self.recurrence_period or self.recurrence_start:
+            schedule_node = ElementTree.SubElement(xml_node, 'sx:schedule')
+            recurrence_node = ElementTree.SubElement(schedule_node, 'gnc:recurrence', attrib={'version': '1.0.0'})
+            if self.recurrence_multiplier:
+                ElementTree.SubElement(recurrence_node, 'recurrence:mult').text = str(self.recurrence_multiplier)
+            if self.recurrence_period:
+                ElementTree.SubElement(recurrence_node, 'recurrence:period_type').text = self.recurrence_period
+            if self.recurrence_start:
+                start_node = ElementTree.SubElement(recurrence_node, 'recurrence:start')
+                ElementTree.SubElement(start_node, 'gdate').text = self.recurrence_start.strftime('%Y-%m-%d')
+        return xml_node
+
+    @classmethod
+    def from_xml(cls, xml_obj, namespaces, template_account_root):
+        new_obj = cls()
+        new_obj.guid = cls.read_xml_child_text(xml_obj, 'sx:id', namespaces)
+        new_obj.name = cls.read_xml_child_text(xml_obj, 'sx:name', namespaces)
+        new_obj.enabled = cls.read_xml_child_boolean(xml_obj, 'sx:enabled', namespaces)
+        new_obj.auto_create = cls.read_xml_child_boolean(xml_obj, 'sx:autoCreate', namespaces)
+        new_obj.auto_create_notify = cls.read_xml_child_boolean(xml_obj, 'sx:autoCreateNotify', namespaces)
+        new_obj.advance_create_days = cls.read_xml_child_int(xml_obj, 'sx:advanceCreateDays', namespaces)
+        new_obj.advance_remind_days = cls.read_xml_child_int(xml_obj, 'sx:advanceRemindDays', namespaces)
+        new_obj.instance_count = cls.read_xml_child_int(xml_obj, 'sx:instanceCount', namespaces)
+        new_obj.start_date = cls.read_xml_child_date(xml_obj, 'sx:start', namespaces)
+        new_obj.last_date = cls.read_xml_child_date(xml_obj, 'sx:last', namespaces)
+        new_obj.end_date = cls.read_xml_child_date(xml_obj, 'sx:end', namespaces)
+
+        template_account_node = xml_obj.find('sx:templ-acct', namespaces)
+        if template_account_node is not None:
+            new_obj.template_account = template_account_root.get_subaccount_by_id(template_account_node.text)
+
+        schedule_node = xml_obj.find('sx:schedule', namespaces)
+        if schedule_node is not None:
+            recurrence_node = schedule_node.find('gnc:recurrence', namespaces)
+            if recurrence_node is not None:
+                new_obj.recurrence_multiplier = cls.read_xml_child_int(
+                    xml_obj, 'recurrence:mult', namespaces
+                )
+                new_obj.recurrence_period = cls.read_xml_child_text(
+                    xml_obj, 'recurrence:period_type', namespaces)
+                new_obj.recurrence_start = cls.read_xml_child_date(
+                    xml_obj, 'recurrence:start', namespaces)
+
+        return new_obj
+
+    @classmethod
+    def read_xml_child_text(cls, xml_object, tag_name, namespaces):
+        target_node = xml_object.find(tag_name, namespaces)
+        if target_node is not None:
+            return target_node.text
+        return None
+
+    @classmethod
+    def read_xml_child_boolean(cls, xml_object, tag_name, namespaces):
+        node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
+        if node_text and node_text.lower() == 'y':
+            return True
+        elif node_text:
+            return False
+        return None
+
+    @classmethod
+    def read_xml_child_int(cls, xml_object, tag_name, namespaces):
+        node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
+        if node_text:
+            return int(node_text)
+        return None
+
+    @classmethod
+    def read_xml_child_date(cls, xml_object, tag_name, namespaces):
+        target_node = xml_object.find(tag_name, namespaces)
+        if target_node is None:
+            return None
+
+        date_node = target_node.find('gdate', namespaces)
+        if date_node is None:
+            return None
+
+        return datetime.strptime(date_node.text, '%Y-%m-%d') if date_node.text else None
