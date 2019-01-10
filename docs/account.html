@@ -97,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
 </ul>
 
             
@@ -329,6 +330,24 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">First transaction amount if the account has transactions, otherwise 0.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="account.Account.get_subaccount_by_id">
+<code class="descname">get_subaccount_by_id</code><span class="sig-paren">(</span><em>subaccount_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_subaccount_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_subaccount_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a subaccount by its guid field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>subaccount_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Subaccount guid to find</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Account object for that guid or None if no account was found</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#account.Account" title="account.Account">Account</a></td>
 </tr>
 </tbody>
 </table>
@@ -634,6 +653,7 @@ and “payment_date” for the date the additional amount was paid.</li>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

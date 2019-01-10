@@ -13,6 +13,7 @@ xmldiff = "*"
 "flake8" = "*"
 pylint = "*"
 twine = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.7"

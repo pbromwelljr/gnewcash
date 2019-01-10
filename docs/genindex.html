@@ -82,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_documentation.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
 </ul>
 
             
@@ -195,8 +196,6 @@
         <li><a href="gnucash_file.html#gnucash_file.Commodity.as_short_xml">(gnucash_file.Commodity method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.Account.as_xml">as_xml (account.Account attribute)</a>
 
       <ul>
@@ -204,15 +203,21 @@
 </li>
         <li><a href="gnucash_file.html#gnucash_file.Book.as_xml">(gnucash_file.Book attribute)</a>
 </li>
+        <li><a href="gnucash_file.html#gnucash_file.Budget.as_xml">(gnucash_file.Budget attribute)</a>
+</li>
         <li><a href="gnucash_file.html#gnucash_file.Commodity.as_xml">(gnucash_file.Commodity attribute)</a>
 </li>
         <li><a href="slot.html#slot.Slot.as_xml">(slot.Slot attribute)</a>
+</li>
+        <li><a href="transaction.html#transaction.ScheduledTransaction.as_xml">(transaction.ScheduledTransaction attribute)</a>
 </li>
         <li><a href="transaction.html#transaction.Split.as_xml">(transaction.Split attribute)</a>
 </li>
         <li><a href="transaction.html#transaction.Transaction.as_xml">(transaction.Transaction attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.AssetAccount">AssetAccount (class in account)</a>
 </li>
   </ul></td>
@@ -223,9 +228,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.BankAccount">BankAccount (class in account)</a>
 </li>
+      <li><a href="gnucash_file.html#gnucash_file.Book">Book (class in gnucash_file)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gnucash_file.html#gnucash_file.Book">Book (class in gnucash_file)</a>
+      <li><a href="gnucash_file.html#gnucash_file.Budget">Budget (class in gnucash_file)</a>
 </li>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.build_file">build_file() (gnucash_file.GnuCashFile method)</a>
 </li>
@@ -288,9 +295,13 @@
 </li>
         <li><a href="gnucash_file.html#gnucash_file.Book.from_xml">(gnucash_file.Book class method)</a>
 </li>
+        <li><a href="gnucash_file.html#gnucash_file.Budget.from_xml">(gnucash_file.Budget class method)</a>
+</li>
         <li><a href="gnucash_file.html#gnucash_file.Commodity.from_xml">(gnucash_file.Commodity class method)</a>
 </li>
         <li><a href="slot.html#slot.Slot.from_xml">(slot.Slot class method)</a>
+</li>
+        <li><a href="transaction.html#transaction.ScheduledTransaction.from_xml">(transaction.ScheduledTransaction class method)</a>
 </li>
         <li><a href="transaction.html#transaction.Split.from_xml">(transaction.Split class method)</a>
 </li>
@@ -321,15 +332,17 @@
       </ul></li>
       <li><a href="account.html#account.Account.get_ending_balance">get_ending_balance() (account.Account method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="guid_object.html#guid_object.GuidObject.get_guid">get_guid() (guid_object.GuidObject class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.InterestAccount.get_info_at_date">get_info_at_date() (account.InterestAccount method)</a>
 </li>
       <li><a href="account.html#account.Account.get_parent_commodity">get_parent_commodity() (account.Account method)</a>
 </li>
       <li><a href="account.html#account.Account.get_starting_balance">get_starting_balance() (account.Account method)</a>
+</li>
+      <li><a href="account.html#account.Account.get_subaccount_by_id">get_subaccount_by_id() (account.Account method)</a>
 </li>
       <li><a href="transaction.html#transaction.TransactionManager.get_transactions">get_transactions() (transaction.TransactionManager method)</a>
 </li>
@@ -405,12 +418,24 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.read_file">read_file() (gnucash_file.GnuCashFile class method)</a>
 </li>
+      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_boolean">read_xml_child_boolean() (transaction.ScheduledTransaction class method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_date">read_xml_child_date() (transaction.ScheduledTransaction class method)</a>
+</li>
+      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_int">read_xml_child_int() (transaction.ScheduledTransaction class method)</a>
+</li>
+      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_text">read_xml_child_text() (transaction.ScheduledTransaction class method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transaction.html#transaction.ScheduledTransaction">ScheduledTransaction (class in transaction)</a>
+</li>
       <li><a href="slot.html#slot.Slot">Slot (class in slot)</a>
 </li>
       <li><a href="slot.html#module-slot">slot (module)</a>
@@ -485,6 +510,7 @@
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

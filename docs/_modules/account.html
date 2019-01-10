@@ -81,6 +81,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Using GNewCash</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../code_documentation.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Versions</a></li>
 </ul>
 
             
@@ -189,6 +190,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -312,6 +315,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">:</span>
             <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:commodity-scu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:code&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
             <span class="n">slots_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:slots&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
@@ -348,7 +357,7 @@
         <span class="n">account_object</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:type&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">commodity</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">commodity</span> <span class="ow">and</span> <span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">commodity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">commodity</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="kc">None</span>
@@ -358,9 +367,17 @@
             <span class="n">account_object</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="n">commodity_scu</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">slots</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slots</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
                 <span class="n">account_object</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
+
+        <span class="n">code</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:code&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">account_object</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">account_object</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">parent</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:parent&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -420,6 +437,23 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_parent_commodity</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Account.get_subaccount_by_id"><a class="viewcode-back" href="../account.html#account.Account.get_subaccount_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_subaccount_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subaccount_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds a subaccount by its guid field.</span>
+
+<span class="sd">        :param subaccount_id: Subaccount guid to find</span>
+<span class="sd">        :type subaccount_id: str</span>
+<span class="sd">        :return: Account object for that guid or None if no account was found</span>
+<span class="sd">        :rtype: Account</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">subaccount_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">subaccount</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">subaccount_result</span> <span class="o">=</span> <span class="n">subaccount</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span><span class="n">subaccount_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">subaccount_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">subaccount_result</span>
         <span class="k">return</span> <span class="kc">None</span></div></div>
 
 
@@ -769,6 +803,7 @@
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
 
   

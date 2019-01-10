@@ -13,3 +13,4 @@ Welcome to gnewcash's documentation!
    overview
    usage
    code_documentation
+   versions

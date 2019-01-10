@@ -81,6 +81,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Using GNewCash</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../code_documentation.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Versions</a></li>
 </ul>
 
             
@@ -150,6 +151,7 @@
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
@@ -157,9 +159,10 @@
 <span class="kn">from</span> <span class="nn">xml.dom</span> <span class="k">import</span> <span class="n">minidom</span>
 
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span>
+<span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">,</span> <span class="n">ScheduledTransaction</span>
 <span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="k">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
+<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span>
 
 
 <div class="viewcode-block" id="GnuCashFile"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a><span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">:</span>
@@ -287,11 +290,18 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a Book in GnuCash</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">commodities</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">commodities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">template_root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scheduled_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">budgets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span> <span class="o">=</span> <span class="n">root_account</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transactions</span> <span class="ow">or</span> <span class="n">TransactionManager</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commodities</span> <span class="o">=</span> <span class="n">commodities</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">slots</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span> <span class="o">=</span> <span class="n">template_root_account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_transactions</span> <span class="o">=</span> <span class="n">template_transactions</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheduled_transactions</span> <span class="o">=</span> <span class="n">scheduled_transactions</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">budgets</span> <span class="o">=</span> <span class="n">budgets</span> <span class="ow">or</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -307,6 +317,11 @@
 
         <span class="n">accounts_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="o">.</span><span class="n">as_xml</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="n">slot_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">book_node</span><span class="p">,</span> <span class="s1">&#39;book:slots&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                <span class="n">slot_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
         <span class="n">commodity_count_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">book_node</span><span class="p">,</span> <span class="s1">&#39;gnc:count-data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cd:type&#39;</span><span class="p">:</span> <span class="s1">&#39;commodity&#39;</span><span class="p">})</span>
         <span class="n">commodity_count_node</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">commodity_id</span> <span class="o">!=</span> <span class="s1">&#39;template&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodities</span><span class="p">))))</span>
 
@@ -316,6 +331,15 @@
         <span class="n">transaction_count_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">book_node</span><span class="p">,</span> <span class="s1">&#39;gnc:count-data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cd:type&#39;</span><span class="p">:</span> <span class="s1">&#39;transaction&#39;</span><span class="p">})</span>
         <span class="n">transaction_count_node</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="p">:</span>
+            <span class="n">scheduled_transaction_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">book_node</span><span class="p">,</span> <span class="s1">&#39;gnc:count-data&#39;</span><span class="p">,</span>
+                                                                <span class="p">{</span><span class="s1">&#39;cd:type&#39;</span><span class="p">:</span> <span class="s1">&#39;schedxaction&#39;</span><span class="p">})</span>
+            <span class="n">scheduled_transaction_node</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">budgets</span><span class="p">:</span>
+            <span class="n">budget_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">book_node</span><span class="p">,</span> <span class="s1">&#39;gnc:count-data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cd:type&#39;</span><span class="p">:</span> <span class="s1">&#39;budget&#39;</span><span class="p">})</span>
+            <span class="n">budget_node</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">budgets</span><span class="p">))</span>
+
         <span class="k">for</span> <span class="n">commodity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodities</span><span class="p">:</span>
             <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">commodity</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
 
@@ -324,6 +348,19 @@
 
         <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
             <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_transactions</span><span class="p">:</span>
+            <span class="n">template_transactions_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">book_node</span><span class="p">,</span> <span class="s1">&#39;gnc:template-transactions&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span><span class="o">.</span><span class="n">as_xml</span><span class="p">:</span>
+                <span class="n">template_transactions_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_transactions</span><span class="p">:</span>
+                <span class="n">template_transactions_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">scheduled_transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="p">:</span>
+            <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scheduled_transaction</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">budget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">budgets</span><span class="p">:</span>
+            <span class="n">book_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">budget</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">book_node</span>
 
@@ -345,6 +382,11 @@
         <span class="n">new_book</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;book:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
         <span class="n">accounts</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="n">transactions</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:transaction&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">slots</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;book:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">):</span>
+                <span class="n">new_book</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
 
         <span class="n">commodities</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:commodity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">commodity</span> <span class="ow">in</span> <span class="n">commodities</span><span class="p">:</span>
@@ -362,6 +404,39 @@
 
         <span class="n">new_book</span><span class="o">.</span><span class="n">root_account</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;ROOT&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">new_book</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transaction_manager</span>
+
+        <span class="n">template_transactions_xml</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:template-transactions&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">template_transactions_xml</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">template_accounts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">template_transactions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">template_transaction</span> <span class="ow">in</span> <span class="n">template_transactions_xml</span><span class="p">:</span>
+                <span class="c1"># Process accounts before transactions</span>
+                <span class="k">for</span> <span class="n">subelement</span> <span class="ow">in</span> <span class="n">template_transaction</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">subelement</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="n">template_accounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">subelement</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_accounts</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">subelement</span> <span class="ow">in</span> <span class="n">template_transaction</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">subelement</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;transaction&#39;</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="n">template_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Transaction</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">subelement</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_accounts</span><span class="p">))</span>
+            <span class="n">new_book</span><span class="o">.</span><span class="n">template_transactions</span> <span class="o">=</span> <span class="n">template_transactions</span>
+            <span class="n">template_root_accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">template_accounts</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;ROOT&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">template_root_accounts</span><span class="p">:</span>
+                <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span> <span class="o">=</span> <span class="n">template_root_accounts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">scheduled_transactions</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:schedxaction&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheduled_transactions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">scheduled_transaction</span> <span class="ow">in</span> <span class="n">scheduled_transactions</span><span class="p">:</span>
+                <span class="n">new_book</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">ScheduledTransaction</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">scheduled_transaction</span><span class="p">,</span>
+                                                  <span class="n">namespaces</span><span class="p">,</span>
+                                                  <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span><span class="p">))</span>
+
+        <span class="n">budgets</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:budget&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">budgets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">budget</span> <span class="ow">in</span> <span class="n">budgets</span><span class="p">:</span>
+                <span class="n">new_book</span><span class="o">.</span><span class="n">budgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Budget</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">budget</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">new_book</span></div>
 
@@ -410,6 +485,108 @@
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Budget"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a><span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class object representing a Budget in GnuCash</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Budget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_count</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current budget as GnuCash-compatible XML</span>
+
+<span class="sd">        :return: Current budget as XML</span>
+<span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">budget_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:budget&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">budget_node</span><span class="p">,</span> <span class="s1">&#39;bgt:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">budget_node</span><span class="p">,</span> <span class="s1">&#39;bgt:name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">budget_node</span><span class="p">,</span> <span class="s1">&#39;bgt:description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">budget_node</span><span class="p">,</span> <span class="s1">&#39;bgt:num-periods&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_count</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">recurrence_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">budget_node</span><span class="p">,</span> <span class="s1">&#39;bgt:recurrence&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;1.0.0&#39;</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:mult&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:period_type&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">start_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:start&#39;</span><span class="p">)</span>
+                <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="s1">&#39;gdate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="n">slots_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">budget_node</span><span class="p">,</span> <span class="s1">&#39;bgt:slots&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                <span class="n">slots_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">budget_node</span>
+
+<div class="viewcode-block" id="Budget.from_xml"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">budget_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Budget object from the GnuCash XML</span>
+
+<span class="sd">        :param budget_node: XML node for the budget</span>
+<span class="sd">        :type budget_node: ElementTree.Element</span>
+<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :return: Budget object from XML</span>
+<span class="sd">        :rtype: Budget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="n">id_node</span> <span class="o">=</span> <span class="n">budget_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bgt:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">id_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_obj</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">id_node</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">name_node</span> <span class="o">=</span> <span class="n">budget_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bgt:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name_node</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">description_node</span> <span class="o">=</span> <span class="n">budget_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bgt:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">description_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_obj</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description_node</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">period_count_node</span> <span class="o">=</span> <span class="n">budget_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bgt:num-periods&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">period_count_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_obj</span><span class="o">.</span><span class="n">period_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">period_count_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">recurrence_node</span> <span class="o">=</span> <span class="n">budget_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bgt:recurrence&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">recurrence_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">multiplier_node</span> <span class="o">=</span> <span class="n">recurrence_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;recurrence:mult&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">multiplier_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_obj</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">multiplier_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="n">period_type_node</span> <span class="o">=</span> <span class="n">recurrence_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;recurrence:period_type&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">period_type_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_obj</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">=</span> <span class="n">period_type_node</span><span class="o">.</span><span class="n">text</span>
+
+            <span class="n">recurrence_start_node</span> <span class="o">=</span> <span class="n">recurrence_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;recurrence:start&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">recurrence_start_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gdate_node</span> <span class="o">=</span> <span class="n">recurrence_start_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gdate&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gdate_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">new_obj</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">gdate_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">slots</span> <span class="o">=</span> <span class="n">budget_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;bgt:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slots</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+                <span class="n">new_obj</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">new_obj</span></div></div>
 </pre></div>
 
            </div>
@@ -447,6 +624,7 @@
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
 
   

@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
 </ul>
 
             
@@ -413,6 +414,153 @@ If the provided date is None, it will retrieve the ending balance.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="transaction.ScheduledTransaction">
+<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">ScheduledTransaction</code><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that represents a scheduled transaction in Gnucash.</p>
+<dl class="attribute">
+<dt id="transaction.ScheduledTransaction.as_xml">
+<code class="descname">as_xml</code><a class="headerlink" href="#transaction.ScheduledTransaction.as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current scheduled transaction as GnuCash-compatible XML</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current scheduled transaction as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="transaction.ScheduledTransaction.from_xml">
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>xml_obj</em>, <em>namespaces</em>, <em>template_account_root</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ScheduledTransaction object from the GnuCash XML</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_obj</strong> (<em>ElementTree.Element</em>) – XML node for the scheduled transaction</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
+<li><strong>template_account_root</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root template account</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ScheduledTransaction object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.ScheduledTransaction" title="transaction.ScheduledTransaction">ScheduledTransaction</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="transaction.ScheduledTransaction.read_xml_child_boolean">
+<em class="property">classmethod </em><code class="descname">read_xml_child_boolean</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element and returns a Boolean if the text is “Y” or “y”</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if child node’s text is “Y” or “Y”, otherwise False.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="transaction.ScheduledTransaction.read_xml_child_date">
+<em class="property">classmethod </em><code class="descname">read_xml_child_date</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element and returns its inner gdate text as a datetime.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child’s gdate’s text as datetime</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)">datetime.datetime</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="transaction.ScheduledTransaction.read_xml_child_int">
+<em class="property">classmethod </em><code class="descname">read_xml_child_int</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element and returns its text as an integer value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child’s text as an integer value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="transaction.ScheduledTransaction.read_xml_child_text">
+<em class="property">classmethod </em><code class="descname">read_xml_child_text</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child node’s text</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -460,6 +608,7 @@ If the provided date is None, it will retrieve the ending balance.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   
