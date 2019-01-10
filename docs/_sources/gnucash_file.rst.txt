@@ -11,3 +11,6 @@ GnuCash File
 
 .. autoclass:: Commodity
    :members:
+
+.. autoclass:: Budget
+   :members:

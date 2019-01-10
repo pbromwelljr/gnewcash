@@ -292,6 +292,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="n">reconciled_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantity_denominator</span> <span class="o">=</span> <span class="s1">&#39;100&#39;</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span><span class="p">))</span>
@@ -309,9 +312,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">split_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;trn:split&#39;</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:memo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:action&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span>
+
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/100&#39;</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:quantity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/100&#39;</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:quantity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity_denominator</span><span class="p">])</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span>
         <span class="k">return</span> <span class="n">split_node</span>
 
@@ -337,6 +347,20 @@
         <span class="n">new_split</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">account</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
                         <span class="n">value</span><span class="p">,</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="n">new_split</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">split_memo</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:memo&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">split_memo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="n">split_memo</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">split_action</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:action&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">split_action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">split_action</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">quantity_node</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:quantity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">quantity_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">quantity</span> <span class="o">=</span> <span class="n">quantity_node</span><span class="o">.</span><span class="n">text</span>
+            <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">quantity</span><span class="p">:</span>
+                <span class="n">new_split</span><span class="o">.</span><span class="n">quantity_denominator</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">new_split</span></div></div>
 
@@ -459,6 +483,202 @@
             <span class="k">if</span> <span class="n">my_transaction</span> <span class="o">!=</span> <span class="n">other_transaction</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="ScheduledTransaction"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction">[docs]</a><span class="k">class</span> <span class="nc">ScheduledTransaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that represents a scheduled transaction in Gnucash.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ScheduledTransaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_create</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_create_notify</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advance_create_days</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advance_remind_days</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_date</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_account</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current scheduled transaction as GnuCash-compatible XML</span>
+
+<span class="sd">        :return: Current scheduled transaction as XML</span>
+<span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xml_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:schedxaction&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:id&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:enabled&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="k">else</span> <span class="s1">&#39;n&#39;</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:autoCreate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_create</span> <span class="k">else</span> <span class="s1">&#39;n&#39;</span>
+        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:autoCreateNotify&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_create_notify</span> <span class="k">else</span> <span class="s1">&#39;n&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">advance_create_days</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:advanceCreateDays&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">advance_create_days</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">advance_remind_days</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:advanceRemindDays&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">advance_remind_days</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:instanceCount&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="p">:</span>
+            <span class="n">start_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:start&#39;</span><span class="p">)</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="s1">&#39;gdate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_date</span><span class="p">:</span>
+            <span class="n">last_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:last&#39;</span><span class="p">)</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">last_node</span><span class="p">,</span> <span class="s1">&#39;gdate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">:</span>
+            <span class="n">end_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:end&#39;</span><span class="p">)</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">end_node</span><span class="p">,</span> <span class="s1">&#39;gdate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_account</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:templ-acct&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_account</span><span class="o">.</span><span class="n">guid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">schedule_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:schedule&#39;</span><span class="p">)</span>
+            <span class="n">recurrence_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">schedule_node</span><span class="p">,</span> <span class="s1">&#39;gnc:recurrence&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;1.0.0&#39;</span><span class="p">})</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span><span class="p">:</span>
+                <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:mult&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period</span><span class="p">:</span>
+                <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:period_type&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span><span class="p">:</span>
+                <span class="n">start_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:start&#39;</span><span class="p">)</span>
+                <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="s1">&#39;gdate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xml_node</span>
+
+<div class="viewcode-block" id="ScheduledTransaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_obj</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_account_root</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a ScheduledTransaction object from the GnuCash XML</span>
+
+<span class="sd">        :param xml_obj: XML node for the scheduled transaction</span>
+<span class="sd">        :type xml_obj: ElementTree.Element</span>
+<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :param template_account_root: Root template account</span>
+<span class="sd">        :type template_account_root: Account</span>
+<span class="sd">        :return: ScheduledTransaction object from XML</span>
+<span class="sd">        :rtype: ScheduledTransaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_boolean</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:enabled&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">auto_create</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_boolean</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:autoCreate&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">auto_create_notify</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_boolean</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:autoCreateNotify&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">advance_create_days</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_int</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:advanceCreateDays&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">advance_remind_days</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_int</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:advanceRemindDays&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">instance_count</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_int</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:instanceCount&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_date</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:start&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">last_date</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_date</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:last&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_date</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:end&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+
+        <span class="n">template_account_node</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sx:templ-acct&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">template_account_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_obj</span><span class="o">.</span><span class="n">template_account</span> <span class="o">=</span> <span class="n">template_account_root</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span><span class="n">template_account_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">schedule_node</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sx:schedule&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">schedule_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">recurrence_node</span> <span class="o">=</span> <span class="n">schedule_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gnc:recurrence&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">recurrence_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_obj</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_int</span><span class="p">(</span>
+                    <span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:mult&#39;</span><span class="p">,</span> <span class="n">namespaces</span>
+                <span class="p">)</span>
+                <span class="n">new_obj</span><span class="o">.</span><span class="n">recurrence_period</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span>
+                    <span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:period_type&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+                <span class="n">new_obj</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_date</span><span class="p">(</span>
+                    <span class="n">recurrence_node</span><span class="p">,</span> <span class="s1">&#39;recurrence:start&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_obj</span></div>
+
+<div class="viewcode-block" id="ScheduledTransaction.read_xml_child_text"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_text">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_text</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the text from a specific child XML element</span>
+
+<span class="sd">        :param xml_object: Current XML object</span>
+<span class="sd">        :type xml_object: ElementTree.Element</span>
+<span class="sd">        :param tag_name: Child tag name</span>
+<span class="sd">        :type tag_name: str</span>
+<span class="sd">        :param namespaces: GnuCash namespaces</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :return: Child node&#39;s text</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_node</span> <span class="o">=</span> <span class="n">xml_object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">target_node</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ScheduledTransaction.read_xml_child_boolean"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_boolean">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_boolean</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the text from a specific child XML element and returns a Boolean if the text is &quot;Y&quot; or &quot;y&quot;</span>
+
+<span class="sd">        :param xml_object: Current XML object</span>
+<span class="sd">        :type xml_object: ElementTree.Element</span>
+<span class="sd">        :param tag_name: Child tag name</span>
+<span class="sd">        :type tag_name: str</span>
+<span class="sd">        :param namespaces: GnuCash namespaces</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :return: True if child node&#39;s text is &quot;Y&quot; or &quot;Y&quot;, otherwise False.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_text</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node_text</span> <span class="ow">and</span> <span class="n">node_text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">node_text</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ScheduledTransaction.read_xml_child_int"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_int">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_int</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the text from a specific child XML element and returns its text as an integer value.</span>
+
+<span class="sd">        :param xml_object: Current XML object</span>
+<span class="sd">        :type xml_object: ElementTree.Element</span>
+<span class="sd">        :param tag_name: Child tag name</span>
+<span class="sd">        :type tag_name: str</span>
+<span class="sd">        :param namespaces: GnuCash namespaces</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :return: Child&#39;s text as an integer value</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_text</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node_text</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ScheduledTransaction.read_xml_child_date"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_date">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_date</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the text from a specific child XML element and returns its inner gdate text as a datetime.</span>
+
+<span class="sd">        :param xml_object: Current XML object</span>
+<span class="sd">        :type xml_object: ElementTree.Element</span>
+<span class="sd">        :param tag_name: Child tag name</span>
+<span class="sd">        :type tag_name: str</span>
+<span class="sd">        :param namespaces: GnuCash namespaces</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :return: Child&#39;s gdate&#39;s text as datetime</span>
+<span class="sd">        :rtype: datetime.datetime</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_node</span> <span class="o">=</span> <span class="n">xml_object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">date_node</span> <span class="o">=</span> <span class="n">target_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gdate&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">date_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">date_node</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="kc">None</span></div></div>
 </pre></div>
 
            </div>
@@ -496,6 +716,7 @@
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
 
   
