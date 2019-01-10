@@ -341,6 +341,9 @@ class Book(GuidObject):
 
 
 class Budget(GuidObject):
+    """
+    Class object representing a Budget in GnuCash
+    """
     def __init__(self):
         super(Budget, self).__init__()
         self.name = None
@@ -353,6 +356,12 @@ class Budget(GuidObject):
 
     @property
     def as_xml(self):
+        """
+        Returns the current budget as GnuCash-compatible XML
+
+        :return: Current budget as XML
+        :rtype: xml.etree.ElementTree.Element
+        """
         budget_node = ElementTree.Element('gnc:budget', attrib={'version': '2.0.0'})
         ElementTree.SubElement(budget_node, 'bgt:id', {'type': 'guid'}).text = self.guid
         ElementTree.SubElement(budget_node, 'bgt:name').text = self.name
@@ -381,6 +390,16 @@ class Budget(GuidObject):
 
     @classmethod
     def from_xml(cls, budget_node, namespaces):
+        """
+        Creates a Budget object from the GnuCash XML
+
+        :param budget_node: XML node for the budget
+        :type budget_node: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: dict[str, str]
+        :return: Budget object from XML
+        :rtype: Budget
+        """
         new_obj = cls()
 
         id_node = budget_node.find('bgt:id', namespaces)

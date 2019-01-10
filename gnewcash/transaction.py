@@ -342,6 +342,9 @@ class TransactionManager:
 
 
 class ScheduledTransaction(GuidObject):
+    """
+    Class that represents a scheduled transaction in Gnucash.
+    """
     def __init__(self):
         super(ScheduledTransaction, self).__init__()
         self.name = None
@@ -361,6 +364,12 @@ class ScheduledTransaction(GuidObject):
 
     @property
     def as_xml(self):
+        """
+        Returns the current scheduled transaction as GnuCash-compatible XML
+
+        :return: Current scheduled transaction as XML
+        :rtype: xml.etree.ElementTree.Element
+        """
         xml_node = ElementTree.Element('gnc:schedxaction', attrib={'version': '2.0.0'})
         if self.guid:
             ElementTree.SubElement(xml_node, 'sx:id', attrib={'type': 'guid'}).text = self.guid
@@ -401,6 +410,18 @@ class ScheduledTransaction(GuidObject):
 
     @classmethod
     def from_xml(cls, xml_obj, namespaces, template_account_root):
+        """
+        Creates a ScheduledTransaction object from the GnuCash XML
+
+        :param xml_obj: XML node for the scheduled transaction
+        :type xml_obj: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: dict[str, str]
+        :param template_account_root: Root template account
+        :type template_account_root: Account
+        :return: ScheduledTransaction object from XML
+        :rtype: ScheduledTransaction
+        """
         new_obj = cls()
         new_obj.guid = cls.read_xml_child_text(xml_obj, 'sx:id', namespaces)
         new_obj.name = cls.read_xml_child_text(xml_obj, 'sx:name', namespaces)
@@ -434,6 +455,18 @@ class ScheduledTransaction(GuidObject):
 
     @classmethod
     def read_xml_child_text(cls, xml_object, tag_name, namespaces):
+        """
+        Reads the text from a specific child XML element
+
+        :param xml_object: Current XML object
+        :type xml_object: ElementTree.Element
+        :param tag_name: Child tag name
+        :type tag_name: str
+        :param namespaces: GnuCash namespaces
+        :type namespaces: dict[str, str]
+        :return: Child node's text
+        :rtype: str
+        """
         target_node = xml_object.find(tag_name, namespaces)
         if target_node is not None:
             return target_node.text
@@ -441,6 +474,18 @@ class ScheduledTransaction(GuidObject):
 
     @classmethod
     def read_xml_child_boolean(cls, xml_object, tag_name, namespaces):
+        """
+        Reads the text from a specific child XML element and returns a Boolean if the text is "Y" or "y"
+
+        :param xml_object: Current XML object
+        :type xml_object: ElementTree.Element
+        :param tag_name: Child tag name
+        :type tag_name: str
+        :param namespaces: GnuCash namespaces
+        :type namespaces: dict[str, str]
+        :return: True if child node's text is "Y" or "Y", otherwise False.
+        :rtype: bool
+        """
         node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
         if node_text and node_text.lower() == 'y':
             return True
@@ -450,6 +495,18 @@ class ScheduledTransaction(GuidObject):
 
     @classmethod
     def read_xml_child_int(cls, xml_object, tag_name, namespaces):
+        """
+        Reads the text from a specific child XML element and returns its text as an integer value.
+
+        :param xml_object: Current XML object
+        :type xml_object: ElementTree.Element
+        :param tag_name: Child tag name
+        :type tag_name: str
+        :param namespaces: GnuCash namespaces
+        :type namespaces: dict[str, str]
+        :return: Child's text as an integer value
+        :rtype: int
+        """
         node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
         if node_text:
             return int(node_text)
@@ -457,6 +514,18 @@ class ScheduledTransaction(GuidObject):
 
     @classmethod
     def read_xml_child_date(cls, xml_object, tag_name, namespaces):
+        """
+        Reads the text from a specific child XML element and returns its inner gdate text as a datetime.
+
+        :param xml_object: Current XML object
+        :type xml_object: ElementTree.Element
+        :param tag_name: Child tag name
+        :type tag_name: str
+        :param namespaces: GnuCash namespaces
+        :type namespaces: dict[str, str]
+        :return: Child's gdate's text as datetime
+        :rtype: datetime.datetime
+        """
         target_node = xml_object.find(tag_name, namespaces)
         if target_node is None:
             return None

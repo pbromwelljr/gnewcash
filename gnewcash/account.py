@@ -293,6 +293,14 @@ class Account(GuidObject):
         return None
 
     def get_subaccount_by_id(self, subaccount_id):
+        """
+        Finds a subaccount by its guid field.
+
+        :param subaccount_id: Subaccount guid to find
+        :type subaccount_id: str
+        :return: Account object for that guid or None if no account was found
+        :rtype: Account
+        """
         if self.guid == subaccount_id:
             return self
         for subaccount in self.children:
