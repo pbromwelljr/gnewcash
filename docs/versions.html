@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>GUID Object &mdash; gnewcash 1.0alpha documentation</title>
+  <title>Versions &mdash; gnewcash 1.0alpha documentation</title>
   
 
   
@@ -28,8 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Transaction" href="transaction.html" />
-    <link rel="prev" title="GnuCash File" href="gnucash_file.html" /> 
+    <link rel="prev" title="Slot" href="slot.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,17 +81,8 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">GUID Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_documentation.html">Code Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Versions</a></li>
 </ul>
 
             
@@ -138,15 +128,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="code_documentation.html">Code Documentation</a> &raquo;</li>
-        
-      <li>GUID Object</li>
+      <li>Versions</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/guid_object.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/versions.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -159,30 +147,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-guid_object">
-<span id="guid-object"></span><h1>GUID Object<a class="headerlink" href="#module-guid_object" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="guid_object.GuidObject">
-<em class="property">class </em><code class="descclassname">guid_object.</code><code class="descname">GuidObject</code><a class="reference internal" href="_modules/guid_object.html#GuidObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#guid_object.GuidObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class used to generate unique GUIDs for various GNewCash objects.</p>
-<dl class="classmethod">
-<dt id="guid_object.GuidObject.get_guid">
-<em class="property">classmethod </em><code class="descname">get_guid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/guid_object.html#GuidObject.get_guid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#guid_object.GuidObject.get_guid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves a unique GUID and returns it</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">New unique GUID</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="versions">
+<h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>1.0.1</dt>
+<dd><ul class="first last">
+<li>Bugfixes</li>
+<li>Adding support for <a class="reference external" href="transaction.html#transaction.ScheduledTransaction">ScheduledTransactions</a>.</li>
+<li>Adding support for <a class="reference external" href="gnucash_file.html#gnucash_file.Budget">Budgets</a>.</li>
+<li>Added method <a class="reference external" href="account.html#account.Account.get_subaccount_by_id">get_subaccount_by_id</a>  for retrieving a subaccount by its GUID</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>1.0.0</dt>
+<dd><ul class="first last">
+<li>Initial Release</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 </div>
 
 
@@ -193,10 +180,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="transaction.html" class="btn btn-neutral float-right" title="Transaction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="gnucash_file.html" class="btn btn-neutral" title="GnuCash File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="slot.html" class="btn btn-neutral" title="Slot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
