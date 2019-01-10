@@ -216,8 +216,6 @@ class Split(GuidObject):
             if '/' in quantity:
                 new_split.quantity_denominator = quantity.split('/')[1]
 
-
-
         return new_split
 
 
@@ -489,7 +487,7 @@ class ScheduledTransaction(GuidObject):
         node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
         if node_text and node_text.lower() == 'y':
             return True
-        elif node_text:
+        if node_text:
             return False
         return None
 

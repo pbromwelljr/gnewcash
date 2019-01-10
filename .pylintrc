@@ -1,4 +1,4 @@
 [master]
 init-hook='import os; import sys; sys.path.insert(0, os.path.abspath('gnewcash'))'
 max-line-length=120
-disable=R0902,R0903,R0912
+disable=R0902,R0903,R0912,R0913,R0914

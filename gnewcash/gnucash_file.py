@@ -214,7 +214,7 @@ class Book(GuidObject):
 
         for budget in self.budgets:
             book_node.append(budget.as_xml)
-        
+
         return book_node
 
     @classmethod

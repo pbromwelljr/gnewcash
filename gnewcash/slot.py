@@ -35,7 +35,7 @@ class Slot:
             slot_value_node.text = self.value
         elif self.type in ['integer', 'double']:
             slot_value_node.text = str(self.value)
-        elif type(self.value) is list and self.value:
+        elif isinstance(self.value, list) and self.value:
             for sub_slot in self.value:
                 slot_value_node.append(sub_slot.as_xml)
         elif self.type == 'frame':
