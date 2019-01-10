@@ -4,6 +4,7 @@
 .. moduleauthor: Paul Bromwell Jr.
 """
 
+from datetime import datetime
 import gzip
 import os.path
 from logging import getLogger
@@ -143,7 +144,8 @@ class Book(GuidObject):
     Represents a Book in GnuCash
     """
     def __init__(self, root_account=None, transactions=None, commodities=None, slots=None,
-                 template_root_account=None, template_transactions=None, scheduled_transactions=None):
+                 template_root_account=None, template_transactions=None, scheduled_transactions=None,
+                 budgets=None):
         super(Book, self).__init__()
         self.root_account = root_account
         self.transactions = transactions or TransactionManager()
@@ -152,6 +154,7 @@ class Book(GuidObject):
         self.template_root_account = template_root_account
         self.template_transactions = template_transactions or []
         self.scheduled_transactions = scheduled_transactions or []
+        self.budgets = budgets or []
 
     @property
     def as_xml(self):
@@ -186,6 +189,10 @@ class Book(GuidObject):
                                                                 {'cd:type': 'schedxaction'})
             scheduled_transaction_node.text = str(len(self.scheduled_transactions))
 
+        if self.budgets:
+            budget_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'budget'})
+            budget_node.text = str(len(self.budgets))
+
         for commodity in self.commodities:
             book_node.append(commodity.as_xml)
 
@@ -204,6 +211,9 @@ class Book(GuidObject):
 
         for scheduled_transaction in self.scheduled_transactions:
             book_node.append(scheduled_transaction.as_xml)
+
+        for budget in self.budgets:
+            book_node.append(budget.as_xml)
         
         return book_node
 
@@ -276,6 +286,11 @@ class Book(GuidObject):
                                                   namespaces,
                                                   new_book.template_root_account))
 
+        budgets = book_node.findall('gnc:budget', namespaces)
+        if budgets is not None:
+            for budget in budgets:
+                new_book.budgets.append(Budget.from_xml(budget, namespaces))
+
         return new_book
 
     def get_account(self, *paths_to_account, current_level=None):
@@ -323,3 +338,86 @@ class Book(GuidObject):
 
     def __repr__(self):
         return str(self)
+
+
+class Budget(GuidObject):
+    def __init__(self):
+        super(Budget, self).__init__()
+        self.name = None
+        self.description = None
+        self.period_count = None
+        self.recurrence_multiplier = None
+        self.recurrence_period_type = None
+        self.recurrence_start = None
+        self.slots = []
+
+    @property
+    def as_xml(self):
+        budget_node = ElementTree.Element('gnc:budget', attrib={'version': '2.0.0'})
+        ElementTree.SubElement(budget_node, 'bgt:id', {'type': 'guid'}).text = self.guid
+        ElementTree.SubElement(budget_node, 'bgt:name').text = self.name
+        ElementTree.SubElement(budget_node, 'bgt:description').text = self.description
+
+        if self.period_count is not None:
+            ElementTree.SubElement(budget_node, 'bgt:num-periods').text = str(self.period_count)
+
+        if self.recurrence_multiplier is not None or self.recurrence_period_type is not None or \
+                self.recurrence_start is not None:
+            recurrence_node = ElementTree.SubElement(budget_node, 'bgt:recurrence', attrib={'version': '1.0.0'})
+            if self.recurrence_multiplier is not None:
+                ElementTree.SubElement(recurrence_node, 'recurrence:mult').text = str(self.recurrence_multiplier)
+            if self.recurrence_period_type is not None:
+                ElementTree.SubElement(recurrence_node, 'recurrence:period_type').text = self.recurrence_period_type
+            if self.recurrence_start is not None:
+                start_node = ElementTree.SubElement(recurrence_node, 'recurrence:start')
+                ElementTree.SubElement(start_node, 'gdate').text = self.recurrence_start.strftime('%Y-%m-%d')
+
+        if self.slots:
+            slots_node = ElementTree.SubElement(budget_node, 'bgt:slots')
+            for slot in self.slots:
+                slots_node.append(slot.as_xml)
+
+        return budget_node
+
+    @classmethod
+    def from_xml(cls, budget_node, namespaces):
+        new_obj = cls()
+
+        id_node = budget_node.find('bgt:id', namespaces)
+        if id_node is not None:
+            new_obj.guid = id_node.text
+
+        name_node = budget_node.find('bgt:name', namespaces)
+        if name_node is not None:
+            new_obj.name = name_node.text
+
+        description_node = budget_node.find('bgt:description', namespaces)
+        if description_node is not None:
+            new_obj.description = description_node.text
+
+        period_count_node = budget_node.find('bgt:num-periods', namespaces)
+        if period_count_node is not None:
+            new_obj.period_count = int(period_count_node.text)
+
+        recurrence_node = budget_node.find('bgt:recurrence', namespaces)
+        if recurrence_node is not None:
+            multiplier_node = recurrence_node.find('recurrence:mult', namespaces)
+            if multiplier_node is not None:
+                new_obj.recurrence_multiplier = int(multiplier_node.text)
+
+            period_type_node = recurrence_node.find('recurrence:period_type', namespaces)
+            if period_type_node is not None:
+                new_obj.recurrence_period_type = period_type_node.text
+
+            recurrence_start_node = recurrence_node.find('recurrence:start', namespaces)
+            if recurrence_start_node is not None:
+                gdate_node = recurrence_start_node.find('gdate', namespaces)
+                if gdate_node is not None:
+                    new_obj.recurrence_start = datetime.strptime(gdate_node.text, '%Y-%m-%d')
+
+        slots = budget_node.find('bgt:slots', namespaces)
+        if slots:
+            for slot in slots.findall('slot', namespaces):
+                new_obj.slots.append(Slot.from_xml(slot, namespaces))
+
+        return new_obj
