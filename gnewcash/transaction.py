@@ -369,11 +369,11 @@ class ScheduledTransaction(GuidObject):
         ElementTree.SubElement(xml_node, 'sx:enabled').text = 'y' if self.enabled else 'n'
         ElementTree.SubElement(xml_node, 'sx:autoCreate').text = 'y' if self.auto_create else 'n'
         ElementTree.SubElement(xml_node, 'sx:autoCreateNotify').text = 'y' if self.auto_create_notify else 'n'
-        if self.advance_create_days:
+        if self.advance_create_days is not None:
             ElementTree.SubElement(xml_node, 'sx:advanceCreateDays').text = str(self.advance_create_days)
-        if self.advance_remind_days:
+        if self.advance_remind_days is not None:
             ElementTree.SubElement(xml_node, 'sx:advanceRemindDays').text = str(self.advance_remind_days)
-        if self.instance_count:
+        if self.instance_count is not None:
             ElementTree.SubElement(xml_node, 'sx:instanceCount').text = str(self.instance_count)
         if self.start_date:
             start_node = ElementTree.SubElement(xml_node, 'sx:start')
@@ -386,7 +386,8 @@ class ScheduledTransaction(GuidObject):
             ElementTree.SubElement(end_node, 'gdate').text = self.end_date.strftime('%Y-%m-%d')
         if self.template_account:
             ElementTree.SubElement(xml_node, 'sx:templ-acct', attrib={'type': 'guid'}).text = self.template_account.guid
-        if self.recurrence_multiplier or self.recurrence_period or self.recurrence_start:
+        if self.recurrence_multiplier is not None or self.recurrence_period is not None \
+                or self.recurrence_start is not None:
             schedule_node = ElementTree.SubElement(xml_node, 'sx:schedule')
             recurrence_node = ElementTree.SubElement(schedule_node, 'gnc:recurrence', attrib={'version': '1.0.0'})
             if self.recurrence_multiplier:
@@ -422,12 +423,12 @@ class ScheduledTransaction(GuidObject):
             recurrence_node = schedule_node.find('gnc:recurrence', namespaces)
             if recurrence_node is not None:
                 new_obj.recurrence_multiplier = cls.read_xml_child_int(
-                    xml_obj, 'recurrence:mult', namespaces
+                    recurrence_node, 'recurrence:mult', namespaces
                 )
                 new_obj.recurrence_period = cls.read_xml_child_text(
-                    xml_obj, 'recurrence:period_type', namespaces)
+                    recurrence_node, 'recurrence:period_type', namespaces)
                 new_obj.recurrence_start = cls.read_xml_child_date(
-                    xml_obj, 'recurrence:start', namespaces)
+                    recurrence_node, 'recurrence:start', namespaces)
 
         return new_obj
 

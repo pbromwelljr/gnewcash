@@ -202,9 +202,9 @@
   </slot>
 </book:slots>
 <gnc:count-data cd:type="commodity">1</gnc:count-data>
-<gnc:count-data cd:type="account">15</gnc:count-data>
+<gnc:count-data cd:type="account">19</gnc:count-data>
 <gnc:count-data cd:type="transaction">96</gnc:count-data>
-<gnc:count-data cd:type="schedxaction">1</gnc:count-data>
+<gnc:count-data cd:type="schedxaction">2</gnc:count-data>
 <gnc:commodity version="2.0.0">
   <cmdty:space>ISO4217</cmdty:space>
   <cmdty:id>USD</cmdty:id>
@@ -474,6 +474,68 @@
       <slot:value type="string">true</slot:value>
     </slot>
   </act:slots>
+  <act:parent type="guid">bc222a9fec746db35cbac34c25bce632</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Loans</act:name>
+  <act:id type="guid">39562af0d06a02475a5a208a90806b5c</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:slots>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">Not Set</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">bc222a9fec746db35cbac34c25bce632</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Car Loan</act:name>
+  <act:id type="guid">c773b0f9b41238e8a7b8f5468d5365a4</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:slots>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">Not Set</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">39562af0d06a02475a5a208a90806b5c</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Interest</act:name>
+  <act:id type="guid">7e9dbbc4d71d809d627670be4713714b</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:slots>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">Not Set</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">c773b0f9b41238e8a7b8f5468d5365a4</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Imbalance-USD</act:name>
+  <act:id type="guid">d9e09a56921f9f78ec53ce02a221e2c4</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
   <act:parent type="guid">bc222a9fec746db35cbac34c25bce632</act:parent>
 </gnc:account>
 <gnc:transaction version="2.0.0">
@@ -4539,6 +4601,17 @@
   <act:commodity-scu>1</act:commodity-scu>
   <act:parent type="guid">abc1cd7237a3b9874bdd9a8eb894cfa5</act:parent>
 </gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>5defe2e4521d7b4a44c2b2f9816caa2d</act:name>
+  <act:id type="guid">b8090d39a825d7815e2fec9820b0c2f8</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>template</cmdty:space>
+    <cmdty:id>template</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>1</act:commodity-scu>
+  <act:parent type="guid">abc1cd7237a3b9874bdd9a8eb894cfa5</act:parent>
+</gnc:account>
 <gnc:transaction version="2.0.0">
   <trn:id type="guid">2fe68d3a519557a4cdd723572612819a</trn:id>
   <trn:currency>
@@ -4640,6 +4713,103 @@
     </trn:split>
   </trn:splits>
 </gnc:transaction>
+<gnc:transaction version="2.0.0">
+  <trn:id type="guid">3f9aac19ae65447a8945d27e1eee176c</trn:id>
+  <trn:currency>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>USD</cmdty:id>
+  </trn:currency>
+  <trn:date-posted>
+    <ts:date>2019-01-09 05:59:00 -0500</ts:date>
+  </trn:date-posted>
+  <trn:date-entered>
+    <ts:date>2019-01-09 21:45:13 -0500</ts:date>
+  </trn:date-entered>
+  <trn:description>Car Loan - Payment</trn:description>
+  <trn:slots>
+    <slot>
+      <slot:key>date-posted</slot:key>
+      <slot:value type="gdate">
+        <gdate>2019-01-09</gdate>
+      </slot:value>
+    </slot>
+  </trn:slots>
+  <trn:splits>
+    <trn:split>
+      <split:id type="guid">dfd9abba744e3c805d80f797e261fe0a</split:id>
+      <split:memo>Car Loan - Payment</split:memo>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/1</split:quantity>
+      <split:account type="guid">b8090d39a825d7815e2fec9820b0c2f8</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>sched-xaction</slot:key>
+          <slot:value type="frame">
+            <slot>
+              <slot:key>account</slot:key>
+              <slot:value type="guid">98dc3f29ce096088d113f992128736d8</slot:value>
+            </slot>
+            <slot>
+              <slot:key>credit-formula</slot:key>
+              <slot:value type="string">pmt( 0.10000 / 12.00 : 12.00 : 2,000.00 : 0 : 0 )</slot:value>
+            </slot>
+            <slot>
+              <slot:key>credit-numeric</slot:key>
+              <slot:value type="numeric">8791588723/50000000</slot:value>
+            </slot>
+          </slot:value>
+        </slot>
+      </split:slots>
+    </trn:split>
+    <trn:split>
+      <split:id type="guid">93f9762207fa1fea0a2db125f635a077</split:id>
+      <split:memo>Car Loan - Principal</split:memo>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/1</split:quantity>
+      <split:account type="guid">b8090d39a825d7815e2fec9820b0c2f8</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>sched-xaction</slot:key>
+          <slot:value type="frame">
+            <slot>
+              <slot:key>account</slot:key>
+              <slot:value type="guid">c773b0f9b41238e8a7b8f5468d5365a4</slot:value>
+            </slot>
+            <slot>
+              <slot:key>debit-formula</slot:key>
+              <slot:value type="string">ppmt( 0.10000 / 12.00 : i : 12.00 : 2,000.00 : 0 : 0 )</slot:value>
+            </slot>
+          </slot:value>
+        </slot>
+      </split:slots>
+    </trn:split>
+    <trn:split>
+      <split:id type="guid">73532d4450d025ac5e3f7a6c4d9f82a8</split:id>
+      <split:memo>Car Loan - Interest</split:memo>
+      <split:reconciled-state>n</split:reconciled-state>
+      <split:value>0/100</split:value>
+      <split:quantity>0/1</split:quantity>
+      <split:account type="guid">b8090d39a825d7815e2fec9820b0c2f8</split:account>
+      <split:slots>
+        <slot>
+          <slot:key>sched-xaction</slot:key>
+          <slot:value type="frame">
+            <slot>
+              <slot:key>account</slot:key>
+              <slot:value type="guid">7e9dbbc4d71d809d627670be4713714b</slot:value>
+            </slot>
+            <slot>
+              <slot:key>debit-formula</slot:key>
+              <slot:value type="string">ipmt( 0.10000 / 12.00 : i : 12.00 : 2,000.00 : 0 : 0 )</slot:value>
+            </slot>
+          </slot:value>
+        </slot>
+      </split:slots>
+    </trn:split>
+  </trn:splits>
+</gnc:transaction>
 </gnc:template-transactions>
 <gnc:schedxaction version="2.0.0">
   <sx:id type="guid">91a5961936d926a2d1d759507360ffe7</sx:id>
@@ -4666,6 +4836,35 @@
       <recurrence:period_type>month</recurrence:period_type>
       <recurrence:start>
         <gdate>2019-01-05</gdate>
+      </recurrence:start>
+    </gnc:recurrence>
+  </sx:schedule>
+</gnc:schedxaction>
+<gnc:schedxaction version="2.0.0">
+  <sx:id type="guid">5defe2e4521d7b4a44c2b2f9816caa2d</sx:id>
+  <sx:name>Car Loan</sx:name>
+  <sx:enabled>y</sx:enabled>
+  <sx:autoCreate>n</sx:autoCreate>
+  <sx:autoCreateNotify>n</sx:autoCreateNotify>
+  <sx:advanceCreateDays>0</sx:advanceCreateDays>
+  <sx:advanceRemindDays>0</sx:advanceRemindDays>
+  <sx:instanceCount>2</sx:instanceCount>
+  <sx:start>
+    <gdate>2019-01-09</gdate>
+  </sx:start>
+  <sx:last>
+    <gdate>2019-01-09</gdate>
+  </sx:last>
+  <sx:end>
+    <gdate>2019-12-09</gdate>
+  </sx:end>
+  <sx:templ-acct type="guid">b8090d39a825d7815e2fec9820b0c2f8</sx:templ-acct>
+  <sx:schedule>
+    <gnc:recurrence version="1.0.0">
+      <recurrence:mult>1</recurrence:mult>
+      <recurrence:period_type>month</recurrence:period_type>
+      <recurrence:start>
+        <gdate>2019-01-09</gdate>
       </recurrence:start>
     </gnc:recurrence>
   </sx:schedule>
