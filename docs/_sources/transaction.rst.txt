@@ -11,3 +11,6 @@ Transaction
 
 .. autoclass:: TransactionManager
    :members:
+
+.. autoclass:: ScheduledTransaction
+   :members:
