@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#transaction">Transaction</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#retrieving-transactions">Retrieving Transactions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-transactions">Creating Transactions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-transactions-simplified">Creating Transactions (Simplified)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#transaction-manager">Transaction Manager</a></li>
 </ul>
 </li>
@@ -598,6 +599,44 @@ are in the “cleared” state.</p>
 <p>Transactions also have an additional method called <code class="code docutils literal notranslate"><span class="pre">mark_transaction_cleared</span></code>, which sets the <code class="code docutils literal notranslate"><span class="pre">reconciled_state</span></code>
 of all splits on the transaction to “c” (for cleared).</p>
 <p>For more information on reconciliation states, please see the <a class="reference external" href="https://www.gnucash.org/docs/v3/C/gnucash-help/trans-stts.html">GnuCash documentation</a>.</p>
+</div>
+<div class="section" id="creating-transactions-simplified">
+<h3>Creating Transactions (Simplified)<a class="headerlink" href="#creating-transactions-simplified" title="Permalink to this headline">¶</a></h3>
+<p>As of version 1.0.2, GNewCash provides a class called <a class="reference external" href="transaction.html#transaction.SimpleTransaction">SimpleTransaction</a>.
+The purpose of this class is to simplify creating transactions that consist of only two splits: “from” and “to”.</p>
+<p>When using SimpleTransaction, the code changes to this:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+
+<span class="kn">from</span> <span class="nn">gnewcash</span> <span class="k">import</span> <span class="n">SimpleTransaction</span>
+
+<span class="kn">from</span> <span class="nn">pytz</span> <span class="k">import</span> <span class="n">timezone</span>
+
+
+<span class="n">my_new_transaction</span> <span class="o">=</span> <span class="n">SimpleTransaction</span><span class="p">()</span>
+
+<span class="c1"># Date that the transaction takes place</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">))</span>
+
+<span class="c1"># Date that the transaction was created</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">))</span>
+
+<span class="c1"># Description for the transaction</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;My First Transaction&#39;</span>
+
+<span class="c1"># Memo for the transaction (appears in the &quot;Num&quot; field in GnuCash)</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="s1">&#39;My First Memo&#39;</span>
+
+<span class="c1"># Define the dollar amount</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;50.00&#39;</span><span class="p">)</span>
+
+<span class="c1"># Define where it&#39;s coming from</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">from_account</span> <span class="o">=</span> <span class="n">checking_account</span>
+
+<span class="c1"># Define where it&#39;s going to</span>
+<span class="n">my_new_transaction</span><span class="o">.</span><span class="n">to_account</span> <span class="o">=</span> <span class="n">phone_bill</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="transaction-manager">
 <h3>Transaction Manager<a class="headerlink" href="#transaction-manager" title="Permalink to this headline">¶</a></h3>

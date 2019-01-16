@@ -441,6 +441,49 @@ of all splits on the transaction to "c" (for cleared).
 
 For more information on reconciliation states, please see the `GnuCash documentation <https://www.gnucash.org/docs/v3/C/gnucash-help/trans-stts.html>`__.
 
+
+Creating Transactions (Simplified)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of version 1.0.2, GNewCash provides a class called `SimpleTransaction <transaction.html#transaction.SimpleTransaction>`__.
+The purpose of this class is to simplify creating transactions that consist of only two splits: "from" and "to".
+
+When using SimpleTransaction, the code changes to this:
+
+.. code:: python
+
+    from datetime import datetime
+    from decimal import Decimal
+
+    from gnewcash import SimpleTransaction
+
+    from pytz import timezone
+
+
+    my_new_transaction = SimpleTransaction()
+
+    # Date that the transaction takes place
+    my_new_transaction.date_posted = datetime(2019, 7, 5, 0, 0, 0, 0, tzinfo=timezone('US/Eastern'))
+
+    # Date that the transaction was created
+    my_new_transaction.date_entered = datetime.now(tz=timezone('US/Eastern'))
+
+    # Description for the transaction
+    my_new_transaction.description = 'My First Transaction'
+
+    # Memo for the transaction (appears in the "Num" field in GnuCash)
+    my_new_transaction.memo = 'My First Memo'
+
+    # Define the dollar amount
+    my_new_transaction.amount = Decimal('50.00')
+
+    # Define where it's coming from
+    my_new_transaction.from_account = checking_account
+
+    # Define where it's going to
+    my_new_transaction.to_account = phone_bill
+
+
 Transaction Manager
 ~~~~~~~~~~~~~~~~~~~
 

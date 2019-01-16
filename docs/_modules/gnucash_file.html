@@ -218,7 +218,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GnuCashFile.read_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.read_file">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the specified .gnucash file and loads it into memory</span>
 
@@ -226,9 +226,13 @@
 <span class="sd">        :type source_file: str</span>
 <span class="sd">        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML</span>
 <span class="sd">        :type sort_transactions: bool</span>
+<span class="sd">        :param transaction_class: Class to use when initializing transactions</span>
+<span class="sd">        :type transaction_class: type</span>
 <span class="sd">        :return: New GnuCashFile object</span>
 <span class="sd">        :rtype: GnuCashFile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transaction_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transaction_class</span> <span class="o">=</span> <span class="n">Transaction</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">()</span>
         <span class="n">built_file</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file</span>
@@ -245,7 +249,8 @@
 
             <span class="n">books</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:book&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
-                <span class="n">new_book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="n">sort_transactions</span><span class="p">)</span>
+                <span class="n">new_book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="n">sort_transactions</span><span class="p">,</span>
+                                         <span class="n">transaction_class</span><span class="o">=</span><span class="n">transaction_class</span><span class="p">)</span>
                 <span class="n">built_file</span><span class="o">.</span><span class="n">books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_book</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
@@ -365,7 +370,7 @@
         <span class="k">return</span> <span class="n">book_node</span>
 
 <div class="viewcode-block" id="Book.from_xml"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">book_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">book_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Book object from the GnuCash XML</span>
 
@@ -375,9 +380,14 @@
 <span class="sd">        :type namespaces: dict[str, str]</span>
 <span class="sd">        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML</span>
 <span class="sd">        :type sort_transactions: bool</span>
+<span class="sd">        :param transaction_class: Class to use when initializing transactions</span>
+<span class="sd">        :type transaction_class: type</span>
 <span class="sd">        :return: Book object from XML</span>
 <span class="sd">        :rtype: Book</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transaction_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transaction_class</span> <span class="o">=</span> <span class="n">Transaction</span>
+
         <span class="n">new_book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">()</span>
         <span class="n">new_book</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;book:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
         <span class="n">accounts</span> <span class="o">=</span> <span class="n">book_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
@@ -400,7 +410,7 @@
             <span class="n">account_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Account</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">transactions</span><span class="p">:</span>
-            <span class="n">transaction_manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Transaction</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">transaction</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">))</span>
+            <span class="n">transaction_manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">transaction_class</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">transaction</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">))</span>
 
         <span class="n">new_book</span><span class="o">.</span><span class="n">root_account</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;ROOT&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">new_book</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transaction_manager</span>
@@ -419,7 +429,7 @@
                 <span class="k">for</span> <span class="n">subelement</span> <span class="ow">in</span> <span class="n">template_transaction</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">subelement</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;transaction&#39;</span><span class="p">):</span>
                         <span class="k">continue</span>
-                    <span class="n">template_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Transaction</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">subelement</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_accounts</span><span class="p">))</span>
+                    <span class="n">template_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction_class</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">subelement</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_accounts</span><span class="p">))</span>
             <span class="n">new_book</span><span class="o">.</span><span class="n">template_transactions</span> <span class="o">=</span> <span class="n">template_transactions</span>
             <span class="n">template_root_accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">template_accounts</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;ROOT&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">template_root_accounts</span><span class="p">:</span>

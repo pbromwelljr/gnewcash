@@ -4,6 +4,7 @@ import unittest
 
 import gnewcash.gnucash_file as gcf
 import gnewcash.transaction as trn
+import gnewcash.account as acc
 
 import pytz
 
@@ -105,3 +106,28 @@ class TestTransaction(unittest.TestCase):
         balance_at_date = transaction_manager.get_balance_at_date(checking_account, test_date)
 
         self.assertEqual(balance_at_date, Decimal('2620'))
+
+
+class TestSimpleTransaction(unittest.TestCase):
+    def test_create_transaction(self):
+        test_from_account = acc.BankAccount()
+        test_from_account.name = 'Checking Account'
+
+        test_to_account = acc.ExpenseAccount()
+        test_to_account.name = 'Video Games'
+
+        test_transaction = trn.SimpleTransaction()
+        test_transaction.from_account = test_from_account
+        test_transaction.to_account = test_to_account
+        test_transaction.amount = Decimal('60.00')
+        test_transaction.date_entered = datetime.now()
+        test_transaction.date_posted = datetime.now()
+
+        self.assertEqual(test_transaction.from_account, test_from_account)
+        self.assertEqual(test_transaction.to_account, test_to_account)
+        self.assertEqual(test_transaction.amount, Decimal('60.00'))
+        self.assertEqual(len(test_transaction.splits), 2)
+        self.assertEqual(test_transaction.splits[0].account, test_from_account)
+        self.assertEqual(test_transaction.splits[0].amount, Decimal('-60.00'))
+        self.assertEqual(test_transaction.splits[1].account, test_to_account)
+        self.assertEqual(test_transaction.splits[1].amount, Decimal('60.00'))

@@ -4,6 +4,7 @@ import unittest
 from xml.etree import ElementTree
 
 import gnewcash.gnucash_file as gcf
+import gnewcash.transaction as trn
 
 
 class TestGnuCashFile(unittest.TestCase):
@@ -84,3 +85,16 @@ class TestGnuCashFile(unittest.TestCase):
             test_root = ElementTree.fromstring(test_file_contents)
 
             self.check_gnucash_elements(original_root, test_root)
+
+    def test_simple_transaction_load(self):
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', sort_transactions=False,
+                                                 transaction_class=trn.SimpleTransaction)
+        gnucash_file.build_file('test_files/Test1.simpletransaction.testresult.gnucash', prettify_xml=True)
+
+        original_tree = ElementTree.parse(source='test_files/Test1.gnucash')
+        original_root = original_tree.getroot()
+
+        test_tree = ElementTree.parse(source='test_files/Test1.simpletransaction.testresult.gnucash')
+        test_root = test_tree.getroot()
+
+        self.check_gnucash_elements(original_root, test_root)
