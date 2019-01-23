@@ -137,6 +137,14 @@ class Transaction(GuidObject):
         for split in self.splits:
             split.reconciled_state = 'c'
 
+    # TODO: notes property on transactions (string)
+    # TODO: reversed-by property on transactions (guid, transaction?)
+    # TODO: voided property on transaction (key='trans-read-only', value='Transaction Voided', type='string')
+    # TODO: void-time property on transaction (key='void-time', value='YYYY-MM-DD HH:MM:SS.ZZZZZZ -0000', type='string')
+    # TODO: void-reason property on transaction (key='void-reason', value='Voided transaction reason', type='string')
+    # TODO: assoc_uri property on transaction (key='assoc_uri', value='http://www.google.com', type='string')
+
+
 
 class Split(GuidObject):
     """
