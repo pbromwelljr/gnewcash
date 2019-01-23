@@ -218,7 +218,7 @@
 <dl class="attribute">
 <dt id="account.Account.color">
 <code class="descname">color</code><a class="headerlink" href="#account.Account.color" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the account color in GnuCash</p>
+<dd><p>Account color</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -369,6 +369,22 @@ If the provided date is None, it will retrieve the ending balance.</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="account.Account.hidden">
+<code class="descname">hidden</code><a class="headerlink" href="#account.Account.hidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the account hidden?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if account is marked hidden, otherwise False.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="account.Account.minimum_balance_past_date">
 <code class="descname">minimum_balance_past_date</code><span class="sig-paren">(</span><em>transactions</em>, <em>start_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.minimum_balance_past_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.minimum_balance_past_date" title="Permalink to this definition">¶</a></dt>
@@ -394,9 +410,25 @@ If the provided date is None, it will retrieve the ending balance.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="account.Account.notes">
+<code class="descname">notes</code><a class="headerlink" href="#account.Account.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>User defined notes for the account</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">User-defined notes</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="account.Account.parent">
 <code class="descname">parent</code><a class="headerlink" href="#account.Account.parent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the parent account of the current account</p>
+<dd><p>Parent account of the current account</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -404,6 +436,22 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Account’s parent</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#account.Account" title="account.Account">Account</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.Account.placeholder">
+<code class="descname">placeholder</code><a class="headerlink" href="#account.Account.placeholder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the account a placeholder?</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the account is a placeholder, otherwise False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
 </tr>
 </tbody>
 </table>

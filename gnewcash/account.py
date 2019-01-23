@@ -306,7 +306,7 @@ class Account(GuidObject):
     @property
     def parent(self):
         """
-        Sets the parent account of the current account
+        Parent account of the current account
 
         :return: Account's parent
         :rtype: Account
@@ -323,7 +323,7 @@ class Account(GuidObject):
     @property
     def color(self):
         """
-        Sets the account color in GnuCash
+        Account color
 
         :return: Account color as a string
         :rtype: str
@@ -344,6 +344,103 @@ class Account(GuidObject):
             color_slot[0].value = value
         else:
             self.slots.append(Slot('color', value, 'string'))
+
+    @property
+    def notes(self):
+        """
+        User defined notes for the account
+
+        :return: User-defined notes
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
+        if not notes_slot:
+            return None
+
+        return notes_slot[0].value
+
+    @notes.setter
+    def notes(self, value):
+        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
+        if notes_slot:
+            notes_slot[0].value = value
+        else:
+            self.slots.append(Slot('notes', value, 'string'))
+
+    @property
+    def hidden(self):
+        """
+        Is the account hidden?
+
+        :return: True if account is marked hidden, otherwise False.
+        :rtype: bool
+        """
+        if not self.slots:
+            return False
+
+        hidden_slot = list(filter(lambda x: x.key == 'hidden', self.slots))
+        if not hidden_slot:
+            return False
+
+        return hidden_slot[0].value == 'true'
+
+    @hidden.setter
+    def hidden(self, value):
+        if isinstance(value, str) and value.lower() == 'true':
+            hidden_value = True
+        elif isinstance(value, str) and value.lower() == 'false':
+            hidden_value = False
+        elif isinstance(value, bool):
+            hidden_value = value
+        else:
+            raise ValueError('Account\'s "hidden" property must be "true", "false", True, or False.')
+
+        hidden_value = 'true' if hidden_value else 'false'
+
+        hidden_slot = list(filter(lambda x: x.key == 'hidden', self.slots))
+        if hidden_slot:
+            hidden_slot[0].value = hidden_value
+        else:
+            self.slots.append(Slot('hidden', hidden_value, 'string'))
+
+    @property
+    def placeholder(self):
+        """
+        Is the account a placeholder?
+
+        :return: True if the account is a placeholder, otherwise False
+        :rtype: bool
+        """
+        if not self.slots:
+            return False
+
+        placeholder_slot = list(filter(lambda x: x.key == 'placeholder', self.slots))
+        if not placeholder_slot:
+            return False
+
+        return placeholder_slot[0].value == 'true'
+
+    @placeholder.setter
+    def placeholder(self, value):
+        if isinstance(value, str) and value.lower() == 'true':
+            placeholder_value = True
+        elif isinstance(value, str) and value.lower() == 'false':
+            placeholder_value = False
+        elif isinstance(value, bool):
+            placeholder_value = value
+        else:
+            raise ValueError('Account\'s "placeholder" property must be "true", "false", True, or False.')
+
+        placeholder_value = 'true' if placeholder_value else 'false'
+
+        placeholder_slot = list(filter(lambda x: x.key == 'placeholder', self.slots))
+        if placeholder_slot:
+            placeholder_slot[0].value = placeholder_value
+        else:
+            self.slots.append(Slot('placeholder', placeholder_value, 'string'))
 
 
 class BankAccount(Account):
