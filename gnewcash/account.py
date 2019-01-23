@@ -40,7 +40,7 @@ class Account(GuidObject):
         self.name = ''
         self.type = None
         self.commodity_scu = None
-        self.parent = None
+        self.__parent = None
         self.children = []
         self.commodity = None
         self.code = None
@@ -52,12 +52,6 @@ class Account(GuidObject):
 
     def __repr__(self):
         return str(self)
-
-    def __setattr__(self, key, value):
-        if key == 'parent' and value is not None:
-            if self not in value.children:
-                value.children.append(self)
-        self.__dict__[key] = value
 
     def __eq__(self, other):
         return self.guid == getattr(other, 'guid', None)
@@ -308,6 +302,48 @@ class Account(GuidObject):
             if subaccount_result is not None:
                 return subaccount_result
         return None
+
+    @property
+    def parent(self):
+        """
+        Sets the parent account of the current account
+
+        :return: Account's parent
+        :rtype: Account
+        """
+        return self.__parent
+
+    @parent.setter
+    def parent(self, value):
+        if value is not None:
+            if self not in value.children:
+                value.children.append(self)
+        self.__parent = value
+
+    @property
+    def color(self):
+        """
+        Sets the account color in GnuCash
+
+        :return: Account color as a string
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        color_slot = list(filter(lambda x: x.key == 'color', self.slots))
+        if not color_slot:
+            return None
+
+        return color_slot[0].value
+
+    @color.setter
+    def color(self, value):
+        color_slot = list(filter(lambda x: x.key == 'color', self.slots))
+        if color_slot:
+            color_slot[0].value = value
+        else:
+            self.slots.append(Slot('color', value, 'string'))
 
 
 class BankAccount(Account):

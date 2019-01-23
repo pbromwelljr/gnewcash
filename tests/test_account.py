@@ -326,3 +326,16 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(after_interest.iterator_date, datetime(2019, 7, 1))
         self.assertEqual(after_interest.amount_to_capital, Decimal('94.4'))
         self.assertEqual(after_interest.interest, Decimal('5.6'))
+
+    def test_account_color(self):
+        test_account = acc.Account()
+        self.assertEqual(len(test_account.slots), 0)
+
+        test_account.color = 'Not Set'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'color')
+        self.assertEqual(test_account.slots[0].value, 'Not Set')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        self.assertEqual(test_account.color, 'Not Set')
+

@@ -547,7 +547,6 @@ class SimpleTransaction(Transaction):
         self.to_split = Split(None, None)
         self.splits = [self.from_split, self.to_split]
 
-
     @classmethod
     def from_xml(cls, transaction_node, namespaces, account_objects):
         # pylint: disable=E1101
