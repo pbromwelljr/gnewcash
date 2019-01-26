@@ -11,10 +11,10 @@ from warnings import warn
 
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
-class Transaction(GuidObject):
+class Transaction(GuidObject, SlottableObject):
     """
     Represents a transaction in GnuCash.
     """
@@ -25,7 +25,6 @@ class Transaction(GuidObject):
         self.date_entered = None
         self.description = ''
         self.splits = []
-        self.slots = []
         self.memo = None
 
     def __str__(self):
@@ -145,22 +144,11 @@ class Transaction(GuidObject):
         :return: Notes tied to the transaction
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
-        if not notes_slot:
-            return None
-
-        return notes_slot[0].value
+        return super(Transaction, self).get_slot_value('notes')
 
     @notes.setter
     def notes(self, value):
-        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
-        if notes_slot:
-            notes_slot[0].value = value
-        else:
-            self.slots.append(Slot('notes', value, 'string'))
+        super(Transaction, self).set_slot_value('notes', value, 'string')
 
     @property
     def reversed_by(self):
@@ -170,22 +158,11 @@ class Transaction(GuidObject):
         :return: Transaction GUID
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        reversed_by_slot = list(filter(lambda x: x.key == 'reversed-by', self.slots))
-        if not reversed_by_slot:
-            return None
-
-        return reversed_by_slot[0].value
+        return super(Transaction, self).get_slot_value('reversed-by')
 
     @reversed_by.setter
     def reversed_by(self, value):
-        reversed_by_slot = list(filter(lambda x: x.key == 'reversed-by', self.slots))
-        if reversed_by_slot:
-            reversed_by_slot[0].value = value
-        else:
-            self.slots.append(Slot('reversed-by', value, 'guid'))
+        super(Transaction, self).set_slot_value('reversed-by', value, 'guid')
 
     @property
     def voided(self):
@@ -195,22 +172,11 @@ class Transaction(GuidObject):
         :return: Void status
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        voided_slot = list(filter(lambda x: x.key == 'trans-read-only', self.slots))
-        if not voided_slot:
-            return None
-
-        return voided_slot[0].value
+        return super(Transaction, self).get_slot_value('trans-read-only')
 
     @voided.setter
     def voided(self, value):
-        voided_slot = list(filter(lambda x: x.key == 'trans-read-only', self.slots))
-        if voided_slot:
-            voided_slot[0].value = value
-        else:
-            self.slots.append(Slot('trans-read-only', value, 'string'))
+        super(Transaction, self).set_slot_value('trans-read-only', value, 'string')
 
     @property
     def void_time(self):
@@ -220,22 +186,11 @@ class Transaction(GuidObject):
         :return: Time that the transaction was voided
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        void_time_slot = list(filter(lambda x: x.key == 'void-time', self.slots))
-        if not void_time_slot:
-            return None
-
-        return void_time_slot[0].value
+        return super(Transaction, self).get_slot_value('void-time')
 
     @void_time.setter
     def void_time(self, value):
-        void_time_slot = list(filter(lambda x: x.key == 'void-time', self.slots))
-        if void_time_slot:
-            void_time_slot[0].value = value
-        else:
-            self.slots.append(Slot('void-time', value, 'string'))
+        super(Transaction, self).set_slot_value('void-time', value, 'string')
 
     @property
     def void_reason(self):
@@ -245,22 +200,11 @@ class Transaction(GuidObject):
         :return: Reason that the transaction was voided
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        void_reason_slot = list(filter(lambda x: x.key == 'void-reason', self.slots))
-        if not void_reason_slot:
-            return None
-
-        return void_reason_slot[0].value
+        return super(Transaction, self).get_slot_value('void-reason')
 
     @void_reason.setter
     def void_reason(self, value):
-        void_reason_slot = list(filter(lambda x: x.key == 'void-reason', self.slots))
-        if void_reason_slot:
-            void_reason_slot[0].value = value
-        else:
-            self.slots.append(Slot('void-reason', value, 'string'))
+        super(Transaction, self).set_slot_value('void-reason', value, 'string')
 
     @property
     def associated_uri(self):
@@ -270,22 +214,11 @@ class Transaction(GuidObject):
         :return: URI associated with the transaction
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        associated_uri_slot = list(filter(lambda x: x.key == 'assoc_uri', self.slots))
-        if not associated_uri_slot:
-            return None
-
-        return associated_uri_slot[0].value
+        return super(Transaction, self).get_slot_value('assoc_uri')
 
     @associated_uri.setter
     def associated_uri(self, value):
-        associated_uri_slot = list(filter(lambda x: x.key == 'assoc_uri', self.slots))
-        if associated_uri_slot:
-            associated_uri_slot[0].value = value
-        else:
-            self.slots.append(Slot('assoc_uri', value, 'string'))
+        super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
 
 class Split(GuidObject):

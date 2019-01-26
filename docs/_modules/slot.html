@@ -155,7 +155,7 @@
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
 
-<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">:</span>
+<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a slot in GnuCash.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -225,6 +225,77 @@
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Slot type </span><span class="si">{}</span><span class="s1"> is not implemented.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slot_type</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SlottableObject"><a class="viewcode-back" href="../slot.html#slot.SlottableObject">[docs]</a><span class="k">class</span> <span class="nc">SlottableObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used to consolidate storing and retrieving slot values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SlottableObject</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="SlottableObject.get_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.get_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the value of the slot given a certain key</span>
+
+<span class="sd">        :param key: Name of the slot</span>
+<span class="sd">        :type key: str</span>
+
+<span class="sd">        :return: Slot value</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">target_slot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_slot</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">target_slot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="SlottableObject.set_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the value of the slot given a certain key and slot type</span>
+
+<span class="sd">        :param key: Name of the slot</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param value: New value of the slot</span>
+<span class="sd">        :type value: Any</span>
+<span class="sd">        :param slot_type: Type of slot</span>
+<span class="sd">        :type slot_type: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_slot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">target_slot</span><span class="p">:</span>
+            <span class="n">target_slot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="SlottableObject.set_slot_value_bool"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value_bool">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value_bool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function for slots that expect &quot;true&quot; or &quot;false&quot; GnuCash-side.</span>
+<span class="sd">        Converts &quot;true&quot; (case insensitive) and True to &quot;true&quot;.</span>
+<span class="sd">        Converts &quot;false&quot; (case insensitive) and False to &quot;false&quot;.</span>
+
+<span class="sd">        :param key:</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param value: New value of the slot</span>
+<span class="sd">        :type value: bool|str</span>
+<span class="sd">        :param slot_type: Type of slot</span>
+<span class="sd">        :type slot_type: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;bool&quot; slot values must be &quot;true&quot;, &quot;false&quot;, True, or False.&#39;</span><span class="p">)</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s1">&#39;false&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

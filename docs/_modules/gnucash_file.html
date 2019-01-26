@@ -162,10 +162,10 @@
 <span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">,</span> <span class="n">ScheduledTransaction</span>
 <span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="k">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
-<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 
 
-<div class="viewcode-block" id="GnuCashFile"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a><span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">:</span>
+<div class="viewcode-block" id="GnuCashFile"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a><span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class representing a GnuCash file on disk.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -291,7 +291,7 @@
                 <span class="n">target_file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Book"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Book"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a Book in GnuCash</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -497,7 +497,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Budget"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a><span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Budget"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a><span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class object representing a Budget in GnuCash</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -509,7 +509,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

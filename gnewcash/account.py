@@ -11,13 +11,13 @@ from collections import namedtuple
 
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 
 
-class AccountType:
+class AccountType(object):
     """
     Enumeration class to indicate the types of accounts available in GnuCash.
     """
@@ -31,7 +31,7 @@ class AccountType:
     LIABILITY = 'LIABILITY'
 
 
-class Account(GuidObject):
+class Account(GuidObject, SlottableObject):
     """
     Represents an account in GnuCash.
     """
@@ -45,7 +45,6 @@ class Account(GuidObject):
         self.commodity = None
         self.code = None
         self.description = None
-        self.slots = []
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.type)
@@ -328,22 +327,11 @@ class Account(GuidObject):
         :return: Account color as a string
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        color_slot = list(filter(lambda x: x.key == 'color', self.slots))
-        if not color_slot:
-            return None
-
-        return color_slot[0].value
+        return super(Account, self).get_slot_value('color')
 
     @color.setter
     def color(self, value):
-        color_slot = list(filter(lambda x: x.key == 'color', self.slots))
-        if color_slot:
-            color_slot[0].value = value
-        else:
-            self.slots.append(Slot('color', value, 'string'))
+        super(Account, self).set_slot_value('color', value, 'string')
 
     @property
     def notes(self):
@@ -353,22 +341,11 @@ class Account(GuidObject):
         :return: User-defined notes
         :rtype: str
         """
-        if not self.slots:
-            return None
-
-        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
-        if not notes_slot:
-            return None
-
-        return notes_slot[0].value
+        return super(Account, self).get_slot_value('notes')
 
     @notes.setter
     def notes(self, value):
-        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
-        if notes_slot:
-            notes_slot[0].value = value
-        else:
-            self.slots.append(Slot('notes', value, 'string'))
+        super(Account, self).set_slot_value('notes', value, 'string')
 
     @property
     def hidden(self):
@@ -378,33 +355,11 @@ class Account(GuidObject):
         :return: True if account is marked hidden, otherwise False.
         :rtype: bool
         """
-        if not self.slots:
-            return False
-
-        hidden_slot = list(filter(lambda x: x.key == 'hidden', self.slots))
-        if not hidden_slot:
-            return False
-
-        return hidden_slot[0].value == 'true'
+        return super(Account, self).get_slot_value('hidden') == 'true'
 
     @hidden.setter
     def hidden(self, value):
-        if isinstance(value, str) and value.lower() == 'true':
-            hidden_value = True
-        elif isinstance(value, str) and value.lower() == 'false':
-            hidden_value = False
-        elif isinstance(value, bool):
-            hidden_value = value
-        else:
-            raise ValueError('Account\'s "hidden" property must be "true", "false", True, or False.')
-
-        hidden_value = 'true' if hidden_value else 'false'
-
-        hidden_slot = list(filter(lambda x: x.key == 'hidden', self.slots))
-        if hidden_slot:
-            hidden_slot[0].value = hidden_value
-        else:
-            self.slots.append(Slot('hidden', hidden_value, 'string'))
+        super(Account, self).set_slot_value_bool('hidden', value, 'string')
 
     @property
     def placeholder(self):
@@ -414,33 +369,11 @@ class Account(GuidObject):
         :return: True if the account is a placeholder, otherwise False
         :rtype: bool
         """
-        if not self.slots:
-            return False
-
-        placeholder_slot = list(filter(lambda x: x.key == 'placeholder', self.slots))
-        if not placeholder_slot:
-            return False
-
-        return placeholder_slot[0].value == 'true'
+        return super(Account, self).get_slot_value('placeholder')
 
     @placeholder.setter
     def placeholder(self, value):
-        if isinstance(value, str) and value.lower() == 'true':
-            placeholder_value = True
-        elif isinstance(value, str) and value.lower() == 'false':
-            placeholder_value = False
-        elif isinstance(value, bool):
-            placeholder_value = value
-        else:
-            raise ValueError('Account\'s "placeholder" property must be "true", "false", True, or False.')
-
-        placeholder_value = 'true' if placeholder_value else 'false'
-
-        placeholder_slot = list(filter(lambda x: x.key == 'placeholder', self.slots))
-        if placeholder_slot:
-            placeholder_slot[0].value = placeholder_value
-        else:
-            self.slots.append(Slot('placeholder', placeholder_value, 'string'))
+        super(Account, self).set_slot_value_bool('placeholder', value, 'string')
 
 
 class BankAccount(Account):
@@ -506,7 +439,7 @@ class LiabilityAccount(Account):
         self.type = AccountType.LIABILITY
 
 
-class InterestAccount:
+class InterestAccount(object):
     """
     Class used to calculate interest balances.
     """

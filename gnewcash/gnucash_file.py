@@ -15,10 +15,10 @@ from gnewcash.guid_object import GuidObject
 from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
-from gnewcash.slot import Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
-class GnuCashFile:
+class GnuCashFile(object):
     """
     Class representing a GnuCash file on disk.
     """
@@ -144,7 +144,7 @@ class GnuCashFile:
                 target_file_handle.write(file_contents)
 
 
-class Book(GuidObject):
+class Book(GuidObject, SlottableObject):
     """
     Represents a Book in GnuCash
     """
@@ -350,7 +350,7 @@ class Book(GuidObject):
         return str(self)
 
 
-class Budget(GuidObject):
+class Budget(GuidObject, SlottableObject):
     """
     Class object representing a Budget in GnuCash
     """
@@ -362,7 +362,6 @@ class Budget(GuidObject):
         self.recurrence_multiplier = None
         self.recurrence_period_type = None
         self.recurrence_start = None
-        self.slots = []
 
     @property
     def as_xml(self):

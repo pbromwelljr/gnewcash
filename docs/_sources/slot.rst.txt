@@ -5,3 +5,6 @@ Slot
 
 .. autoclass:: Slot
    :members:
+
+.. autoclass:: SlottableObject
+   :members:
