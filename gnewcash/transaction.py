@@ -137,13 +137,155 @@ class Transaction(GuidObject):
         for split in self.splits:
             split.reconciled_state = 'c'
 
-    # TODO: notes property on transactions (string)
-    # TODO: reversed-by property on transactions (guid, transaction?)
-    # TODO: voided property on transaction (key='trans-read-only', value='Transaction Voided', type='string')
-    # TODO: void-time property on transaction (key='void-time', value='YYYY-MM-DD HH:MM:SS.ZZZZZZ -0000', type='string')
-    # TODO: void-reason property on transaction (key='void-reason', value='Voided transaction reason', type='string')
-    # TODO: assoc_uri property on transaction (key='assoc_uri', value='http://www.google.com', type='string')
+    @property
+    def notes(self):
+        """
+        Notes on the transaction
 
+        :return: Notes tied to the transaction
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
+        if not notes_slot:
+            return None
+
+        return notes_slot[0].value
+
+    @notes.setter
+    def notes(self, value):
+        notes_slot = list(filter(lambda x: x.key == 'notes', self.slots))
+        if notes_slot:
+            notes_slot[0].value = value
+        else:
+            self.slots.append(Slot('notes', value, 'string'))
+
+    @property
+    def reversed_by(self):
+        """
+        GUID of the transaction that reverses this transaction
+
+        :return: Transaction GUID
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        reversed_by_slot = list(filter(lambda x: x.key == 'reversed-by', self.slots))
+        if not reversed_by_slot:
+            return None
+
+        return reversed_by_slot[0].value
+
+    @reversed_by.setter
+    def reversed_by(self, value):
+        reversed_by_slot = list(filter(lambda x: x.key == 'reversed-by', self.slots))
+        if reversed_by_slot:
+            reversed_by_slot[0].value = value
+        else:
+            self.slots.append(Slot('reversed-by', value, 'guid'))
+
+    @property
+    def voided(self):
+        """
+        Void status
+
+        :return: Void status
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        voided_slot = list(filter(lambda x: x.key == 'trans-read-only', self.slots))
+        if not voided_slot:
+            return None
+
+        return voided_slot[0].value
+
+    @voided.setter
+    def voided(self, value):
+        voided_slot = list(filter(lambda x: x.key == 'trans-read-only', self.slots))
+        if voided_slot:
+            voided_slot[0].value = value
+        else:
+            self.slots.append(Slot('trans-read-only', value, 'string'))
+
+    @property
+    def void_time(self):
+        """
+        Time that the transaction was voided
+
+        :return: Time that the transaction was voided
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        void_time_slot = list(filter(lambda x: x.key == 'void-time', self.slots))
+        if not void_time_slot:
+            return None
+
+        return void_time_slot[0].value
+
+    @void_time.setter
+    def void_time(self, value):
+        void_time_slot = list(filter(lambda x: x.key == 'void-time', self.slots))
+        if void_time_slot:
+            void_time_slot[0].value = value
+        else:
+            self.slots.append(Slot('void-time', value, 'string'))
+
+    @property
+    def void_reason(self):
+        """
+        Reason that the transaction was voided
+
+        :return: Reason that the transaction was voided
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        void_reason_slot = list(filter(lambda x: x.key == 'void-reason', self.slots))
+        if not void_reason_slot:
+            return None
+
+        return void_reason_slot[0].value
+
+    @void_reason.setter
+    def void_reason(self, value):
+        void_reason_slot = list(filter(lambda x: x.key == 'void-reason', self.slots))
+        if void_reason_slot:
+            void_reason_slot[0].value = value
+        else:
+            self.slots.append(Slot('void-reason', value, 'string'))
+
+    @property
+    def associated_uri(self):
+        """
+        URI associated with the transaction
+
+        :return: URI associated with the transaction
+        :rtype: str
+        """
+        if not self.slots:
+            return None
+
+        associated_uri_slot = list(filter(lambda x: x.key == 'assoc_uri', self.slots))
+        if not associated_uri_slot:
+            return None
+
+        return associated_uri_slot[0].value
+
+    @associated_uri.setter
+    def associated_uri(self, value):
+        associated_uri_slot = list(filter(lambda x: x.key == 'assoc_uri', self.slots))
+        if associated_uri_slot:
+            associated_uri_slot[0].value = value
+        else:
+            self.slots.append(Slot('assoc_uri', value, 'string'))
 
 
 class Split(GuidObject):
