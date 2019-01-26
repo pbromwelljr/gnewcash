@@ -7,13 +7,14 @@
 from datetime import datetime
 from decimal import Decimal
 from xml.etree import ElementTree
+from warnings import warn
 
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
-class Transaction(GuidObject):
+class Transaction(GuidObject, SlottableObject):
     """
     Represents a transaction in GnuCash.
     """
@@ -24,7 +25,6 @@ class Transaction(GuidObject):
         self.date_entered = None
         self.description = ''
         self.splits = []
-        self.slots = []
         self.memo = None
 
     def __str__(self):
@@ -135,6 +135,90 @@ class Transaction(GuidObject):
         """
         for split in self.splits:
             split.reconciled_state = 'c'
+
+    @property
+    def notes(self):
+        """
+        Notes on the transaction
+
+        :return: Notes tied to the transaction
+        :rtype: str
+        """
+        return super(Transaction, self).get_slot_value('notes')
+
+    @notes.setter
+    def notes(self, value):
+        super(Transaction, self).set_slot_value('notes', value, 'string')
+
+    @property
+    def reversed_by(self):
+        """
+        GUID of the transaction that reverses this transaction
+
+        :return: Transaction GUID
+        :rtype: str
+        """
+        return super(Transaction, self).get_slot_value('reversed-by')
+
+    @reversed_by.setter
+    def reversed_by(self, value):
+        super(Transaction, self).set_slot_value('reversed-by', value, 'guid')
+
+    @property
+    def voided(self):
+        """
+        Void status
+
+        :return: Void status
+        :rtype: str
+        """
+        return super(Transaction, self).get_slot_value('trans-read-only')
+
+    @voided.setter
+    def voided(self, value):
+        super(Transaction, self).set_slot_value('trans-read-only', value, 'string')
+
+    @property
+    def void_time(self):
+        """
+        Time that the transaction was voided
+
+        :return: Time that the transaction was voided
+        :rtype: str
+        """
+        return super(Transaction, self).get_slot_value('void-time')
+
+    @void_time.setter
+    def void_time(self, value):
+        super(Transaction, self).set_slot_value('void-time', value, 'string')
+
+    @property
+    def void_reason(self):
+        """
+        Reason that the transaction was voided
+
+        :return: Reason that the transaction was voided
+        :rtype: str
+        """
+        return super(Transaction, self).get_slot_value('void-reason')
+
+    @void_reason.setter
+    def void_reason(self, value):
+        super(Transaction, self).set_slot_value('void-reason', value, 'string')
+
+    @property
+    def associated_uri(self):
+        """
+        URI associated with the transaction
+
+        :return: URI associated with the transaction
+        :rtype: str
+        """
+        return super(Transaction, self).get_slot_value('assoc_uri')
+
+    @associated_uri.setter
+    def associated_uri(self, value):
+        super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
 
 class Split(GuidObject):
@@ -533,3 +617,92 @@ class ScheduledTransaction(GuidObject):
             return None
 
         return datetime.strptime(date_node.text, '%Y-%m-%d') if date_node.text else None
+
+
+class SimpleTransaction(Transaction):
+    """
+    Class used to simplify creating and manipulating Transactions that only have 2 splits (from account and to account)
+    """
+
+    def __init__(self):
+        super(SimpleTransaction, self).__init__()
+        self.from_split = Split(None, None)
+        self.to_split = Split(None, None)
+        self.splits = [self.from_split, self.to_split]
+
+    @classmethod
+    def from_xml(cls, transaction_node, namespaces, account_objects):
+        # pylint: disable=E1101
+        new_object = super(SimpleTransaction, cls).from_xml(transaction_node, namespaces, account_objects)
+        # Remove the two splits created by the SimpleTransaction constructor
+        new_object.splits = list(filter(lambda x: x.account is not None and x.amount is not None,
+                                        new_object.splits))
+        if new_object.splits and len(new_object.splits) > 2:
+            warn('Transaction {} is a SimpleTransaction but has more than one split. '.format(new_object.guid) +
+                 'Using the from_account, to_account, and amount SimpleTransaction fields will result in undesirable ' +
+                 'behavior.')
+
+        from_split = list(filter(lambda x: x.amount < 0, new_object.splits))
+        if from_split:
+            new_object.from_split = from_split[0]
+        elif new_object.splits:
+            warn('Transaction {} does not have a deterministic "from" split. '.format(new_object.guid) +
+                 'Assuming first split in transaction: {}'.format(str(new_object.splits[0])))
+            new_object.from_split = new_object.splits[0]
+        else:
+            new_object.splits.append(new_object.from_split)
+
+        to_split = list(filter(lambda x: x.amount > 0, new_object.splits))
+        if to_split:
+            new_object.to_split = to_split[0]
+        elif new_object.splits:
+            warn('Transaction {} does not have a deterministic "to" split. '.format(new_object.guid) +
+                 'Assuming last split in transaction: {}'.format(str(new_object.splits[-1])))
+            new_object.to_split = new_object.splits[-1]
+        else:
+            new_object.splits.append(new_object.to_split)
+
+        return new_object
+
+    @property
+    def from_account(self):
+        """
+        Account which the transaction transfers funds from.
+
+        :return: Account which the transaction transfers funds from.
+        :rtype: Account
+        """
+        return self.from_split.account
+
+    @from_account.setter
+    def from_account(self, value):
+        self.from_split.account = value
+
+    @property
+    def to_account(self):
+        """
+        Account which the transaction transfers funds to.
+
+        :return: Account which the transaction transfers funds to.
+        :rtype: Account
+        """
+        return self.to_split.account
+
+    @to_account.setter
+    def to_account(self, value):
+        self.to_split.account = value
+
+    @property
+    def amount(self):
+        """
+        Dollar amount for funds transferred.
+
+        :return: Dollar amount for funds transferred.
+        :rtype: decimal.Decimal
+        """
+        return self.to_split.amount
+
+    @amount.setter
+    def amount(self, value):
+        self.from_split.amount = value * -1
+        self.to_split.amount = value

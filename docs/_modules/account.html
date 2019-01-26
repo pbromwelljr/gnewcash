@@ -158,13 +158,13 @@
 
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 
 
 <span class="n">LoanStatus</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;LoanStatus&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;iterator_balance&#39;</span><span class="p">,</span> <span class="s1">&#39;iterator_date&#39;</span><span class="p">,</span> <span class="s1">&#39;interest&#39;</span><span class="p">,</span> <span class="s1">&#39;amount_to_capital&#39;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="AccountType"><a class="viewcode-back" href="../account.html#account.AccountType">[docs]</a><span class="k">class</span> <span class="nc">AccountType</span><span class="p">:</span>
+<div class="viewcode-block" id="AccountType"><a class="viewcode-back" href="../account.html#account.AccountType">[docs]</a><span class="k">class</span> <span class="nc">AccountType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enumeration class to indicate the types of accounts available in GnuCash.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -178,7 +178,7 @@
     <span class="n">LIABILITY</span> <span class="o">=</span> <span class="s1">&#39;LIABILITY&#39;</span></div>
 
 
-<div class="viewcode-block" id="Account"><a class="viewcode-back" href="../account.html#account.Account">[docs]</a><span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Account"><a class="viewcode-back" href="../account.html#account.Account">[docs]</a><span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents an account in GnuCash.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -187,24 +187,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;parent&#39;</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-                <span class="n">value</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -454,7 +447,80 @@
             <span class="n">subaccount_result</span> <span class="o">=</span> <span class="n">subaccount</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span><span class="n">subaccount_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">subaccount_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">subaccount_result</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parent account of the current account</span>
+
+<span class="sd">        :return: Account&#39;s parent</span>
+<span class="sd">        :rtype: Account</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span>
+
+    <span class="nd">@parent</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Account color</span>
+
+<span class="sd">        :return: Account color as a string</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">)</span>
+
+    <span class="nd">@color</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        User defined notes for the account</span>
+
+<span class="sd">        :return: User-defined notes</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">)</span>
+
+    <span class="nd">@notes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is the account hidden?</span>
+
+<span class="sd">        :return: True if account is marked hidden, otherwise False.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;hidden&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span>
+
+    <span class="nd">@hidden</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value_bool</span><span class="p">(</span><span class="s1">&#39;hidden&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is the account a placeholder?</span>
+
+<span class="sd">        :return: True if the account is a placeholder, otherwise False</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">)</span>
+
+    <span class="nd">@placeholder</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value_bool</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BankAccount"><a class="viewcode-back" href="../account.html#account.BankAccount">[docs]</a><span class="k">class</span> <span class="nc">BankAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
@@ -520,7 +586,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">LIABILITY</span></div>
 
 
-<div class="viewcode-block" id="InterestAccount"><a class="viewcode-back" href="../account.html#account.InterestAccount">[docs]</a><span class="k">class</span> <span class="nc">InterestAccount</span><span class="p">:</span>
+<div class="viewcode-block" id="InterestAccount"><a class="viewcode-back" href="../account.html#account.InterestAccount">[docs]</a><span class="k">class</span> <span class="nc">InterestAccount</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class used to calculate interest balances.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

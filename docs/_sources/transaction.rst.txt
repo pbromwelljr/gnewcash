@@ -14,3 +14,6 @@ Transaction
 
 .. autoclass:: ScheduledTransaction
    :members:
+
+.. autoclass:: SimpleTransaction
+   :members:

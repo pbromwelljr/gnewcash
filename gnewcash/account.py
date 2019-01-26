@@ -11,13 +11,13 @@ from collections import namedtuple
 
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 
 
-class AccountType:
+class AccountType(object):
     """
     Enumeration class to indicate the types of accounts available in GnuCash.
     """
@@ -31,7 +31,7 @@ class AccountType:
     LIABILITY = 'LIABILITY'
 
 
-class Account(GuidObject):
+class Account(GuidObject, SlottableObject):
     """
     Represents an account in GnuCash.
     """
@@ -40,24 +40,17 @@ class Account(GuidObject):
         self.name = ''
         self.type = None
         self.commodity_scu = None
-        self.parent = None
+        self.__parent = None
         self.children = []
         self.commodity = None
         self.code = None
         self.description = None
-        self.slots = []
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.type)
 
     def __repr__(self):
         return str(self)
-
-    def __setattr__(self, key, value):
-        if key == 'parent' and value is not None:
-            if self not in value.children:
-                value.children.append(self)
-        self.__dict__[key] = value
 
     def __eq__(self, other):
         return self.guid == getattr(other, 'guid', None)
@@ -309,6 +302,79 @@ class Account(GuidObject):
                 return subaccount_result
         return None
 
+    @property
+    def parent(self):
+        """
+        Parent account of the current account
+
+        :return: Account's parent
+        :rtype: Account
+        """
+        return self.__parent
+
+    @parent.setter
+    def parent(self, value):
+        if value is not None:
+            if self not in value.children:
+                value.children.append(self)
+        self.__parent = value
+
+    @property
+    def color(self):
+        """
+        Account color
+
+        :return: Account color as a string
+        :rtype: str
+        """
+        return super(Account, self).get_slot_value('color')
+
+    @color.setter
+    def color(self, value):
+        super(Account, self).set_slot_value('color', value, 'string')
+
+    @property
+    def notes(self):
+        """
+        User defined notes for the account
+
+        :return: User-defined notes
+        :rtype: str
+        """
+        return super(Account, self).get_slot_value('notes')
+
+    @notes.setter
+    def notes(self, value):
+        super(Account, self).set_slot_value('notes', value, 'string')
+
+    @property
+    def hidden(self):
+        """
+        Is the account hidden?
+
+        :return: True if account is marked hidden, otherwise False.
+        :rtype: bool
+        """
+        return super(Account, self).get_slot_value('hidden') == 'true'
+
+    @hidden.setter
+    def hidden(self, value):
+        super(Account, self).set_slot_value_bool('hidden', value, 'string')
+
+    @property
+    def placeholder(self):
+        """
+        Is the account a placeholder?
+
+        :return: True if the account is a placeholder, otherwise False
+        :rtype: bool
+        """
+        return super(Account, self).get_slot_value('placeholder')
+
+    @placeholder.setter
+    def placeholder(self, value):
+        super(Account, self).set_slot_value_bool('placeholder', value, 'string')
+
 
 class BankAccount(Account):
     """
@@ -373,7 +439,7 @@ class LiabilityAccount(Account):
         self.type = AccountType.LIABILITY
 
 
-class InterestAccount:
+class InterestAccount(object):
     """
     Class used to calculate interest balances.
     """

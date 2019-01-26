@@ -154,13 +154,14 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 
 
-<div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a transaction in GnuCash.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -171,7 +172,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -281,7 +281,91 @@
 <span class="sd">        Marks all splits in the transaction as cleared (reconciled_state = &#39;c&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
-            <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span></div></div>
+            <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Notes on the transaction</span>
+
+<span class="sd">        :return: Notes tied to the transaction</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">)</span>
+
+    <span class="nd">@notes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        GUID of the transaction that reverses this transaction</span>
+
+<span class="sd">        :return: Transaction GUID</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;reversed-by&#39;</span><span class="p">)</span>
+
+    <span class="nd">@reversed_by</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;reversed-by&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Void status</span>
+
+<span class="sd">        :return: Void status</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;trans-read-only&#39;</span><span class="p">)</span>
+
+    <span class="nd">@voided</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;trans-read-only&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Time that the transaction was voided</span>
+
+<span class="sd">        :return: Time that the transaction was voided</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;void-time&#39;</span><span class="p">)</span>
+
+    <span class="nd">@void_time</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;void-time&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reason that the transaction was voided</span>
+
+<span class="sd">        :return: Reason that the transaction was voided</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;void-reason&#39;</span><span class="p">)</span>
+
+    <span class="nd">@void_reason</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;void-reason&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        URI associated with the transaction</span>
+
+<span class="sd">        :return: URI associated with the transaction</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;assoc_uri&#39;</span><span class="p">)</span>
+
+    <span class="nd">@associated_uri</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;assoc_uri&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Split"><a class="viewcode-back" href="../transaction.html#transaction.Split">[docs]</a><span class="k">class</span> <span class="nc">Split</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
@@ -680,6 +764,95 @@
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">date_node</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="SimpleTransaction"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction">[docs]</a><span class="k">class</span> <span class="nc">SimpleTransaction</span><span class="p">(</span><span class="n">Transaction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used to simplify creating and manipulating Transactions that only have 2 splits (from account and to account)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SimpleTransaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+        <span class="c1"># pylint: disable=E1101</span>
+        <span class="n">new_object</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">)</span>
+        <span class="c1"># Remove the two splits created by the SimpleTransaction constructor</span>
+        <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                                        <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Transaction </span><span class="si">{}</span><span class="s1"> is a SimpleTransaction but has more than one split. &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span> <span class="o">+</span>
+                 <span class="s1">&#39;Using the from_account, to_account, and amount SimpleTransaction fields will result in undesirable &#39;</span> <span class="o">+</span>
+                 <span class="s1">&#39;behavior.&#39;</span><span class="p">)</span>
+
+        <span class="n">from_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">from_split</span><span class="p">:</span>
+            <span class="n">new_object</span><span class="o">.</span><span class="n">from_split</span> <span class="o">=</span> <span class="n">from_split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Transaction </span><span class="si">{}</span><span class="s1"> does not have a deterministic &quot;from&quot; split. &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span> <span class="o">+</span>
+                 <span class="s1">&#39;Assuming first split in transaction: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+            <span class="n">new_object</span><span class="o">.</span><span class="n">from_split</span> <span class="o">=</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">from_split</span><span class="p">)</span>
+
+        <span class="n">to_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">to_split</span><span class="p">:</span>
+            <span class="n">new_object</span><span class="o">.</span><span class="n">to_split</span> <span class="o">=</span> <span class="n">to_split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Transaction </span><span class="si">{}</span><span class="s1"> does not have a deterministic &quot;to&quot; split. &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span> <span class="o">+</span>
+                 <span class="s1">&#39;Assuming last split in transaction: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="n">new_object</span><span class="o">.</span><span class="n">to_split</span> <span class="o">=</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">to_split</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_object</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">from_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Account which the transaction transfers funds from.</span>
+
+<span class="sd">        :return: Account which the transaction transfers funds from.</span>
+<span class="sd">        :rtype: Account</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="o">.</span><span class="n">account</span>
+
+    <span class="nd">@from_account</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">from_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Account which the transaction transfers funds to.</span>
+
+<span class="sd">        :return: Account which the transaction transfers funds to.</span>
+<span class="sd">        :rtype: Account</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">account</span>
+
+    <span class="nd">@to_account</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">amount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dollar amount for funds transferred.</span>
+
+<span class="sd">        :return: Dollar amount for funds transferred.</span>
+<span class="sd">        :rtype: decimal.Decimal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">amount</span>
+
+    <span class="nd">@amount</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">value</span></div>
 </pre></div>
 
            </div>

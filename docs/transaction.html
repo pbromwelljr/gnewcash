@@ -182,6 +182,22 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="transaction.Transaction.associated_uri">
+<code class="descname">associated_uri</code><a class="headerlink" href="#transaction.Transaction.associated_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>URI associated with the transaction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">URI associated with the transaction</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="transaction.Transaction.cleared">
 <code class="descname">cleared</code><a class="headerlink" href="#transaction.Transaction.cleared" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if all splits in the transaction are cleared.</p>
@@ -226,6 +242,86 @@
 <dt id="transaction.Transaction.mark_transaction_cleared">
 <code class="descname">mark_transaction_cleared</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.mark_transaction_cleared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.mark_transaction_cleared" title="Permalink to this definition">¶</a></dt>
 <dd><p>Marks all splits in the transaction as cleared (reconciled_state = ‘c’)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.Transaction.notes">
+<code class="descname">notes</code><a class="headerlink" href="#transaction.Transaction.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Notes on the transaction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Notes tied to the transaction</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.Transaction.reversed_by">
+<code class="descname">reversed_by</code><a class="headerlink" href="#transaction.Transaction.reversed_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>GUID of the transaction that reverses this transaction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Transaction GUID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.Transaction.void_reason">
+<code class="descname">void_reason</code><a class="headerlink" href="#transaction.Transaction.void_reason" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reason that the transaction was voided</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Reason that the transaction was voided</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.Transaction.void_time">
+<code class="descname">void_time</code><a class="headerlink" href="#transaction.Transaction.void_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time that the transaction was voided</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Time that the transaction was voided</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.Transaction.voided">
+<code class="descname">voided</code><a class="headerlink" href="#transaction.Transaction.voided" title="Permalink to this definition">¶</a></dt>
+<dd><p>Void status</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Void status</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -554,6 +650,85 @@ If the provided date is None, it will retrieve the ending balance.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="transaction.SimpleTransaction">
+<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">SimpleTransaction</code><a class="reference internal" href="_modules/transaction.html#SimpleTransaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.SimpleTransaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class used to simplify creating and manipulating Transactions that only have 2 splits (from account and to account)</p>
+<dl class="attribute">
+<dt id="transaction.SimpleTransaction.amount">
+<code class="descname">amount</code><a class="headerlink" href="#transaction.SimpleTransaction.amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dollar amount for funds transferred.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dollar amount for funds transferred.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.SimpleTransaction.from_account">
+<code class="descname">from_account</code><a class="headerlink" href="#transaction.SimpleTransaction.from_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Account which the transaction transfers funds from.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Account which the transaction transfers funds from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="account.html#account.Account" title="account.Account">Account</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="transaction.SimpleTransaction.from_xml">
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#SimpleTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.SimpleTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Transaction object from the GnuCash XML</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>transaction_node</strong> (<em>ElementTree.Element</em>) – XML node for the transaction</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
+<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning accounts)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Transaction object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="transaction.SimpleTransaction.to_account">
+<code class="descname">to_account</code><a class="headerlink" href="#transaction.SimpleTransaction.to_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Account which the transaction transfers funds to.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Account which the transaction transfers funds to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="account.html#account.Account" title="account.Account">Account</a></td>
 </tr>
 </tbody>
 </table>

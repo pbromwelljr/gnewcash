@@ -7,7 +7,7 @@
 from xml.etree import ElementTree
 
 
-class Commodity:
+class Commodity(object):
     """
     Represents a Commodity in GnuCash
     """

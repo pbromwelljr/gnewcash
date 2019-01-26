@@ -15,10 +15,10 @@ from gnewcash.guid_object import GuidObject
 from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
-from gnewcash.slot import Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
-class GnuCashFile:
+class GnuCashFile(object):
     """
     Class representing a GnuCash file on disk.
     """
@@ -71,7 +71,7 @@ class GnuCashFile:
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file, sort_transactions=True):
+    def read_file(cls, source_file, sort_transactions=True, transaction_class=None):
         """
         Reads the specified .gnucash file and loads it into memory
 
@@ -79,9 +79,13 @@ class GnuCashFile:
         :type source_file: str
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
+        :param transaction_class: Class to use when initializing transactions
+        :type transaction_class: type
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
+        if transaction_class is None:
+            transaction_class = Transaction
         logger = getLogger()
         built_file = cls()
         built_file.file_name = source_file
@@ -98,7 +102,8 @@ class GnuCashFile:
 
             books = root.findall('gnc:book', namespaces)
             for book in books:
-                new_book = Book.from_xml(book, namespaces, sort_transactions=sort_transactions)
+                new_book = Book.from_xml(book, namespaces, sort_transactions=sort_transactions,
+                                         transaction_class=transaction_class)
                 built_file.books.append(new_book)
         else:
             logger.warning('Could not find %s', source_file)
@@ -139,7 +144,7 @@ class GnuCashFile:
                 target_file_handle.write(file_contents)
 
 
-class Book(GuidObject):
+class Book(GuidObject, SlottableObject):
     """
     Represents a Book in GnuCash
     """
@@ -218,7 +223,7 @@ class Book(GuidObject):
         return book_node
 
     @classmethod
-    def from_xml(cls, book_node, namespaces, sort_transactions=True):
+    def from_xml(cls, book_node, namespaces, sort_transactions=True, transaction_class=None):
         """
         Creates a Book object from the GnuCash XML
 
@@ -228,9 +233,14 @@ class Book(GuidObject):
         :type namespaces: dict[str, str]
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
+        :param transaction_class: Class to use when initializing transactions
+        :type transaction_class: type
         :return: Book object from XML
         :rtype: Book
         """
+        if transaction_class is None:
+            transaction_class = Transaction
+
         new_book = Book()
         new_book.guid = book_node.find('book:id', namespaces).text
         accounts = book_node.findall('gnc:account', namespaces)
@@ -253,7 +263,7 @@ class Book(GuidObject):
             account_objects.append(Account.from_xml(account, namespaces, account_objects))
 
         for transaction in transactions:
-            transaction_manager.add(Transaction.from_xml(transaction, namespaces, account_objects))
+            transaction_manager.add(transaction_class.from_xml(transaction, namespaces, account_objects))
 
         new_book.root_account = [x for x in account_objects if x.type == 'ROOT'][0]
         new_book.transactions = transaction_manager
@@ -272,7 +282,7 @@ class Book(GuidObject):
                 for subelement in template_transaction:
                     if not subelement.tag.endswith('transaction'):
                         continue
-                    template_transactions.append(Transaction.from_xml(subelement, namespaces, template_accounts))
+                    template_transactions.append(transaction_class.from_xml(subelement, namespaces, template_accounts))
             new_book.template_transactions = template_transactions
             template_root_accounts = [x for x in template_accounts if x.type == 'ROOT']
             if template_root_accounts:
@@ -340,7 +350,7 @@ class Book(GuidObject):
         return str(self)
 
 
-class Budget(GuidObject):
+class Budget(GuidObject, SlottableObject):
     """
     Class object representing a Budget in GnuCash
     """
@@ -352,7 +362,6 @@ class Budget(GuidObject):
         self.recurrence_multiplier = None
         self.recurrence_period_type = None
         self.recurrence_start = None
-        self.slots = []
 
     @property
     def as_xml(self):

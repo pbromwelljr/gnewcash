@@ -207,6 +207,70 @@
 
 </dd></dl>
 
+<dl class="class">
+<dt id="slot.SlottableObject">
+<em class="property">class </em><code class="descclassname">slot.</code><code class="descname">SlottableObject</code><a class="reference internal" href="_modules/slot.html#SlottableObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.SlottableObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class used to consolidate storing and retrieving slot values.</p>
+<dl class="method">
+<dt id="slot.SlottableObject.get_slot_value">
+<code class="descname">get_slot_value</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#SlottableObject.get_slot_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.SlottableObject.get_slot_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the value of the slot given a certain key</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the slot</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Slot value</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Any</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="slot.SlottableObject.set_slot_value">
+<code class="descname">set_slot_value</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>slot_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#SlottableObject.set_slot_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.SlottableObject.set_slot_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the value of the slot given a certain key and slot type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the slot</li>
+<li><strong>value</strong> (<em>Any</em>) – New value of the slot</li>
+<li><strong>slot_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Type of slot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="slot.SlottableObject.set_slot_value_bool">
+<code class="descname">set_slot_value_bool</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>slot_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#SlottableObject.set_slot_value_bool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.SlottableObject.set_slot_value_bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for slots that expect “true” or “false” GnuCash-side.
+Converts “true” (case insensitive) and True to “true”.
+Converts “false” (case insensitive) and False to “false”.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – </li>
+<li><strong>value</strong> (<em>bool|str</em>) – New value of the slot</li>
+<li><strong>slot_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Type of slot</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

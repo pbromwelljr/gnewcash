@@ -326,3 +326,125 @@ class TestAccount(unittest.TestCase):
         self.assertEqual(after_interest.iterator_date, datetime(2019, 7, 1))
         self.assertEqual(after_interest.amount_to_capital, Decimal('94.4'))
         self.assertEqual(after_interest.interest, Decimal('5.6'))
+
+    def test_account_color(self):
+        test_account = acc.Account()
+        self.assertEqual(len(test_account.slots), 0)
+        self.assertIsNone(test_account.color)
+
+        test_account.color = 'Not Set'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'color')
+        self.assertEqual(test_account.slots[0].value, 'Not Set')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        self.assertEqual(test_account.color, 'Not Set')
+
+        test_account.color = '#ffffff'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'color')
+        self.assertEqual(test_account.slots[0].value, '#ffffff')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        test_account = acc.Account()
+        test_account.hidden = True
+        self.assertIsNone(test_account.color)
+
+    def test_account_notes(self):
+        test_account = acc.Account()
+        self.assertEqual(len(test_account.slots), 0)
+        self.assertIsNone(test_account.notes)
+
+        test_account.notes = 'These are some unit test notes'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'notes')
+        self.assertEqual(test_account.slots[0].value, 'These are some unit test notes')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        self.assertEqual(test_account.notes, 'These are some unit test notes')
+
+        test_account.notes = 'These are some more unit test notes'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'notes')
+        self.assertEqual(test_account.slots[0].value, 'These are some more unit test notes')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        test_account = acc.Account()
+        test_account.hidden = True
+        self.assertIsNone(test_account.notes)
+
+    def test_account_hidden(self):
+        test_account = acc.Account()
+        self.assertEqual(len(test_account.slots), 0)
+        self.assertFalse(test_account.hidden)
+
+        test_account.hidden = True
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'hidden')
+        self.assertEqual(test_account.slots[0].value, 'true')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        self.assertTrue(test_account.hidden)
+
+        test_account.hidden = False
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'hidden')
+        self.assertEqual(test_account.slots[0].value, 'false')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        test_account.hidden = 'TRUE'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'hidden')
+        self.assertEqual(test_account.slots[0].value, 'true')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        test_account.hidden = 'FALSE'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'hidden')
+        self.assertEqual(test_account.slots[0].value, 'false')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        with self.assertRaises(ValueError):
+            test_account.hidden = 5
+
+        test_account = acc.Account()
+        test_account.placeholder = True
+        self.assertFalse(test_account.hidden)
+
+    def test_account_placeholder(self):
+        test_account = acc.Account()
+        self.assertEqual(len(test_account.slots), 0)
+        self.assertFalse(test_account.placeholder)
+
+        test_account.placeholder = True
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'placeholder')
+        self.assertEqual(test_account.slots[0].value, 'true')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        self.assertTrue(test_account.placeholder)
+
+        test_account.placeholder = False
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'placeholder')
+        self.assertEqual(test_account.slots[0].value, 'false')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        test_account.placeholder = 'TRUE'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'placeholder')
+        self.assertEqual(test_account.slots[0].value, 'true')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        test_account.placeholder = 'FALSE'
+        self.assertEqual(len(test_account.slots), 1)
+        self.assertEqual(test_account.slots[0].key, 'placeholder')
+        self.assertEqual(test_account.slots[0].value, 'false')
+        self.assertEqual(test_account.slots[0].type, 'string')
+
+        with self.assertRaises(ValueError):
+            test_account.placeholder = 5
+
+        test_account = acc.Account()
+        test_account.hidden = True
+        self.assertFalse(test_account.placeholder)

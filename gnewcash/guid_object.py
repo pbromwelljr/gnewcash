@@ -6,13 +6,14 @@
 import uuid
 
 
-class GuidObject:
+class GuidObject(object):
     """
     Class used to generate unique GUIDs for various GNewCash objects.
     """
     used_guids = []
 
     def __init__(self):
+        super(GuidObject, self).__init__()
         self.guid = self.get_guid()
 
     def __str__(self):

@@ -4,6 +4,7 @@ import unittest
 
 import gnewcash.gnucash_file as gcf
 import gnewcash.transaction as trn
+import gnewcash.account as acc
 
 import pytz
 
@@ -105,3 +106,166 @@ class TestTransaction(unittest.TestCase):
         balance_at_date = transaction_manager.get_balance_at_date(checking_account, test_date)
 
         self.assertEqual(balance_at_date, Decimal('2620'))
+
+    def test_transaction_notes(self):
+        test_transaction = trn.Transaction()
+        self.assertEqual(len(test_transaction.slots), 0)
+        self.assertIsNone(test_transaction.notes)
+
+        test_transaction.notes = 'This is a unit test note'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'notes')
+        self.assertEqual(test_transaction.slots[0].value, 'This is a unit test note')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        self.assertEqual(test_transaction.notes, 'This is a unit test note')
+
+        test_transaction.notes = 'This is another unit test note'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'notes')
+        self.assertEqual(test_transaction.slots[0].value, 'This is another unit test note')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        test_transaction = trn.Transaction()
+        test_transaction.reversed_by = 'test123456'
+        self.assertIsNone(test_transaction.notes)
+
+    def test_transaction_reversed_by(self):
+        test_transaction = trn.Transaction()
+        self.assertEqual(len(test_transaction.slots), 0)
+        self.assertIsNone(test_transaction.reversed_by)
+
+        test_transaction.reversed_by = 'test12345'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'reversed-by')
+        self.assertEqual(test_transaction.slots[0].value, 'test12345')
+        self.assertEqual(test_transaction.slots[0].type, 'guid')
+
+        self.assertEqual(test_transaction.reversed_by, 'test12345')
+
+        test_transaction.reversed_by = 'test23456'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'reversed-by')
+        self.assertEqual(test_transaction.slots[0].value, 'test23456')
+        self.assertEqual(test_transaction.slots[0].type, 'guid')
+
+        test_transaction = trn.Transaction()
+        test_transaction.notes = 'This is a test'
+        self.assertIsNone(test_transaction.reversed_by)
+
+    def test_transaction_voided(self):
+        test_transaction = trn.Transaction()
+        self.assertEqual(len(test_transaction.slots), 0)
+        self.assertIsNone(test_transaction.voided)
+
+        test_transaction.voided = 'test12345'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'trans-read-only')
+        self.assertEqual(test_transaction.slots[0].value, 'test12345')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        self.assertEqual(test_transaction.voided, 'test12345')
+
+        test_transaction.voided = 'test23456'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'trans-read-only')
+        self.assertEqual(test_transaction.slots[0].value, 'test23456')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        test_transaction = trn.Transaction()
+        test_transaction.notes = 'This is a test'
+        self.assertIsNone(test_transaction.voided)
+
+    def test_transaction_void_time(self):
+        test_transaction = trn.Transaction()
+        self.assertEqual(len(test_transaction.slots), 0)
+        self.assertIsNone(test_transaction.void_time)
+
+        test_transaction.void_time = 'test12345'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'void-time')
+        self.assertEqual(test_transaction.slots[0].value, 'test12345')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        self.assertEqual(test_transaction.void_time, 'test12345')
+
+        test_transaction.void_time = 'test23456'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'void-time')
+        self.assertEqual(test_transaction.slots[0].value, 'test23456')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        test_transaction = trn.Transaction()
+        test_transaction.notes = 'This is a test'
+        self.assertIsNone(test_transaction.void_time)
+
+    def test_transaction_void_reason(self):
+        test_transaction = trn.Transaction()
+        self.assertEqual(len(test_transaction.slots), 0)
+        self.assertIsNone(test_transaction.void_reason)
+
+        test_transaction.void_reason = 'test12345'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'void-reason')
+        self.assertEqual(test_transaction.slots[0].value, 'test12345')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        self.assertEqual(test_transaction.void_reason, 'test12345')
+
+        test_transaction.void_reason = 'test23456'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'void-reason')
+        self.assertEqual(test_transaction.slots[0].value, 'test23456')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        test_transaction = trn.Transaction()
+        test_transaction.notes = 'This is a test'
+        self.assertIsNone(test_transaction.void_reason)
+
+    def test_transaction_associated_uri(self):
+        test_transaction = trn.Transaction()
+        self.assertEqual(len(test_transaction.slots), 0)
+        self.assertIsNone(test_transaction.associated_uri)
+
+        test_transaction.associated_uri = 'https://www.google.com'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'assoc_uri')
+        self.assertEqual(test_transaction.slots[0].value, 'https://www.google.com')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        self.assertEqual(test_transaction.associated_uri, 'https://www.google.com')
+
+        test_transaction.associated_uri = 'https://www.microsoft.com'
+        self.assertEqual(len(test_transaction.slots), 1)
+        self.assertEqual(test_transaction.slots[0].key, 'assoc_uri')
+        self.assertEqual(test_transaction.slots[0].value, 'https://www.microsoft.com')
+        self.assertEqual(test_transaction.slots[0].type, 'string')
+
+        test_transaction = trn.Transaction()
+        test_transaction.notes = 'This is a test'
+        self.assertIsNone(test_transaction.associated_uri)
+
+
+class TestSimpleTransaction(unittest.TestCase):
+    def test_create_transaction(self):
+        test_from_account = acc.BankAccount()
+        test_from_account.name = 'Checking Account'
+
+        test_to_account = acc.ExpenseAccount()
+        test_to_account.name = 'Video Games'
+
+        test_transaction = trn.SimpleTransaction()
+        test_transaction.from_account = test_from_account
+        test_transaction.to_account = test_to_account
+        test_transaction.amount = Decimal('60.00')
+        test_transaction.date_entered = datetime.now()
+        test_transaction.date_posted = datetime.now()
+
+        self.assertEqual(test_transaction.from_account, test_from_account)
+        self.assertEqual(test_transaction.to_account, test_to_account)
+        self.assertEqual(test_transaction.amount, Decimal('60.00'))
+        self.assertEqual(len(test_transaction.splits), 2)
+        self.assertEqual(test_transaction.splits[0].account, test_from_account)
+        self.assertEqual(test_transaction.splits[0].amount, Decimal('-60.00'))
+        self.assertEqual(test_transaction.splits[1].account, test_to_account)
+        self.assertEqual(test_transaction.splits[1].amount, Decimal('60.00'))
