@@ -242,7 +242,8 @@ class Book(GuidObject, SlottableObject):
             transaction_class = Transaction
 
         new_book = Book()
-        new_book.guid = book_node.find('book:id', namespaces).text
+        if book_node.find('book:id', namespaces) is not None:
+            new_book.guid = book_node.find('book:id', namespaces).text
         accounts = book_node.findall('gnc:account', namespaces)
         transactions = book_node.findall('gnc:transaction', namespaces)
         slots = book_node.find('book:slots', namespaces)
