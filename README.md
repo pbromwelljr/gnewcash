@@ -2,8 +2,6 @@
 
 A Python library for reading, manipulating, and writing to GnuCash files.
 
-Read the docs: 
-
 This project was made to create and interact with GNewCash documents in an easy way. It handles reading from and
 creating the necessary XML needed to generate the GnuCash documents, as well as making the creation of one
 (or multiple) XML tags as simple as changing an object property.
