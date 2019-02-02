@@ -584,9 +584,10 @@ class InterestAccount(object):
         while iterator_date < date:
             previous_date = iterator_date
             if iterator_date.month == 12:
-                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day, tzinfo=iterator_date.tzinfo)
             else:
-                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day,
+                                         tzinfo=iterator_date.tzinfo)
             applicable_extra_payments = [x for x in self.additional_payments
                                          if previous_date < x['payment_date'] < iterator_date]
             if applicable_extra_payments:
@@ -656,9 +657,10 @@ class InterestAccount(object):
         while iterator_balance > 0:
             previous_date = iterator_date
             if iterator_date.month == 12:
-                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day, tzinfo=iterator_date.tzinfo)
             else:
-                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day,
+                                         tzinfo=iterator_date.tzinfo)
             applicable_extra_payments = [x for x in self.additional_payments
                                          if previous_date < x['payment_date'] < iterator_date]
             if applicable_extra_payments and not skip_additional_payments:
