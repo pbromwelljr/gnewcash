@@ -87,7 +87,7 @@ class Account(GuidObject, SlottableObject):
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
         :rtype: int or decimal.Decimal
         """
-        balance = 0
+        balance = Decimal(0)
         applicable_transactions = [x for x in transactions if self in map(lambda y: y.account, x.splits)]
 
         if date is not None:
