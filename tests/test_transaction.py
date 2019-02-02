@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+import os
 import unittest
 
 import gnewcash.gnucash_file as gcf
@@ -10,6 +11,9 @@ import pytz
 
 
 class TestTransaction(unittest.TestCase):
+    def setUp(self):
+        os.chdir(os.path.realpath(os.path.dirname(__file__)))
+
     def test_transaction_cleared(self):
         gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
         book = gnucash_file.books[0]

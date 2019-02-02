@@ -1,3 +1,5 @@
+import os
+
 from datetime import datetime
 from decimal import Decimal
 import pytz
@@ -8,6 +10,9 @@ import gnewcash.account as acc
 
 
 class TestAccount(unittest.TestCase):
+    def setUp(self):
+        os.chdir(os.path.realpath(os.path.dirname(__file__)))
+
     def test_get_starting_balance(self):
         gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
         book = gnucash_file.books[0]
