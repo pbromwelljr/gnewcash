@@ -1,5 +1,6 @@
 import gzip
 import json
+import os
 import unittest
 from xml.etree import ElementTree
 
@@ -8,6 +9,9 @@ import gnewcash.transaction as trn
 
 
 class TestGnuCashFile(unittest.TestCase):
+    def setUp(self):
+        os.chdir(os.path.realpath(os.path.dirname(__file__)))
+
     def test_read_write(self):
         gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', sort_transactions=False)
         gnucash_file.build_file('test_files/Test1.testresult.gnucash', prettify_xml=True)
