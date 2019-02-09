@@ -450,22 +450,22 @@ class InterestAccount(object):
         Class initializer.
 
         :param starting_balance: Starting balance for the interest account.
-        :type starting_balance: decimal.Decimal
+        :type starting_balance: decimal.Decimal|NoneType
         :param starting_date: datetime object indicating the date of the starting balance.
-        :type starting_date: datetime.datetime
+        :type starting_date: datetime.datetime|NoneType
         :param interest_percentage: Percentage to interest on the loan.
-        :type interest_percentage: decimal.Decimal
+        :type interest_percentage: decimal.Decimal|NoneType
         :param payment_amount: Payment amount on the loan.
-        :type payment_amount: decimal.Decimal
+        :type payment_amount: decimal.Decimal|NoneType
         :param additional_payments: List of dictionaries containing an "amount" key for additional amount paid,
             and "payment_date" for the date the additional amount was paid.
-        :type additional_payments: list[dict]
+        :type additional_payments: list[dict]|NoneType
         :param skip_payment_dates: List of datetime objects that the loan payment should be skipped
-        :type skip_payment_dates: list[datetime.datetime]
+        :type skip_payment_dates: list[datetime.datetime]|NoneType
         :param interest_start_date: datetime object that interest starts on
-        :type interest_start_date: datetime.datetime
+        :type interest_start_date: datetime.datetime|NoneType
         :param subaccounts: List of InterestAccount objects that are subaccounts of this InterestAccount
-        :type subaccounts: list[InterestAccount]
+        :type subaccounts: list[InterestAccount]|NoneType
         """
         if additional_payments is None:
             additional_payments = []
@@ -584,9 +584,10 @@ class InterestAccount(object):
         while iterator_date < date:
             previous_date = iterator_date
             if iterator_date.month == 12:
-                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day, tzinfo=iterator_date.tzinfo)
             else:
-                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day,
+                                         tzinfo=iterator_date.tzinfo)
             applicable_extra_payments = [x for x in self.additional_payments
                                          if previous_date < x['payment_date'] < iterator_date]
             if applicable_extra_payments:
@@ -656,9 +657,10 @@ class InterestAccount(object):
         while iterator_balance > 0:
             previous_date = iterator_date
             if iterator_date.month == 12:
-                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year + 1, 1, iterator_date.day, tzinfo=iterator_date.tzinfo)
             else:
-                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day)
+                iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day,
+                                         tzinfo=iterator_date.tzinfo)
             applicable_extra_payments = [x for x in self.additional_payments
                                          if previous_date < x['payment_date'] < iterator_date]
             if applicable_extra_payments and not skip_additional_payments:

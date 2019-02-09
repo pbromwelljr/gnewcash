@@ -533,15 +533,15 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>starting_balance</strong> (<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)"><em>decimal.Decimal</em></a>) – Starting balance for the interest account.</li>
-<li><strong>starting_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object indicating the date of the starting balance.</li>
-<li><strong>interest_percentage</strong> (<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)"><em>decimal.Decimal</em></a>) – Percentage to interest on the loan.</li>
-<li><strong>payment_amount</strong> (<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)"><em>decimal.Decimal</em></a>) – Payment amount on the loan.</li>
-<li><strong>additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>]</em>) – List of dictionaries containing an “amount” key for additional amount paid,
+<li><strong>starting_balance</strong> (<em>decimal.Decimal|NoneType</em>) – Starting balance for the interest account.</li>
+<li><strong>starting_date</strong> (<em>datetime.datetime|NoneType</em>) – datetime object indicating the date of the starting balance.</li>
+<li><strong>interest_percentage</strong> (<em>decimal.Decimal|NoneType</em>) – Percentage to interest on the loan.</li>
+<li><strong>payment_amount</strong> (<em>decimal.Decimal|NoneType</em>) – Payment amount on the loan.</li>
+<li><strong>additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>]</em><em>|NoneType</em>) – List of dictionaries containing an “amount” key for additional amount paid,
 and “payment_date” for the date the additional amount was paid.</li>
-<li><strong>skip_payment_dates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a><em>]</em>) – List of datetime objects that the loan payment should be skipped</li>
-<li><strong>interest_start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object that interest starts on</li>
-<li><strong>subaccounts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#account.InterestAccount" title="account.InterestAccount"><em>InterestAccount</em></a><em>]</em>) – List of InterestAccount objects that are subaccounts of this InterestAccount</li>
+<li><strong>skip_payment_dates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a><em>]</em><em>|NoneType</em>) – List of datetime objects that the loan payment should be skipped</li>
+<li><strong>interest_start_date</strong> (<em>datetime.datetime|NoneType</em>) – datetime object that interest starts on</li>
+<li><strong>subaccounts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#account.InterestAccount" title="account.InterestAccount"><em>InterestAccount</em></a><em>]</em><em>|NoneType</em>) – List of InterestAccount objects that are subaccounts of this InterestAccount</li>
 </ul>
 </td>
 </tr>

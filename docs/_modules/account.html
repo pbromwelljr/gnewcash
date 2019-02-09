@@ -597,22 +597,22 @@
 <span class="sd">        Class initializer.</span>
 
 <span class="sd">        :param starting_balance: Starting balance for the interest account.</span>
-<span class="sd">        :type starting_balance: decimal.Decimal</span>
+<span class="sd">        :type starting_balance: decimal.Decimal|NoneType</span>
 <span class="sd">        :param starting_date: datetime object indicating the date of the starting balance.</span>
-<span class="sd">        :type starting_date: datetime.datetime</span>
+<span class="sd">        :type starting_date: datetime.datetime|NoneType</span>
 <span class="sd">        :param interest_percentage: Percentage to interest on the loan.</span>
-<span class="sd">        :type interest_percentage: decimal.Decimal</span>
+<span class="sd">        :type interest_percentage: decimal.Decimal|NoneType</span>
 <span class="sd">        :param payment_amount: Payment amount on the loan.</span>
-<span class="sd">        :type payment_amount: decimal.Decimal</span>
+<span class="sd">        :type payment_amount: decimal.Decimal|NoneType</span>
 <span class="sd">        :param additional_payments: List of dictionaries containing an &quot;amount&quot; key for additional amount paid,</span>
 <span class="sd">            and &quot;payment_date&quot; for the date the additional amount was paid.</span>
-<span class="sd">        :type additional_payments: list[dict]</span>
+<span class="sd">        :type additional_payments: list[dict]|NoneType</span>
 <span class="sd">        :param skip_payment_dates: List of datetime objects that the loan payment should be skipped</span>
-<span class="sd">        :type skip_payment_dates: list[datetime.datetime]</span>
+<span class="sd">        :type skip_payment_dates: list[datetime.datetime]|NoneType</span>
 <span class="sd">        :param interest_start_date: datetime object that interest starts on</span>
-<span class="sd">        :type interest_start_date: datetime.datetime</span>
+<span class="sd">        :type interest_start_date: datetime.datetime|NoneType</span>
 <span class="sd">        :param subaccounts: List of InterestAccount objects that are subaccounts of this InterestAccount</span>
-<span class="sd">        :type subaccounts: list[InterestAccount]</span>
+<span class="sd">        :type subaccounts: list[InterestAccount]|NoneType</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">additional_payments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">additional_payments</span> <span class="o">=</span> <span class="p">[]</span>
@@ -731,9 +731,10 @@
         <span class="k">while</span> <span class="n">iterator_date</span> <span class="o">&lt;</span> <span class="n">date</span><span class="p">:</span>
             <span class="n">previous_date</span> <span class="o">=</span> <span class="n">iterator_date</span>
             <span class="k">if</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
-                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                         <span class="n">tzinfo</span><span class="o">=</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
             <span class="n">applicable_extra_payments</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_payments</span>
                                          <span class="k">if</span> <span class="n">previous_date</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;payment_date&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">iterator_date</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">applicable_extra_payments</span><span class="p">:</span>
@@ -803,9 +804,10 @@
         <span class="k">while</span> <span class="n">iterator_balance</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">previous_date</span> <span class="o">=</span> <span class="n">iterator_date</span>
             <span class="k">if</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
-                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+                <span class="n">iterator_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterator_date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                         <span class="n">tzinfo</span><span class="o">=</span><span class="n">iterator_date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
             <span class="n">applicable_extra_payments</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_payments</span>
                                          <span class="k">if</span> <span class="n">previous_date</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;payment_date&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">iterator_date</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">applicable_extra_payments</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_additional_payments</span><span class="p">:</span>
