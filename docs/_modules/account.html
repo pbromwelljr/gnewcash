@@ -234,7 +234,7 @@
 <span class="sd">        :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</span>
 <span class="sd">        :rtype: int or decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">balance</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">balance</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">applicable_transactions</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transactions</span> <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">splits</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

@@ -29,7 +29,7 @@ GNewCash
 
 This package only relies on the Python standard library, so it should be compatible with Windows, Mac OSX, and Linux.
 
-All code and tests are designed for GnuCash version 2 files. Version 3 is currently not supported.
+All code and tests are designed for GnuCash version 2 files. Version 3 is also supported.
 
 Liability
 ---------
