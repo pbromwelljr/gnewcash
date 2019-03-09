@@ -1,4 +1,6 @@
 """
+Module containing classes that read, manipulate, and write slots.
+
 .. module:: slot
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
@@ -9,9 +11,8 @@ from xml.etree import ElementTree
 
 
 class Slot(object):
-    """
-    Represents a slot in GnuCash.
-    """
+    """Represents a slot in GnuCash."""
+
     def __init__(self, key, value, slot_type):
         self.key = key
         self.value = value
@@ -20,7 +21,7 @@ class Slot(object):
     @property
     def as_xml(self):
         """
-        Returns the current slot as GnuCash-compatible XML
+        Returns the current slot as GnuCash-compatible XML.
 
         :return: Current slot as XML
         :rtype: xml.etree.ElementTree.Element
@@ -48,7 +49,7 @@ class Slot(object):
     @classmethod
     def from_xml(cls, slot_node, namespaces):
         """
-        Creates a Slot object from the GnuCash XML
+        Creates a Slot object from the GnuCash XML.
 
         :param slot_node: XML node for the slot
         :type slot_node: ElementTree.Element
@@ -81,16 +82,15 @@ class Slot(object):
 
 
 class SlottableObject(object):
-    """
-    Class used to consolidate storing and retrieving slot values.
-    """
+    """Class used to consolidate storing and retrieving slot values."""
+
     def __init__(self):
         super(SlottableObject, self).__init__()
         self.slots = []
 
     def get_slot_value(self, key):
         """
-        Retrieves the value of the slot given a certain key
+        Retrieves the value of the slot given a certain key.
 
         :param key: Name of the slot
         :type key: str
@@ -109,7 +109,7 @@ class SlottableObject(object):
 
     def set_slot_value(self, key, value, slot_type):
         """
-        Sets the value of the slot given a certain key and slot type
+        Sets the value of the slot given a certain key and slot type.
 
         :param key: Name of the slot
         :type key: str
@@ -127,6 +127,7 @@ class SlottableObject(object):
     def set_slot_value_bool(self, key, value, slot_type):
         """
         Helper function for slots that expect "true" or "false" GnuCash-side.
+
         Converts "true" (case insensitive) and True to "true".
         Converts "false" (case insensitive) and False to "false".
 

@@ -1,4 +1,6 @@
 """
+Module containing classes that read, manipulate, and write commodities.
+
 .. module:: commodity
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
@@ -8,9 +10,8 @@ from xml.etree import ElementTree
 
 
 class Commodity(object):
-    """
-    Represents a Commodity in GnuCash
-    """
+    """Represents a Commodity in GnuCash."""
+
     def __init__(self, commodity_id, space):
         self.commodity_id = commodity_id
         self.space = space
@@ -24,7 +25,7 @@ class Commodity(object):
     @property
     def as_xml(self):
         """
-        Returns the current commodity as GnuCash-compatible XML
+        Returns the current commodity as GnuCash-compatible XML.
 
         :return: Current commodity as XML
         :rtype: xml.etree.ElementTree.Element
@@ -50,7 +51,7 @@ class Commodity(object):
     @classmethod
     def from_xml(cls, commodity_node, namespaces):
         """
-        Creates a Commodity object from the GnuCash XML
+        Creates a Commodity object from the GnuCash XML.
 
         :param commodity_node: XML node for the commodity
         :type commodity_node: ElementTree.Element
@@ -88,7 +89,7 @@ class Commodity(object):
 
     def as_short_xml(self, node_tag):
         """
-        Returns the current commodity as GnuCash-compatible XML (short version used for accounts)
+        Returns the current commodity as GnuCash-compatible XML (short version used for accounts).
 
         :return: Current commodity as short XML
         :rtype: xml.etree.ElementTree.Element

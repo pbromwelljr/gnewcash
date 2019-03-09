@@ -1,4 +1,6 @@
 """
+Module containing classes that manage GUID objects.
+
 .. module:: guid_object
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
@@ -7,9 +9,8 @@ import uuid
 
 
 class GuidObject(object):
-    """
-    Class used to generate unique GUIDs for various GNewCash objects.
-    """
+    """Class used to generate unique GUIDs for various GNewCash objects."""
+
     used_guids = []
 
     def __init__(self):
@@ -25,7 +26,7 @@ class GuidObject(object):
     @classmethod
     def get_guid(cls):
         """
-        Retrieves a unique GUID and returns it
+        Retrieves a unique GUID and returns it.
 
         :return: New unique GUID
         :rtype: str

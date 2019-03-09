@@ -146,6 +146,8 @@
             
   <h1>Source code for account</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing classes that read, manipulate, and write accounts.</span>
+
 <span class="sd">.. module:: account</span>
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
@@ -165,9 +167,8 @@
 
 
 <div class="viewcode-block" id="AccountType"><a class="viewcode-back" href="../account.html#account.AccountType">[docs]</a><span class="k">class</span> <span class="nc">AccountType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Enumeration class to indicate the types of accounts available in GnuCash.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Enumeration class to indicate the types of accounts available in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="n">ROOT</span> <span class="o">=</span> <span class="s1">&#39;ROOT&#39;</span>
     <span class="n">BANK</span> <span class="o">=</span> <span class="s1">&#39;BANK&#39;</span>
     <span class="n">INCOME</span> <span class="o">=</span> <span class="s1">&#39;INCOME&#39;</span>
@@ -179,9 +180,8 @@
 
 
 <div class="viewcode-block" id="Account"><a class="viewcode-back" href="../account.html#account.Account">[docs]</a><span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents an account in GnuCash.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents an account in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -225,6 +225,7 @@
 <div class="viewcode-block" id="Account.get_balance_at_date"><a class="viewcode-back" href="../account.html#account.Account.get_balance_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transactions</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the account balance for the current account at a certain date, given the list of transactions.</span>
+
 <span class="sd">        If the provided date is None, it will retrieve the ending balance.</span>
 
 <span class="sd">        :param transactions: List of transactions or TransactionManager</span>
@@ -287,7 +288,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current account and children as XML</span>
 <span class="sd">        :rtype: list[xml.etree.ElementTree.Element]</span>
@@ -332,7 +333,7 @@
 <div class="viewcode-block" id="Account.from_xml"><a class="viewcode-back" href="../account.html#account.Account.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates an Account object from the GnuCash XML</span>
+<span class="sd">        Creates an Account object from the GnuCash XML.</span>
 
 <span class="sd">        :param account_node: XML node for the account</span>
 <span class="sd">        :type account_node: ElementTree.Element</span>
@@ -343,7 +344,6 @@
 <span class="sd">        :return: Account object from XML</span>
 <span class="sd">        :rtype: Account</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">account_object</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">account_object</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
         <span class="n">account_object</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
@@ -452,7 +452,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parent account of the current account</span>
+<span class="sd">        Parent account of the current account.</span>
 
 <span class="sd">        :return: Account&#39;s parent</span>
 <span class="sd">        :rtype: Account</span>
@@ -469,7 +469,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Account color</span>
+<span class="sd">        Account color.</span>
 
 <span class="sd">        :return: Account color as a string</span>
 <span class="sd">        :rtype: str</span>
@@ -483,7 +483,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        User defined notes for the account</span>
+<span class="sd">        User defined notes for the account.</span>
 
 <span class="sd">        :return: User-defined notes</span>
 <span class="sd">        :rtype: str</span>
@@ -497,7 +497,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Is the account hidden?</span>
+<span class="sd">        Hidden flag for the account.</span>
 
 <span class="sd">        :return: True if account is marked hidden, otherwise False.</span>
 <span class="sd">        :rtype: bool</span>
@@ -511,7 +511,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Is the account a placeholder?</span>
+<span class="sd">        Placeholder flag for the account.</span>
 
 <span class="sd">        :return: True if the account is a placeholder, otherwise False</span>
 <span class="sd">        :rtype: bool</span>
@@ -524,73 +524,65 @@
 
 
 <div class="viewcode-block" id="BankAccount"><a class="viewcode-back" href="../account.html#account.BankAccount">[docs]</a><span class="k">class</span> <span class="nc">BankAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.BANK</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.BANK.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BankAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">BANK</span></div>
 
 
 <div class="viewcode-block" id="IncomeAccount"><a class="viewcode-back" href="../account.html#account.IncomeAccount">[docs]</a><span class="k">class</span> <span class="nc">IncomeAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.INCOME</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.INCOME.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">IncomeAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">INCOME</span></div>
 
 
 <div class="viewcode-block" id="AssetAccount"><a class="viewcode-back" href="../account.html#account.AssetAccount">[docs]</a><span class="k">class</span> <span class="nc">AssetAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.ASSET</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.ASSET.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">AssetAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">ASSET</span></div>
 
 
 <div class="viewcode-block" id="CreditAccount"><a class="viewcode-back" href="../account.html#account.CreditAccount">[docs]</a><span class="k">class</span> <span class="nc">CreditAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.CREDIT</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.CREDIT.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CreditAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span></div>
 
 
 <div class="viewcode-block" id="ExpenseAccount"><a class="viewcode-back" href="../account.html#account.ExpenseAccount">[docs]</a><span class="k">class</span> <span class="nc">ExpenseAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.EXPENSE</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.EXPENSE.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ExpenseAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">EXPENSE</span></div>
 
 
 <div class="viewcode-block" id="EquityAccount"><a class="viewcode-back" href="../account.html#account.EquityAccount">[docs]</a><span class="k">class</span> <span class="nc">EquityAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.EQUITY</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.EQUITY.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EquityAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">EQUITY</span></div>
 
 
 <div class="viewcode-block" id="LiabilityAccount"><a class="viewcode-back" href="../account.html#account.LiabilityAccount">[docs]</a><span class="k">class</span> <span class="nc">LiabilityAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shortcut class to create an account with the type set to AccountType.LIABILITY</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.LIABILITY.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">LiabilityAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">LIABILITY</span></div>
 
 
 <div class="viewcode-block" id="InterestAccount"><a class="viewcode-back" href="../account.html#account.InterestAccount">[docs]</a><span class="k">class</span> <span class="nc">InterestAccount</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class used to calculate interest balances.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="InterestAccount.__init__"><a class="viewcode-back" href="../account.html#account.InterestAccount.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_balance</span><span class="p">,</span> <span class="n">starting_date</span><span class="p">,</span> <span class="n">interest_percentage</span><span class="p">,</span> <span class="n">payment_amount</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;Class used to calculate interest balances.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InterestAccount.__init__"><a class="viewcode-back" href="../account.html#account.InterestAccount.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_balance</span><span class="p">,</span> <span class="n">starting_date</span><span class="p">,</span> <span class="n">interest_percentage</span><span class="p">,</span> <span class="n">payment_amount</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">additional_payments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_payment_dates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interest_start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">subaccounts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -709,7 +701,7 @@
 
 <div class="viewcode-block" id="InterestAccount.get_info_at_date"><a class="viewcode-back" href="../account.html#account.InterestAccount.get_info_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified)</span>
+<span class="sd">        Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified).</span>
 
 <span class="sd">        :param date: datetime object indicating the date you want the loan status of</span>
 <span class="sd">        :type date: datetime.datetime</span>

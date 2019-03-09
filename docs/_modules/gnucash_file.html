@@ -146,6 +146,8 @@
             
   <h1>Source code for gnucash_file</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing classes that read, manipulate, and write GnuCash files, books, and budgets.</span>
+
 <span class="sd">.. module:: gnucash_file</span>
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
@@ -166,9 +168,8 @@
 
 
 <div class="viewcode-block" id="GnuCashFile"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a><span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class representing a GnuCash file on disk.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class representing a GnuCash file on disk.&quot;&quot;&quot;</span>
+
     <span class="n">namespace_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;gnc&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/gnc&#39;</span><span class="p">,</span>
         <span class="s1">&#39;act&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.gnucash.org/XML/act&#39;</span><span class="p">,</span>
@@ -220,7 +221,7 @@
 <div class="viewcode-block" id="GnuCashFile.read_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.read_file">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reads the specified .gnucash file and loads it into memory</span>
+<span class="sd">        Reads the specified .gnucash file and loads it into memory.</span>
 
 <span class="sd">        :param source_file: Full or relative path to the .gnucash file.</span>
 <span class="sd">        :type source_file: str</span>
@@ -258,7 +259,7 @@
 
 <div class="viewcode-block" id="GnuCashFile.build_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.build_file">[docs]</a>    <span class="k">def</span> <span class="nf">build_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_file</span><span class="p">,</span> <span class="n">prettify_xml</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_gzip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Writes the contents of the GnuCashFile object out to a .gnucash file on disk</span>
+<span class="sd">        Writes the contents of the GnuCashFile object out to a .gnucash file on disk.</span>
 
 <span class="sd">        :param target_file: Full or relative path to the target file</span>
 <span class="sd">        :type target_file: str</span>
@@ -292,9 +293,8 @@
 
 
 <div class="viewcode-block" id="Book"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a Book in GnuCash</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents a Book in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">commodities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">template_root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scheduled_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">budgets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -311,7 +311,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current book as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current book as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: ElementTree.Element object</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -372,7 +372,7 @@
 <div class="viewcode-block" id="Book.from_xml"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">book_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a Book object from the GnuCash XML</span>
+<span class="sd">        Creates a Book object from the GnuCash XML.</span>
 
 <span class="sd">        :param book_node: XML node for the book</span>
 <span class="sd">        :type book_node: ElementTree.Element</span>
@@ -453,7 +453,7 @@
 
 <div class="viewcode-block" id="Book.get_account"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths_to_account</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves an account based on a path of account names</span>
+<span class="sd">        Retrieves an account based on a path of account names.</span>
 
 <span class="sd">        :param paths_to_account: Names of accounts that indicate the path</span>
 <span class="sd">        :param kwargs: Keyword arguments.</span>
@@ -502,9 +502,8 @@
 
 
 <div class="viewcode-block" id="Budget"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a><span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class object representing a Budget in GnuCash</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class object representing a Budget in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Budget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
@@ -517,7 +516,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current budget as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current budget as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current budget as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -551,7 +550,7 @@
 <div class="viewcode-block" id="Budget.from_xml"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">budget_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a Budget object from the GnuCash XML</span>
+<span class="sd">        Creates a Budget object from the GnuCash XML.</span>
 
 <span class="sd">        :param budget_node: XML node for the budget</span>
 <span class="sd">        :type budget_node: ElementTree.Element</span>

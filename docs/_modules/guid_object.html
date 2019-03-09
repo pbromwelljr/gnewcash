@@ -146,6 +146,8 @@
             
   <h1>Source code for guid_object</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing classes that manage GUID objects.</span>
+
 <span class="sd">.. module:: guid_object</span>
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
@@ -154,9 +156,8 @@
 
 
 <div class="viewcode-block" id="GuidObject"><a class="viewcode-back" href="../guid_object.html#guid_object.GuidObject">[docs]</a><span class="k">class</span> <span class="nc">GuidObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class used to generate unique GUIDs for various GNewCash objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class used to generate unique GUIDs for various GNewCash objects.&quot;&quot;&quot;</span>
+
     <span class="n">used_guids</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -172,7 +173,7 @@
 <div class="viewcode-block" id="GuidObject.get_guid"><a class="viewcode-back" href="../guid_object.html#guid_object.GuidObject.get_guid">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_guid</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves a unique GUID and returns it</span>
+<span class="sd">        Retrieves a unique GUID and returns it.</span>
 
 <span class="sd">        :return: New unique GUID</span>
 <span class="sd">        :rtype: str</span>

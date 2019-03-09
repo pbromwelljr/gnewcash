@@ -1,4 +1,6 @@
 """
+Catch-all ,odule containing methods that might be helpful to GNewCash users.
+
 .. module:: account
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.

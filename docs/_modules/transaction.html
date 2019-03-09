@@ -146,6 +146,8 @@
             
   <h1>Source code for transaction</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing classes that read, manipulate, and write transactions.</span>
+
 <span class="sd">.. module:: transaction</span>
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
@@ -163,9 +165,8 @@
 
 
 <div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a transaction in GnuCash.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents a transaction in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currency</span> <span class="o">=</span> <span class="kc">None</span>
@@ -184,7 +185,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current transaction as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current transaction as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current transaction as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -219,7 +220,7 @@
 <div class="viewcode-block" id="Transaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a Transaction object from the GnuCash XML</span>
+<span class="sd">        Creates a Transaction object from the GnuCash XML.</span>
 
 <span class="sd">        :param transaction_node: XML node for the transaction</span>
 <span class="sd">        :type transaction_node: ElementTree.Element</span>
@@ -275,16 +276,14 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="k">if</span> <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="Transaction.mark_transaction_cleared"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.mark_transaction_cleared">[docs]</a>    <span class="k">def</span> <span class="nf">mark_transaction_cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Marks all splits in the transaction as cleared (reconciled_state = &#39;c&#39;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Marks all splits in the transaction as cleared (reconciled_state = &#39;c&#39;).&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
             <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Notes on the transaction</span>
+<span class="sd">        Notes on the transaction.</span>
 
 <span class="sd">        :return: Notes tied to the transaction</span>
 <span class="sd">        :rtype: str</span>
@@ -298,7 +297,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        GUID of the transaction that reverses this transaction</span>
+<span class="sd">        GUID of the transaction that reverses this transaction.</span>
 
 <span class="sd">        :return: Transaction GUID</span>
 <span class="sd">        :rtype: str</span>
@@ -312,7 +311,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Void status</span>
+<span class="sd">        Void status.</span>
 
 <span class="sd">        :return: Void status</span>
 <span class="sd">        :rtype: str</span>
@@ -326,7 +325,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Time that the transaction was voided</span>
+<span class="sd">        Time that the transaction was voided.</span>
 
 <span class="sd">        :return: Time that the transaction was voided</span>
 <span class="sd">        :rtype: str</span>
@@ -340,7 +339,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reason that the transaction was voided</span>
+<span class="sd">        Reason that the transaction was voided.</span>
 
 <span class="sd">        :return: Reason that the transaction was voided</span>
 <span class="sd">        :rtype: str</span>
@@ -354,7 +353,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        URI associated with the transaction</span>
+<span class="sd">        URI associated with the transaction.</span>
 
 <span class="sd">        :return: URI associated with the transaction</span>
 <span class="sd">        :rtype: str</span>
@@ -367,9 +366,8 @@
 
 
 <div class="viewcode-block" id="Split"><a class="viewcode-back" href="../transaction.html#transaction.Split">[docs]</a><span class="k">class</span> <span class="nc">Split</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a split in GnuCash.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents a split in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">reconciled_state</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Split</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="n">reconciled_state</span>
@@ -388,7 +386,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current split as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current split as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current split as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -411,7 +409,7 @@
 <div class="viewcode-block" id="Split.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.Split.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">split_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates an Split object from the GnuCash XML</span>
+<span class="sd">        Creates an Split object from the GnuCash XML.</span>
 
 <span class="sd">        :param split_node: XML node for the split</span>
 <span class="sd">        :type split_node: ElementTree.Element</span>
@@ -449,16 +447,15 @@
 
 
 <div class="viewcode-block" id="TransactionManager"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager">[docs]</a><span class="k">class</span> <span class="nc">TransactionManager</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class used to add/remove transactions while maintaining a chronological order based on transaction posted date.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class used to add/remove transactions, maintaining a chronological order based on transaction posted date.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="TransactionManager.add"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a transaction to the transaction manager</span>
+<span class="sd">        Adds a transaction to the transaction manager.</span>
 
 <span class="sd">        :param new_transaction: Transaction to add</span>
 <span class="sd">        :type new_transaction: Transaction</span>
@@ -479,7 +476,7 @@
 
 <div class="viewcode-block" id="TransactionManager.delete"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes a transaction from the transaction manager</span>
+<span class="sd">        Removes a transaction from the transaction manager.</span>
 
 <span class="sd">        :param transaction: Transaction to remove</span>
 <span class="sd">        :type transaction: Transaction</span>
@@ -492,7 +489,7 @@
 
 <div class="viewcode-block" id="TransactionManager.get_transactions"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_transactions">[docs]</a>    <span class="k">def</span> <span class="nf">get_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generator function that gets transactions based on a from account and/or to account for the transaction</span>
+<span class="sd">        Generator function that gets transactions based on a from account and/or to account for the transaction.</span>
 
 <span class="sd">        :param account: Account to retrieve transactions for (default None, all transactions)</span>
 <span class="sd">        :type account: Account</span>
@@ -541,6 +538,7 @@
 <div class="viewcode-block" id="TransactionManager.get_balance_at_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_balance_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the account balance for the specified account at a certain date.</span>
+
 <span class="sd">        If the provided date is None, it will retrieve the ending balance.</span>
 
 <span class="sd">        :param account: List of transactions or TransactionManager</span>
@@ -569,9 +567,8 @@
 
 
 <div class="viewcode-block" id="ScheduledTransaction"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction">[docs]</a><span class="k">class</span> <span class="nc">ScheduledTransaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class that represents a scheduled transaction in Gnucash.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class that represents a scheduled transaction in Gnucash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ScheduledTransaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
@@ -592,7 +589,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current scheduled transaction as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current scheduled transaction as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current scheduled transaction as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -638,7 +635,7 @@
 <div class="viewcode-block" id="ScheduledTransaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_obj</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_account_root</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a ScheduledTransaction object from the GnuCash XML</span>
+<span class="sd">        Creates a ScheduledTransaction object from the GnuCash XML.</span>
 
 <span class="sd">        :param xml_obj: XML node for the scheduled transaction</span>
 <span class="sd">        :type xml_obj: ElementTree.Element</span>
@@ -683,7 +680,7 @@
 <div class="viewcode-block" id="ScheduledTransaction.read_xml_child_text"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_text">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">read_xml_child_text</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reads the text from a specific child XML element</span>
+<span class="sd">        Reads the text from a specific child XML element.</span>
 
 <span class="sd">        :param xml_object: Current XML object</span>
 <span class="sd">        :type xml_object: ElementTree.Element</span>
@@ -702,7 +699,7 @@
 <div class="viewcode-block" id="ScheduledTransaction.read_xml_child_boolean"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_boolean">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">read_xml_child_boolean</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reads the text from a specific child XML element and returns a Boolean if the text is &quot;Y&quot; or &quot;y&quot;</span>
+<span class="sd">        Reads the text from a specific child XML element and returns a Boolean if the text is &quot;Y&quot; or &quot;y&quot;.</span>
 
 <span class="sd">        :param xml_object: Current XML object</span>
 <span class="sd">        :type xml_object: ElementTree.Element</span>
@@ -765,9 +762,7 @@
 
 
 <div class="viewcode-block" id="SimpleTransaction"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction">[docs]</a><span class="k">class</span> <span class="nc">SimpleTransaction</span><span class="p">(</span><span class="n">Transaction</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class used to simplify creating and manipulating Transactions that only have 2 splits (from account and to account)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class used to simplify creating and manipulating Transactions that only have 2 splits.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -777,6 +772,18 @@
 
 <div class="viewcode-block" id="SimpleTransaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a SimpleTransaction object from the GnuCash XML.</span>
+
+<span class="sd">        :param transaction_node: XML node for the transaction</span>
+<span class="sd">        :type transaction_node: ElementTree.Element</span>
+<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
+<span class="sd">        :type namespaces: dict[str, str]</span>
+<span class="sd">        :param account_objects: Account objects already created from XML (used for assigning accounts)</span>
+<span class="sd">        :type account_objects: list[Account]</span>
+<span class="sd">        :return: Transaction object from XML</span>
+<span class="sd">        :rtype: Transaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=E1101</span>
         <span class="n">new_object</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">)</span>
         <span class="c1"># Remove the two splits created by the SimpleTransaction constructor</span>

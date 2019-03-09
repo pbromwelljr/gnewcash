@@ -146,6 +146,8 @@
             
   <h1>Source code for slot</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing classes that read, manipulate, and write slots.</span>
+
 <span class="sd">.. module:: slot</span>
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
@@ -156,9 +158,8 @@
 
 
 <div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a slot in GnuCash.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Represents a slot in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
@@ -167,7 +168,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current slot as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current slot as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current slot as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -195,7 +196,7 @@
 <div class="viewcode-block" id="Slot.from_xml"><a class="viewcode-back" href="../slot.html#slot.Slot.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a Slot object from the GnuCash XML</span>
+<span class="sd">        Creates a Slot object from the GnuCash XML.</span>
 
 <span class="sd">        :param slot_node: XML node for the slot</span>
 <span class="sd">        :type slot_node: ElementTree.Element</span>
@@ -228,16 +229,15 @@
 
 
 <div class="viewcode-block" id="SlottableObject"><a class="viewcode-back" href="../slot.html#slot.SlottableObject">[docs]</a><span class="k">class</span> <span class="nc">SlottableObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class used to consolidate storing and retrieving slot values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class used to consolidate storing and retrieving slot values.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SlottableObject</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="SlottableObject.get_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.get_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves the value of the slot given a certain key</span>
+<span class="sd">        Retrieves the value of the slot given a certain key.</span>
 
 <span class="sd">        :param key: Name of the slot</span>
 <span class="sd">        :type key: str</span>
@@ -256,7 +256,7 @@
 
 <div class="viewcode-block" id="SlottableObject.set_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets the value of the slot given a certain key and slot type</span>
+<span class="sd">        Sets the value of the slot given a certain key and slot type.</span>
 
 <span class="sd">        :param key: Name of the slot</span>
 <span class="sd">        :type key: str</span>
@@ -274,6 +274,7 @@
 <div class="viewcode-block" id="SlottableObject.set_slot_value_bool"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value_bool">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value_bool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function for slots that expect &quot;true&quot; or &quot;false&quot; GnuCash-side.</span>
+
 <span class="sd">        Converts &quot;true&quot; (case insensitive) and True to &quot;true&quot;.</span>
 <span class="sd">        Converts &quot;false&quot; (case insensitive) and False to &quot;false&quot;.</span>
 

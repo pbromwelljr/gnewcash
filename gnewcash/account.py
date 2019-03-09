@@ -1,4 +1,6 @@
 """
+Module containing classes that read, manipulate, and write accounts.
+
 .. module:: account
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
@@ -18,9 +20,8 @@ LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'int
 
 
 class AccountType(object):
-    """
-    Enumeration class to indicate the types of accounts available in GnuCash.
-    """
+    """Enumeration class to indicate the types of accounts available in GnuCash."""
+
     ROOT = 'ROOT'
     BANK = 'BANK'
     INCOME = 'INCOME'
@@ -32,9 +33,8 @@ class AccountType(object):
 
 
 class Account(GuidObject, SlottableObject):
-    """
-    Represents an account in GnuCash.
-    """
+    """Represents an account in GnuCash."""
+
     def __init__(self):
         super(Account, self).__init__()
         self.name = ''
@@ -78,6 +78,7 @@ class Account(GuidObject, SlottableObject):
     def get_balance_at_date(self, transactions, date=None):
         """
         Retrieves the account balance for the current account at a certain date, given the list of transactions.
+
         If the provided date is None, it will retrieve the ending balance.
 
         :param transactions: List of transactions or TransactionManager
@@ -140,7 +141,7 @@ class Account(GuidObject, SlottableObject):
     @property
     def as_xml(self):
         """
-        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML
+        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.
 
         :return: Current account and children as XML
         :rtype: list[xml.etree.ElementTree.Element]
@@ -185,7 +186,7 @@ class Account(GuidObject, SlottableObject):
     @classmethod
     def from_xml(cls, account_node, namespaces, account_objects):
         """
-        Creates an Account object from the GnuCash XML
+        Creates an Account object from the GnuCash XML.
 
         :param account_node: XML node for the account
         :type account_node: ElementTree.Element
@@ -196,7 +197,6 @@ class Account(GuidObject, SlottableObject):
         :return: Account object from XML
         :rtype: Account
         """
-
         account_object = cls()
         account_object.guid = account_node.find('act:id', namespaces).text
         account_object.name = account_node.find('act:name', namespaces).text
@@ -305,7 +305,7 @@ class Account(GuidObject, SlottableObject):
     @property
     def parent(self):
         """
-        Parent account of the current account
+        Parent account of the current account.
 
         :return: Account's parent
         :rtype: Account
@@ -322,7 +322,7 @@ class Account(GuidObject, SlottableObject):
     @property
     def color(self):
         """
-        Account color
+        Account color.
 
         :return: Account color as a string
         :rtype: str
@@ -336,7 +336,7 @@ class Account(GuidObject, SlottableObject):
     @property
     def notes(self):
         """
-        User defined notes for the account
+        User defined notes for the account.
 
         :return: User-defined notes
         :rtype: str
@@ -350,7 +350,7 @@ class Account(GuidObject, SlottableObject):
     @property
     def hidden(self):
         """
-        Is the account hidden?
+        Hidden flag for the account.
 
         :return: True if account is marked hidden, otherwise False.
         :rtype: bool
@@ -364,7 +364,7 @@ class Account(GuidObject, SlottableObject):
     @property
     def placeholder(self):
         """
-        Is the account a placeholder?
+        Placeholder flag for the account.
 
         :return: True if the account is a placeholder, otherwise False
         :rtype: bool
@@ -377,72 +377,64 @@ class Account(GuidObject, SlottableObject):
 
 
 class BankAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.BANK
-    """
+    """Shortcut class to create an account with the type set to AccountType.BANK."""
+
     def __init__(self):
         super(BankAccount, self).__init__()
         self.type = AccountType.BANK
 
 
 class IncomeAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.INCOME
-    """
+    """Shortcut class to create an account with the type set to AccountType.INCOME."""
+
     def __init__(self):
         super(IncomeAccount, self).__init__()
         self.type = AccountType.INCOME
 
 
 class AssetAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.ASSET
-    """
+    """Shortcut class to create an account with the type set to AccountType.ASSET."""
+
     def __init__(self):
         super(AssetAccount, self).__init__()
         self.type = AccountType.ASSET
 
 
 class CreditAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.CREDIT
-    """
+    """Shortcut class to create an account with the type set to AccountType.CREDIT."""
+
     def __init__(self):
         super(CreditAccount, self).__init__()
         self.type = AccountType.CREDIT
 
 
 class ExpenseAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.EXPENSE
-    """
+    """Shortcut class to create an account with the type set to AccountType.EXPENSE."""
+
     def __init__(self):
         super(ExpenseAccount, self).__init__()
         self.type = AccountType.EXPENSE
 
 
 class EquityAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.EQUITY
-    """
+    """Shortcut class to create an account with the type set to AccountType.EQUITY."""
+
     def __init__(self):
         super(EquityAccount, self).__init__()
         self.type = AccountType.EQUITY
 
 
 class LiabilityAccount(Account):
-    """
-    Shortcut class to create an account with the type set to AccountType.LIABILITY
-    """
+    """Shortcut class to create an account with the type set to AccountType.LIABILITY."""
+
     def __init__(self):
         super(LiabilityAccount, self).__init__()
         self.type = AccountType.LIABILITY
 
 
 class InterestAccount(object):
-    """
-    Class used to calculate interest balances.
-    """
+    """Class used to calculate interest balances."""
+
     def __init__(self, starting_balance, starting_date, interest_percentage, payment_amount, *,
                  additional_payments=None, skip_payment_dates=None, interest_start_date=None,
                  subaccounts=None):
@@ -562,7 +554,7 @@ class InterestAccount(object):
 
     def get_info_at_date(self, date):
         """
-        Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified)
+        Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified).
 
         :param date: datetime object indicating the date you want the loan status of
         :type date: datetime.datetime

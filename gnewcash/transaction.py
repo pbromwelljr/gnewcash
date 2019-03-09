@@ -1,4 +1,6 @@
 """
+Module containing classes that read, manipulate, and write transactions.
+
 .. module:: transaction
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
@@ -16,9 +18,8 @@ from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 
 
 class Transaction(GuidObject, SlottableObject):
-    """
-    Represents a transaction in GnuCash.
-    """
+    """Represents a transaction in GnuCash."""
+
     def __init__(self):
         super(Transaction, self).__init__()
         self.currency = None
@@ -37,7 +38,7 @@ class Transaction(GuidObject, SlottableObject):
     @property
     def as_xml(self):
         """
-        Returns the current transaction as GnuCash-compatible XML
+        Returns the current transaction as GnuCash-compatible XML.
 
         :return: Current transaction as XML
         :rtype: xml.etree.ElementTree.Element
@@ -72,7 +73,7 @@ class Transaction(GuidObject, SlottableObject):
     @classmethod
     def from_xml(cls, transaction_node, namespaces, account_objects):
         """
-        Creates a Transaction object from the GnuCash XML
+        Creates a Transaction object from the GnuCash XML.
 
         :param transaction_node: XML node for the transaction
         :type transaction_node: ElementTree.Element
@@ -128,16 +129,14 @@ class Transaction(GuidObject, SlottableObject):
         return sum([1 for split in self.splits if split.reconciled_state.lower() == 'c']) > 0
 
     def mark_transaction_cleared(self):
-        """
-        Marks all splits in the transaction as cleared (reconciled_state = 'c')
-        """
+        """Marks all splits in the transaction as cleared (reconciled_state = 'c')."""
         for split in self.splits:
             split.reconciled_state = 'c'
 
     @property
     def notes(self):
         """
-        Notes on the transaction
+        Notes on the transaction.
 
         :return: Notes tied to the transaction
         :rtype: str
@@ -151,7 +150,7 @@ class Transaction(GuidObject, SlottableObject):
     @property
     def reversed_by(self):
         """
-        GUID of the transaction that reverses this transaction
+        GUID of the transaction that reverses this transaction.
 
         :return: Transaction GUID
         :rtype: str
@@ -165,7 +164,7 @@ class Transaction(GuidObject, SlottableObject):
     @property
     def voided(self):
         """
-        Void status
+        Void status.
 
         :return: Void status
         :rtype: str
@@ -179,7 +178,7 @@ class Transaction(GuidObject, SlottableObject):
     @property
     def void_time(self):
         """
-        Time that the transaction was voided
+        Time that the transaction was voided.
 
         :return: Time that the transaction was voided
         :rtype: str
@@ -193,7 +192,7 @@ class Transaction(GuidObject, SlottableObject):
     @property
     def void_reason(self):
         """
-        Reason that the transaction was voided
+        Reason that the transaction was voided.
 
         :return: Reason that the transaction was voided
         :rtype: str
@@ -207,7 +206,7 @@ class Transaction(GuidObject, SlottableObject):
     @property
     def associated_uri(self):
         """
-        URI associated with the transaction
+        URI associated with the transaction.
 
         :return: URI associated with the transaction
         :rtype: str
@@ -220,9 +219,8 @@ class Transaction(GuidObject, SlottableObject):
 
 
 class Split(GuidObject):
-    """
-    Represents a split in GnuCash.
-    """
+    """Represents a split in GnuCash."""
+
     def __init__(self, account, amount, reconciled_state='n'):
         super(Split, self).__init__()
         self.reconciled_state = reconciled_state
@@ -241,7 +239,7 @@ class Split(GuidObject):
     @property
     def as_xml(self):
         """
-        Returns the current split as GnuCash-compatible XML
+        Returns the current split as GnuCash-compatible XML.
 
         :return: Current split as XML
         :rtype: xml.etree.ElementTree.Element
@@ -264,7 +262,7 @@ class Split(GuidObject):
     @classmethod
     def from_xml(cls, split_node, namespaces, account_objects):
         """
-        Creates an Split object from the GnuCash XML
+        Creates an Split object from the GnuCash XML.
 
         :param split_node: XML node for the split
         :type split_node: ElementTree.Element
@@ -302,16 +300,15 @@ class Split(GuidObject):
 
 
 class TransactionManager:
-    """
-    Class used to add/remove transactions while maintaining a chronological order based on transaction posted date.
-    """
+    """Class used to add/remove transactions, maintaining a chronological order based on transaction posted date."""
+
     def __init__(self):
         self.transactions = list()
         self.disable_sort = False
 
     def add(self, new_transaction):
         """
-        Adds a transaction to the transaction manager
+        Adds a transaction to the transaction manager.
 
         :param new_transaction: Transaction to add
         :type new_transaction: Transaction
@@ -332,7 +329,7 @@ class TransactionManager:
 
     def delete(self, transaction):
         """
-        Removes a transaction from the transaction manager
+        Removes a transaction from the transaction manager.
 
         :param transaction: Transaction to remove
         :type transaction: Transaction
@@ -345,7 +342,7 @@ class TransactionManager:
 
     def get_transactions(self, account=None):
         """
-        Generator function that gets transactions based on a from account and/or to account for the transaction
+        Generator function that gets transactions based on a from account and/or to account for the transaction.
 
         :param account: Account to retrieve transactions for (default None, all transactions)
         :type account: Account
@@ -394,6 +391,7 @@ class TransactionManager:
     def get_balance_at_date(self, account, date):
         """
         Retrieves the account balance for the specified account at a certain date.
+
         If the provided date is None, it will retrieve the ending balance.
 
         :param account: List of transactions or TransactionManager
@@ -422,9 +420,8 @@ class TransactionManager:
 
 
 class ScheduledTransaction(GuidObject):
-    """
-    Class that represents a scheduled transaction in Gnucash.
-    """
+    """Class that represents a scheduled transaction in Gnucash."""
+
     def __init__(self):
         super(ScheduledTransaction, self).__init__()
         self.name = None
@@ -445,7 +442,7 @@ class ScheduledTransaction(GuidObject):
     @property
     def as_xml(self):
         """
-        Returns the current scheduled transaction as GnuCash-compatible XML
+        Returns the current scheduled transaction as GnuCash-compatible XML.
 
         :return: Current scheduled transaction as XML
         :rtype: xml.etree.ElementTree.Element
@@ -491,7 +488,7 @@ class ScheduledTransaction(GuidObject):
     @classmethod
     def from_xml(cls, xml_obj, namespaces, template_account_root):
         """
-        Creates a ScheduledTransaction object from the GnuCash XML
+        Creates a ScheduledTransaction object from the GnuCash XML.
 
         :param xml_obj: XML node for the scheduled transaction
         :type xml_obj: ElementTree.Element
@@ -536,7 +533,7 @@ class ScheduledTransaction(GuidObject):
     @classmethod
     def read_xml_child_text(cls, xml_object, tag_name, namespaces):
         """
-        Reads the text from a specific child XML element
+        Reads the text from a specific child XML element.
 
         :param xml_object: Current XML object
         :type xml_object: ElementTree.Element
@@ -555,7 +552,7 @@ class ScheduledTransaction(GuidObject):
     @classmethod
     def read_xml_child_boolean(cls, xml_object, tag_name, namespaces):
         """
-        Reads the text from a specific child XML element and returns a Boolean if the text is "Y" or "y"
+        Reads the text from a specific child XML element and returns a Boolean if the text is "Y" or "y".
 
         :param xml_object: Current XML object
         :type xml_object: ElementTree.Element
@@ -618,9 +615,7 @@ class ScheduledTransaction(GuidObject):
 
 
 class SimpleTransaction(Transaction):
-    """
-    Class used to simplify creating and manipulating Transactions that only have 2 splits (from account and to account)
-    """
+    """Class used to simplify creating and manipulating Transactions that only have 2 splits."""
 
     def __init__(self):
         super(SimpleTransaction, self).__init__()
@@ -630,6 +625,18 @@ class SimpleTransaction(Transaction):
 
     @classmethod
     def from_xml(cls, transaction_node, namespaces, account_objects):
+        """
+        Creates a SimpleTransaction object from the GnuCash XML.
+
+        :param transaction_node: XML node for the transaction
+        :type transaction_node: ElementTree.Element
+        :param namespaces: XML namespaces for GnuCash elements
+        :type namespaces: dict[str, str]
+        :param account_objects: Account objects already created from XML (used for assigning accounts)
+        :type account_objects: list[Account]
+        :return: Transaction object from XML
+        :rtype: Transaction
+        """
         # pylint: disable=E1101
         new_object = super(SimpleTransaction, cls).from_xml(transaction_node, namespaces, account_objects)
         # Remove the two splits created by the SimpleTransaction constructor

@@ -200,7 +200,7 @@
 <dl class="attribute">
 <dt id="account.Account.as_xml">
 <code class="descname">as_xml</code><a class="headerlink" href="#account.Account.as_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML</p>
+<dd><p>Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -218,7 +218,7 @@
 <dl class="attribute">
 <dt id="account.Account.color">
 <code class="descname">color</code><a class="headerlink" href="#account.Account.color" title="Permalink to this definition">¶</a></dt>
-<dd><p>Account color</p>
+<dd><p>Account color.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -251,7 +251,7 @@
 <dl class="classmethod">
 <dt id="account.Account.from_xml">
 <em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>account_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.from_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates an Account object from the GnuCash XML</p>
+<dd><p>Creates an Account object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -276,8 +276,8 @@
 <dl class="method">
 <dt id="account.Account.get_balance_at_date">
 <code class="descname">get_balance_at_date</code><span class="sig-paren">(</span><em>transactions</em>, <em>date=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_balance_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_balance_at_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the account balance for the current account at a certain date, given the list of transactions.
-If the provided date is None, it will retrieve the ending balance.</p>
+<dd><p>Retrieves the account balance for the current account at a certain date, given the list of transactions.</p>
+<p>If the provided date is None, it will retrieve the ending balance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -372,7 +372,7 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <dl class="attribute">
 <dt id="account.Account.hidden">
 <code class="descname">hidden</code><a class="headerlink" href="#account.Account.hidden" title="Permalink to this definition">¶</a></dt>
-<dd><p>Is the account hidden?</p>
+<dd><p>Hidden flag for the account.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -412,7 +412,7 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <dl class="attribute">
 <dt id="account.Account.notes">
 <code class="descname">notes</code><a class="headerlink" href="#account.Account.notes" title="Permalink to this definition">¶</a></dt>
-<dd><p>User defined notes for the account</p>
+<dd><p>User defined notes for the account.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -428,7 +428,7 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <dl class="attribute">
 <dt id="account.Account.parent">
 <code class="descname">parent</code><a class="headerlink" href="#account.Account.parent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parent account of the current account</p>
+<dd><p>Parent account of the current account.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -444,7 +444,7 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <dl class="attribute">
 <dt id="account.Account.placeholder">
 <code class="descname">placeholder</code><a class="headerlink" href="#account.Account.placeholder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Is the account a placeholder?</p>
+<dd><p>Placeholder flag for the account.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -472,49 +472,49 @@ If the provided date is None, it will retrieve the ending balance.</p>
 <dt id="account.AssetAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">AssetAccount</code><a class="reference internal" href="_modules/account.html#AssetAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.AssetAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.ASSET</p>
+<p>Shortcut class to create an account with the type set to AccountType.ASSET.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="account.BankAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">BankAccount</code><a class="reference internal" href="_modules/account.html#BankAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.BankAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.BANK</p>
+<p>Shortcut class to create an account with the type set to AccountType.BANK.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="account.CreditAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">CreditAccount</code><a class="reference internal" href="_modules/account.html#CreditAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.CreditAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.CREDIT</p>
+<p>Shortcut class to create an account with the type set to AccountType.CREDIT.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="account.EquityAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">EquityAccount</code><a class="reference internal" href="_modules/account.html#EquityAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.EquityAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.EQUITY</p>
+<p>Shortcut class to create an account with the type set to AccountType.EQUITY.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="account.ExpenseAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">ExpenseAccount</code><a class="reference internal" href="_modules/account.html#ExpenseAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.ExpenseAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.EXPENSE</p>
+<p>Shortcut class to create an account with the type set to AccountType.EXPENSE.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="account.IncomeAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">IncomeAccount</code><a class="reference internal" href="_modules/account.html#IncomeAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.IncomeAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.INCOME</p>
+<p>Shortcut class to create an account with the type set to AccountType.INCOME.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="account.LiabilityAccount">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">LiabilityAccount</code><a class="reference internal" href="_modules/account.html#LiabilityAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.LiabilityAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#account.Account" title="account.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">account.Account</span></code></a></p>
-<p>Shortcut class to create an account with the type set to AccountType.LIABILITY</p>
+<p>Shortcut class to create an account with the type set to AccountType.LIABILITY.</p>
 </dd></dl>
 
 </div>
@@ -570,7 +570,7 @@ and “payment_date” for the date the additional amount was paid.</li>
 <dl class="method">
 <dt id="account.InterestAccount.get_info_at_date">
 <code class="descname">get_info_at_date</code><span class="sig-paren">(</span><em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount.get_info_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.get_info_at_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified)</p>
+<dd><p>Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

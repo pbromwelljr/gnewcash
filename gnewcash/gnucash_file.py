@@ -1,4 +1,6 @@
 """
+Module containing classes that read, manipulate, and write GnuCash files, books, and budgets.
+
 .. module:: gnucash_file
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
@@ -19,9 +21,8 @@ from gnewcash.slot import Slot, SlottableObject
 
 
 class GnuCashFile(object):
-    """
-    Class representing a GnuCash file on disk.
-    """
+    """Class representing a GnuCash file on disk."""
+
     namespace_data = {
         'gnc': 'http://www.gnucash.org/XML/gnc',
         'act': 'http://www.gnucash.org/XML/act',
@@ -73,7 +74,7 @@ class GnuCashFile(object):
     @classmethod
     def read_file(cls, source_file, sort_transactions=True, transaction_class=None):
         """
-        Reads the specified .gnucash file and loads it into memory
+        Reads the specified .gnucash file and loads it into memory.
 
         :param source_file: Full or relative path to the .gnucash file.
         :type source_file: str
@@ -111,7 +112,7 @@ class GnuCashFile(object):
 
     def build_file(self, target_file, prettify_xml=False, use_gzip=False):
         """
-        Writes the contents of the GnuCashFile object out to a .gnucash file on disk
+        Writes the contents of the GnuCashFile object out to a .gnucash file on disk.
 
         :param target_file: Full or relative path to the target file
         :type target_file: str
@@ -145,9 +146,8 @@ class GnuCashFile(object):
 
 
 class Book(GuidObject, SlottableObject):
-    """
-    Represents a Book in GnuCash
-    """
+    """Represents a Book in GnuCash."""
+
     def __init__(self, root_account=None, transactions=None, commodities=None, slots=None,
                  template_root_account=None, template_transactions=None, scheduled_transactions=None,
                  budgets=None):
@@ -164,7 +164,7 @@ class Book(GuidObject, SlottableObject):
     @property
     def as_xml(self):
         """
-        Returns the current book as GnuCash-compatible XML
+        Returns the current book as GnuCash-compatible XML.
 
         :return: ElementTree.Element object
         :rtype: xml.etree.ElementTree.Element
@@ -225,7 +225,7 @@ class Book(GuidObject, SlottableObject):
     @classmethod
     def from_xml(cls, book_node, namespaces, sort_transactions=True, transaction_class=None):
         """
-        Creates a Book object from the GnuCash XML
+        Creates a Book object from the GnuCash XML.
 
         :param book_node: XML node for the book
         :type book_node: ElementTree.Element
@@ -306,7 +306,7 @@ class Book(GuidObject, SlottableObject):
 
     def get_account(self, *paths_to_account, **kwargs):
         """
-        Retrieves an account based on a path of account names
+        Retrieves an account based on a path of account names.
 
         :param paths_to_account: Names of accounts that indicate the path
         :param kwargs: Keyword arguments.
@@ -355,9 +355,8 @@ class Book(GuidObject, SlottableObject):
 
 
 class Budget(GuidObject, SlottableObject):
-    """
-    Class object representing a Budget in GnuCash
-    """
+    """Class object representing a Budget in GnuCash."""
+
     def __init__(self):
         super(Budget, self).__init__()
         self.name = None
@@ -370,7 +369,7 @@ class Budget(GuidObject, SlottableObject):
     @property
     def as_xml(self):
         """
-        Returns the current budget as GnuCash-compatible XML
+        Returns the current budget as GnuCash-compatible XML.
 
         :return: Current budget as XML
         :rtype: xml.etree.ElementTree.Element
@@ -404,7 +403,7 @@ class Budget(GuidObject, SlottableObject):
     @classmethod
     def from_xml(cls, budget_node, namespaces):
         """
-        Creates a Budget object from the GnuCash XML
+        Creates a Budget object from the GnuCash XML.
 
         :param budget_node: XML node for the budget
         :type budget_node: ElementTree.Element
