@@ -1,5 +1,5 @@
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 def read(file_name):
@@ -12,7 +12,7 @@ setup(
     description='Python Library for reading, interacting with, and writing GnuCash files',
     author='Paul Bromwell Jr.',
     author_email='pbromwelljr@gmail.com',
-    packages='gnewcash',
+    packages=['gnewcash'],
     license='MIT',
     keywords='gnucash finance finances cash personal banking',
     url='https://github.com/pbromwelljr/gnewcash',
