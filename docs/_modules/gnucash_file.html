@@ -451,23 +451,20 @@
 
         <span class="k">return</span> <span class="n">new_book</span></div>
 
-<div class="viewcode-block" id="Book.get_account"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths_to_account</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Book.get_account"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account">[docs]</a>    <span class="k">def</span> <span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths_to_account</span><span class="p">,</span> <span class="n">current_level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves an account based on a path of account names</span>
 
 <span class="sd">        :param paths_to_account: Names of accounts that indicate the path</span>
-<span class="sd">        :param kwargs: Keyword arguments.</span>
-<span class="sd">        :type kwargs: dict</span>
+<span class="sd">        :param current_level: Account to start the search at (None indicates to start at the root account)</span>
+<span class="sd">        :type current_level: Account</span>
 <span class="sd">        :return: Account object if found, otherwise None</span>
 <span class="sd">        :rtype: Account</span>
 
 <span class="sd">        Example: ``get_account(&#39;Assets&#39;, &#39;Current Assets&#39;, &#39;Checking Account&#39;)``</span>
-
-<span class="sd">        **Keyword Arguments:**</span>
-
-<span class="sd">        * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">current_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;current_level&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span>
         <span class="n">paths_to_account</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths_to_account</span><span class="p">)</span>
         <span class="n">next_level</span> <span class="o">=</span> <span class="n">paths_to_account</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">current_level</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>

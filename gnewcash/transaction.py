@@ -12,7 +12,6 @@ from warnings import warn
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 
 
 class Transaction(GuidObject, SlottableObject):
@@ -42,6 +41,8 @@ class Transaction(GuidObject, SlottableObject):
         :return: Current transaction as XML
         :rtype: xml.etree.ElementTree.Element
         """
+        timestamp_format = '%Y-%m-%d %H:%M:%S %z'
+
         transaction_node = ElementTree.Element('gnc:transaction', {'version': '2.0.0'})
         ElementTree.SubElement(transaction_node, 'trn:id', {'type': 'guid'}).text = self.guid
 
@@ -52,9 +53,10 @@ class Transaction(GuidObject, SlottableObject):
             ElementTree.SubElement(transaction_node, 'trn:num').text = self.memo
 
         date_posted_node = ElementTree.SubElement(transaction_node, 'trn:date-posted')
-        ElementTree.SubElement(date_posted_node, 'ts:date').text = safe_iso_date_formatting(self.date_posted)
+        ElementTree.SubElement(date_posted_node, 'ts:date').text = datetime.strftime(self.date_posted, timestamp_format)
         date_entered_node = ElementTree.SubElement(transaction_node, 'trn:date-entered')
-        ElementTree.SubElement(date_entered_node, 'ts:date').text = safe_iso_date_formatting(self.date_entered)
+        ElementTree.SubElement(date_entered_node, 'ts:date').text = datetime.strftime(self.date_entered,
+                                                                                      timestamp_format)
         ElementTree.SubElement(transaction_node, 'trn:description').text = self.description
 
         if self.slots:
@@ -87,8 +89,8 @@ class Transaction(GuidObject, SlottableObject):
         transaction.guid = transaction_node.find('trn:id', namespaces).text
         date_entered = transaction_node.find('trn:date-entered', namespaces).find('ts:date', namespaces).text
         date_posted = transaction_node.find('trn:date-posted', namespaces).find('ts:date', namespaces).text
-        transaction.date_entered = safe_iso_date_parsing(date_entered)
-        transaction.date_posted = safe_iso_date_parsing(date_posted)
+        transaction.date_entered = datetime.strptime(date_entered, '%Y-%m-%d %H:%M:%S %z')
+        transaction.date_posted = datetime.strptime(date_posted, '%Y-%m-%d %H:%M:%S %z')
         transaction.description = transaction_node.find('trn:description', namespaces).text
 
         memo = transaction_node.find('trn:num', namespaces)

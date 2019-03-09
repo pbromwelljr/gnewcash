@@ -443,7 +443,7 @@ class InterestAccount(object):
     """
     Class used to calculate interest balances.
     """
-    def __init__(self, starting_balance, starting_date, interest_percentage, payment_amount,
+    def __init__(self, starting_balance, starting_date, interest_percentage, payment_amount, *,
                  additional_payments=None, skip_payment_dates=None, interest_start_date=None,
                  subaccounts=None):
         """

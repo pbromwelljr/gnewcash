@@ -2,4 +2,4 @@ Utils
 *****
 
 .. automodule:: utils
-    :members:
+    :members: delete_log_files
