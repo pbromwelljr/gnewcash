@@ -304,20 +304,23 @@ class Book(GuidObject, SlottableObject):
 
         return new_book
 
-    def get_account(self, *paths_to_account, current_level=None):
+    def get_account(self, *paths_to_account, **kwargs):
         """
         Retrieves an account based on a path of account names
 
         :param paths_to_account: Names of accounts that indicate the path
-        :param current_level: Account to start the search at (None indicates to start at the root account)
-        :type current_level: Account
+        :param kwargs: Keyword arguments.
+        :type kwargs: dict
         :return: Account object if found, otherwise None
         :rtype: Account
 
         Example: ``get_account('Assets', 'Current Assets', 'Checking Account')``
+
+        **Keyword Arguments:**
+
+        * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.
         """
-        if current_level is None:
-            current_level = self.root_account
+        current_level = kwargs.get('current_level', self.root_account)
         paths_to_account = list(paths_to_account)
         next_level = paths_to_account.pop(0)
         for account in current_level.children:
