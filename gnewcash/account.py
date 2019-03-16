@@ -36,8 +36,6 @@ class AccountType(object):
 class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents an account in GnuCash."""
 
-    sqlite_table_name = 'accounts'
-
     def __init__(self):
         super(Account, self).__init__()
         self.name = ''
@@ -379,21 +377,26 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         super(Account, self).set_slot_value_bool('placeholder', value, 'string')
 
     @classmethod
-    def from_sqlite(cls, sqlite_row):
+    def from_sqlite(cls, sqlite_cursor, account_id):
+        account_data = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
+        if not account_data:
+            raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))
+        account_data, = account_data
         new_account = cls()
-        new_account.guid = sqlite_row['guid']
-        new_account.name = sqlite_row['name']
-        new_account.type = sqlite_row['account_type']
-        new_account.code = sqlite_row['code']
-        new_account.description = sqlite_row['description']
-        if sqlite_row['hidden'] is not None and sqlite_row['hidden'] == 1:
+        new_account.guid = account_data['guid']
+        new_account.name = account_data['name']
+        new_account.type = account_data['account_type']
+        new_account.code = account_data['code']
+        new_account.description = account_data['description']
+        if account_data['hidden'] is not None and account_data['hidden'] == 1:
             new_account.hidden = True
-        if sqlite_row['placeholder'] is not None and sqlite_row['placeholder'] == 1:
+        if account_data['placeholder'] is not None and account_data['placeholder'] == 1:
             new_account.placeholder = True
         # TODO: commodity_guid
         # TODO: commodity_scu
         # TODO: non_std_scu
-        # TODO: parent_guid
+        for subaccount in cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'parent_guid = ?', (account_id,)):
+            new_account.children.append(cls.from_sqlite(sqlite_cursor, subaccount['guid']))
         return new_account
 
     def to_sqlite(self, sqlite_handle):

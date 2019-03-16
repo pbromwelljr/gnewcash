@@ -12,13 +12,13 @@ from xml.etree import ElementTree
 from warnings import warn
 
 from gnewcash.commodity import Commodity
-from gnewcash.file_formats import GnuCashXMLObject
+from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 
 
-class Transaction(GuidObject, SlottableObject, GnuCashXMLObject):
+class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a transaction in GnuCash."""
 
     # TODO: SQLite support
@@ -220,8 +220,42 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject):
     def associated_uri(self, value):
         super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
+    @classmethod
+    def from_sqlite(cls, sqlite_cursor, root_account):
+        transaction_data = cls.get_sqlite_table_data(sqlite_cursor, 'transactions')
+        new_transactions = []
+        for transaction in transaction_data:
+            new_transaction = cls()
+            new_transaction.guid = transaction['guid']
+            new_transaction.memo = transaction['num']
+            new_transaction.date_posted = datetime.strptime(transaction['post_date'], '%Y-%m-%d %H:%M:%S')
+            new_transaction.date_entered = datetime.strptime(transaction['enter_date'], '%Y-%m-%d %H:%M:%S')
+            new_transaction.description = transaction['description']
 
-class Split(GuidObject, GnuCashXMLObject):
+            # TODO: currency
+            # currency_node = transaction_node.find('trn:currency', namespaces)
+            # if currency_node is not None:
+            #     transaction.currency = Commodity(currency_node.find('cmdty:id', namespaces).text,
+            #                                      currency_node.find('cmdty:space', namespaces).text)
+
+            # TODO: slots
+            # slots = transaction_node.find('trn:slots', namespaces)
+            # if slots:
+            #     for slot in slots.findall('slot', namespaces):
+            #         transaction.slots.append(Slot.from_xml(slot, namespaces))
+
+            new_transaction.splits = Split.from_sqlite(sqlite_cursor, transaction['guid'], root_account)
+            new_transactions.append(new_transaction)
+        return new_transactions
+
+    def to_sqlite(self, sqlite_cursor):
+        raise NotImplementedError
+
+
+GnuCashSQLiteObject.register(Transaction)
+
+
+class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a split in GnuCash."""
 
     # TODO: SQLite support
@@ -302,6 +336,31 @@ class Split(GuidObject, GnuCashXMLObject):
                 new_split.quantity_denominator = quantity.split('/')[1]
 
         return new_split
+
+    @classmethod
+    def from_sqlite(cls, sqlite_cursor, transaction_guid, root_account):
+        split_data = cls.get_sqlite_table_data(sqlite_cursor, 'splits', 'tx_guid = ?', (transaction_guid,))
+        new_splits = []
+        for split in split_data:
+            new_split = cls(root_account.get_subaccount_by_id(split['account_guid']),
+                            split['value_num'] / split['value_denom'],
+                            split['reconcile_state'])
+            new_split.guid = split['guid']
+            new_split.memo = split['memo']
+            new_split.action = split['action']
+            # TODO: reconcile_date
+            # TODO: quantity_num
+            new_split.quantity_denominator = split['quantity_denom']
+            # TODO: lot_guid
+
+            new_splits.append(new_split)
+        return new_splits
+
+    def to_sqlite(self, sqlite_cursor):
+        raise NotImplementedError
+
+
+GnuCashSQLiteObject.register(Split)
 
 
 class TransactionManager:

@@ -22,13 +22,27 @@ class GnuCashXMLObject(abc.ABC):
 
 
 class GnuCashSQLiteObject(abc.ABC):
-    sqlite_table_name = None
-
     @classmethod
     @abc.abstractmethod
-    def from_sqlite(cls, sqlite_row):
+    def from_sqlite(cls, sqlite_cursor):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def to_sqlite(self, sqlite_handle):
+    def to_sqlite(self, sqlite_cursor):
         raise NotImplementedError
+
+    @classmethod
+    def get_sqlite_table_data(cls, sqlite_cursor, table_name, where_condition=None, where_parameters=None):
+        sql = 'SELECT * FROM {}'.format(table_name)
+        if where_condition is not None:
+            sql += ' WHERE ' + where_condition
+        if where_parameters is not None:
+            sqlite_cursor.execute(sql, where_parameters)
+        else:
+            sqlite_cursor.execute(sql)
+        column_names = [column[0] for column in sqlite_cursor.description]
+        rows = []
+        for row in sqlite_cursor.fetchall():
+            row_data = dict(zip(column_names, row))
+            rows.append(row_data)
+        return rows
