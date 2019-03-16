@@ -391,11 +391,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_book.guid = book['guid']
             new_book.root_account = Account.from_sqlite(sqlite_cursor, book['root_account_guid'])
 
-            # TODO: slots
-            # slots = book_node.find('book:slots', namespaces)
-            # if slots is not None:
-            #    for slot in slots.findall('slot'):
-            #        new_book.slots.append(Slot.from_xml(slot, namespaces))
+            new_book.slots = Slot.from_sqlite(sqlite_cursor, book['guid'])
 
             # TODO: commodities
             # commodities = book_node.findall('gnc:commodity', namespaces)

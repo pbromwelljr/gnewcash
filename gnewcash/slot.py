@@ -9,13 +9,21 @@ from datetime import datetime
 from decimal import Decimal
 from xml.etree import ElementTree
 
-from gnewcash.file_formats import GnuCashXMLObject
+from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
 
 
-class Slot(GnuCashXMLObject):
+class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a slot in GnuCash."""
 
-    # TODO: SQLite support
+    sqlite_slot_type_mapping = {
+        1: 'integer',
+        2: 'double',
+        3: 'numeric',
+        4: 'string',
+        5: 'guid',
+        9: 'guid',
+        10: 'gdate'
+    }
 
     def __init__(self, key, value, slot_type):
         self.key = key
@@ -83,6 +91,34 @@ class Slot(GnuCashXMLObject):
                 raise NotImplementedError('Slot type {} is not implemented.'.format(slot_type))
 
         return cls(key, value, slot_type)
+
+    @classmethod
+    def from_sqlite(cls, sqlite_cursor, object_id):
+        slot_info = cls.get_sqlite_table_data(sqlite_cursor, 'slots', 'obj_guid = ?', (object_id,))
+        new_slots = []
+        for slot in slot_info:
+            slot_type = cls.sqlite_slot_type_mapping[slot['slot_type']]
+            slot_name = slot['name']
+            if slot_type == 'guid':
+                slot_value = slot['guid_val']
+            elif slot_type == 'string':
+                slot_value = slot['string_val']
+            elif slot_type == 'gdate':
+                slot_value = datetime.strptime(slot['gdate_val'], '%Y%m%d')
+            else:
+                raise NotImplementedError('Slot type {} is not implemented.'.format(slot['slot_type']))
+        # 1: 'integer',
+        # 2: 'double',
+        # 3: 'numeric',
+        # 4: 'string',
+        # 10: 'gdate'
+            new_slot = cls(slot_name, slot_value, slot_type)
+            new_slots.append(new_slot)
+        return new_slots
+
+    def to_sqlite(self, sqlite_cursor):
+        # TODO: to_sqlite
+        raise NotImplementedError
 
 
 class SlottableObject(object):

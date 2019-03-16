@@ -21,8 +21,6 @@ from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a transaction in GnuCash."""
 
-    # TODO: SQLite support
-
     def __init__(self):
         super(Transaction, self).__init__()
         self.currency = None
@@ -238,12 +236,7 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
             #     transaction.currency = Commodity(currency_node.find('cmdty:id', namespaces).text,
             #                                      currency_node.find('cmdty:space', namespaces).text)
 
-            # TODO: slots
-            # slots = transaction_node.find('trn:slots', namespaces)
-            # if slots:
-            #     for slot in slots.findall('slot', namespaces):
-            #         transaction.slots.append(Slot.from_xml(slot, namespaces))
-
+            new_transaction.slots = Slot.from_sqlite(sqlite_cursor, transaction['guid'])
             new_transaction.splits = Split.from_sqlite(sqlite_cursor, transaction['guid'], root_account)
             new_transactions.append(new_transaction)
         return new_transactions
@@ -257,8 +250,6 @@ GnuCashSQLiteObject.register(Transaction)
 
 class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a split in GnuCash."""
-
-    # TODO: SQLite support
 
     def __init__(self, account, amount, reconciled_state='n'):
         super(Split, self).__init__()

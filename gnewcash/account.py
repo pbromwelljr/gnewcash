@@ -392,6 +392,7 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
             new_account.hidden = True
         if account_data['placeholder'] is not None and account_data['placeholder'] == 1:
             new_account.placeholder = True
+        new_account.slots = Slot.from_sqlite(sqlite_cursor, account_data['guid'])
         # TODO: commodity_guid
         # TODO: commodity_scu
         # TODO: non_std_scu
