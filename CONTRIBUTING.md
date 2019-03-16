@@ -17,10 +17,10 @@ release cycles. Your pull request should go into a feature branch of gnewcash fo
 
 ## Getting Set Up
 
-Fork the repository to your GitHub account and clone it. You'll need [pipenv](https://pipenv.readthedocs.io/en/latest/)
-to install the dependencies of the project. To do so, run ```pipenv install --dev```.
+Fork the repository to your GitHub account and clone it. You'll need [poetry](https://poetry.eustace.io/)
+to install the dependencies of the project. To do so, run ```poetry install```.
 
-After dependencies are installed, run ```pipenv shell``` and run the following commands:
+After dependencies are installed, run ```poetry shell``` and run the following commands:
 
 1. ```flake8 gnewcash```
 2. ```pylint gnewcash```
