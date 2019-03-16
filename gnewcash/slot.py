@@ -9,9 +9,13 @@ from datetime import datetime
 from decimal import Decimal
 from xml.etree import ElementTree
 
+from gnewcash.file_formats import GnuCashXMLObject
 
-class Slot(object):
+
+class Slot(GnuCashXMLObject):
     """Represents a slot in GnuCash."""
+
+    # TODO: SQLite support
 
     def __init__(self, key, value, slot_type):
         self.key = key

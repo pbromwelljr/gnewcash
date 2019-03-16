@@ -102,3 +102,7 @@ class TestGnuCashFile(unittest.TestCase):
         test_root = test_tree.getroot()
 
         self.check_gnucash_elements(original_root, test_root)
+
+    def test_read_write_sqlite(self):
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.sqlite.gnucash', sort_transactions=False)
+        # gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash')

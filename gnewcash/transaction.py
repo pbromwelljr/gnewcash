@@ -12,13 +12,16 @@ from xml.etree import ElementTree
 from warnings import warn
 
 from gnewcash.commodity import Commodity
+from gnewcash.file_formats import GnuCashXMLObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 
 
-class Transaction(GuidObject, SlottableObject):
+class Transaction(GuidObject, SlottableObject, GnuCashXMLObject):
     """Represents a transaction in GnuCash."""
+
+    # TODO: SQLite support
 
     def __init__(self):
         super(Transaction, self).__init__()
@@ -218,8 +221,10 @@ class Transaction(GuidObject, SlottableObject):
         super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
 
-class Split(GuidObject):
+class Split(GuidObject, GnuCashXMLObject):
     """Represents a split in GnuCash."""
+
+    # TODO: SQLite support
 
     def __init__(self, account, amount, reconciled_state='n'):
         super(Split, self).__init__()
@@ -419,8 +424,10 @@ class TransactionManager:
         return True
 
 
-class ScheduledTransaction(GuidObject):
+class ScheduledTransaction(GuidObject, GnuCashXMLObject):
     """Class that represents a scheduled transaction in Gnucash."""
+
+    # TODO: SQLite support
 
     def __init__(self):
         super(ScheduledTransaction, self).__init__()

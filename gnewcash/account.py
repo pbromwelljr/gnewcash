@@ -12,6 +12,7 @@ from xml.etree import ElementTree
 from collections import namedtuple
 
 from gnewcash.commodity import Commodity
+from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 
@@ -32,8 +33,10 @@ class AccountType(object):
     LIABILITY = 'LIABILITY'
 
 
-class Account(GuidObject, SlottableObject):
+class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents an account in GnuCash."""
+
+    sqlite_table_name = 'accounts'
 
     def __init__(self):
         super(Account, self).__init__()
@@ -374,6 +377,30 @@ class Account(GuidObject, SlottableObject):
     @placeholder.setter
     def placeholder(self, value):
         super(Account, self).set_slot_value_bool('placeholder', value, 'string')
+
+    @classmethod
+    def from_sqlite(cls, sqlite_row):
+        new_account = cls()
+        new_account.guid = sqlite_row['guid']
+        new_account.name = sqlite_row['name']
+        new_account.type = sqlite_row['account_type']
+        new_account.code = sqlite_row['code']
+        new_account.description = sqlite_row['description']
+        if sqlite_row['hidden'] is not None and sqlite_row['hidden'] == 1:
+            new_account.hidden = True
+        if sqlite_row['placeholder'] is not None and sqlite_row['placeholder'] == 1:
+            new_account.placeholder = True
+        # TODO: commodity_guid
+        # TODO: commodity_scu
+        # TODO: non_std_scu
+        # TODO: parent_guid
+        return new_account
+
+    def to_sqlite(self, sqlite_handle):
+        pass
+
+
+GnuCashSQLiteObject.register(Account)
 
 
 class BankAccount(Account):

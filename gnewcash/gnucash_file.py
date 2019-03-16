@@ -10,14 +10,16 @@ from datetime import datetime
 import gzip
 import os.path
 from logging import getLogger
+import sqlite3
 from xml.etree import ElementTree
 from xml.dom import minidom
 
-from gnewcash.guid_object import GuidObject
-from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
+from gnewcash.file_formats import FileFormat, GnuCashSQLiteObject, GnuCashXMLObject
+from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
+from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
 
 
 class GnuCashFile(object):
@@ -72,7 +74,18 @@ class GnuCashFile(object):
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file, sort_transactions=True, transaction_class=None):
+    def detect_file_format(cls, source_file):
+        with open(source_file, 'rb') as  source_file_handle:
+            first_bytes = source_file_handle.read(10)
+            if first_bytes.startswith(b'<?xml'):
+                return FileFormat.XML
+            elif first_bytes.startswith(b'\x1f\x8b'):
+                return FileFormat.GZIP_XML
+            elif first_bytes.startswith(b'SQLite'):
+                return FileFormat.SQLITE
+
+    @classmethod
+    def read_file(cls, source_file, sort_transactions=True, transaction_class=None, file_format=None):
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -82,6 +95,9 @@ class GnuCashFile(object):
         :type sort_transactions: bool
         :param transaction_class: Class to use when initializing transactions
         :type transaction_class: type
+        :param file_format: File format of the file being uploaded.
+        If no format is provided, GNewCash will try to detect the file format,
+        :type file_format: FileFormat
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
@@ -90,24 +106,47 @@ class GnuCashFile(object):
         logger = getLogger()
         built_file = cls()
         built_file.file_name = source_file
-        if os.path.exists(source_file):
-            try:
+        if not os.path.exists(source_file):
+            logger.warning('Could not find %s', source_file)
+            return built_file
+
+        file_format = cls.detect_file_format(source_file) if file_format is None else file_format
+        if file_format == FileFormat.UNKNOWN:
+            raise RuntimeError('Could not detect file format of {}'.format(source_file))
+        elif file_format in [FileFormat.XML, FileFormat.GZIP_XML]:
+            if file_format == FileFormat.XML:
                 xml_tree = ElementTree.parse(source=source_file)
                 root = xml_tree.getroot()
-            except ElementTree.ParseError:
+            elif file_format == FileFormat.GZIP_XML:
                 with gzip.open(source_file, 'rb') as gzipped_file:
                     contents = gzipped_file.read().decode('utf-8')
                 xml_tree = ElementTree.fromstring(contents)
                 root = xml_tree
             namespaces = cls.namespace_data
-
             books = root.findall('gnc:book', namespaces)
             for book in books:
                 new_book = Book.from_xml(book, namespaces, sort_transactions=sort_transactions,
                                          transaction_class=transaction_class)
                 built_file.books.append(new_book)
-        else:
-            logger.warning('Could not find %s', source_file)
+        elif file_format == FileFormat.SQLITE:
+            sqlite_handle = sqlite3.connect(source_file)
+            created_objects = []
+            for subclz in GnuCashSQLiteObject.__subclasses__():
+                if subclz.sqlite_table_name is None:
+                    raise ValueError('Class {} does not have a SQLite table name set.'.format(subclz.__name__))
+
+                cursor = sqlite_handle.cursor()
+                try:
+                    cursor.execute('SELECT * FROM {}'.format(subclz.sqlite_table_name))
+                    column_names = [column[0] for column in cursor.description]
+                    for row in cursor.fetchall():
+                        row_data = dict(zip(column_names, row))
+                        created_objects.append(subclz.from_sqlite(row_data))
+                finally:
+                    cursor.close()
+
+            raise NotImplementedError('SQLite support not implemented yet')
+
         return built_file
 
     def build_file(self, target_file, prettify_xml=False, use_gzip=False):
@@ -145,8 +184,10 @@ class GnuCashFile(object):
                 target_file_handle.write(file_contents)
 
 
-class Book(GuidObject, SlottableObject):
+class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a Book in GnuCash."""
+
+    sqlite_table_name = 'books'
 
     def __init__(self, root_account=None, transactions=None, commodities=None, slots=None,
                  template_root_account=None, template_transactions=None, scheduled_transactions=None,
@@ -353,9 +394,25 @@ class Book(GuidObject, SlottableObject):
     def __repr__(self):
         return str(self)
 
+    @classmethod
+    def from_sqlite(cls, sqlite_row):
+        new_book = cls()
+        new_book.guid = sqlite_row['guid']
+        # TODO: root_account_guid
+        # TODO: root_template_guid
+        return new_book
 
-class Budget(GuidObject, SlottableObject):
+    def to_sqlite(self, sqlite_handle):
+        pass
+
+
+GnuCashSQLiteObject.register(Book)
+
+
+class Budget(GuidObject, SlottableObject, GnuCashXMLObject):
     """Class object representing a Budget in GnuCash."""
+
+    # TODO: SQLite support
 
     def __init__(self):
         super(Budget, self).__init__()

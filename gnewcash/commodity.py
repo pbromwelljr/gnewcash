@@ -8,9 +8,13 @@ Module containing classes that read, manipulate, and write commodities.
 
 from xml.etree import ElementTree
 
+from gnewcash.file_formats import GnuCashXMLObject
 
-class Commodity(object):
+
+class Commodity(GnuCashXMLObject):
     """Represents a Commodity in GnuCash."""
+
+    # TODO: SQLite support
 
     def __init__(self, commodity_id, space):
         self.commodity_id = commodity_id
