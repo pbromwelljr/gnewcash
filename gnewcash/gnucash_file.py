@@ -390,6 +390,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_book = cls()
             new_book.guid = book['guid']
             new_book.root_account = Account.from_sqlite(sqlite_cursor, book['root_account_guid'])
+            new_book.template_root_account = Account.from_sqlite(sqlite_cursor, book['root_template_guid'])
 
             new_book.slots = Slot.from_sqlite(sqlite_cursor, book['guid'])
 
@@ -399,42 +400,23 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
             #     new_book.commodities.append(Commodity.from_xml(commodity, namespaces))
             transaction_manager = TransactionManager()
             transaction_manager.disable_sort = not sort_transactions
+            template_transactions = []
+            template_account_guids = new_book.template_root_account.get_account_guids()
 
-            for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account):
-                transaction_manager.add(transaction)
+            for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account,
+                                                             new_book.template_root_account):
+                transaction_account_guids = [x.account.guid for x in transaction.splits]
+                if any(map(lambda x: x in template_account_guids, transaction_account_guids)):
+                    template_transactions.append(transaction)
+                else:
+                    transaction_manager.add(transaction)
 
             new_book.transactions = transaction_manager
+            new_book.template_transactions = template_transactions
 
-            # TODO: template transactions
-            # template_transactions_xml = book_node.findall('gnc:template-transactions', namespaces)
-            # if template_transactions_xml is not None:
-            #     template_accounts = []
-            #     template_transactions = []
-            #     for template_transaction in template_transactions_xml:
-            #         # Process accounts before transactions
-            #         for subelement in template_transaction:
-            #             if not subelement.tag.endswith('account'):
-            #                 continue
-            #             template_accounts.append(Account.from_xml(subelement, namespaces, template_accounts))
-            #
-            #         for subelement in template_transaction:
-            #             if not subelement.tag.endswith('transaction'):
-            #                 continue
-            #             template_transactions.append(
-            #                 transaction_class.from_xml(subelement, namespaces, template_accounts))
-            #     new_book.template_transactions = template_transactions
-            #     template_root_accounts = [x for x in template_accounts if x.type == 'ROOT']
-            #     if template_root_accounts:
-            #         new_book.template_root_account = template_root_accounts[0]
-
-            # TODO: scheduled transactions
-            # scheduled_transactions = book_node.findall('gnc:schedxaction', namespaces)
-            # if scheduled_transactions is not None:
-            #     for scheduled_transaction in scheduled_transactions:
-            #         new_book.scheduled_transactions.append(
-            #             ScheduledTransaction.from_xml(scheduled_transaction,
-            #                                           namespaces,
-            #                                           new_book.template_root_account))
+            for scheduled_transaction in ScheduledTransaction.from_sqlite(sqlite_cursor,
+                                                                          new_book.template_root_account):
+                new_book.scheduled_transactions.append(scheduled_transaction)
 
             # TODO: budgets
             # budgets = book_node.findall('gnc:budget', namespaces)

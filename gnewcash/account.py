@@ -403,6 +403,14 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
     def to_sqlite(self, sqlite_handle):
         pass
 
+    def get_account_guids(self, account_guids=None):
+        if account_guids is None:
+            account_guids = []
+        account_guids.append(self.guid)
+        for sub_account in self.children:
+            account_guids = sub_account.get_account_guids(account_guids)
+        return account_guids
+
 
 GnuCashSQLiteObject.register(Account)
 
