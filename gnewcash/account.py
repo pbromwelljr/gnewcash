@@ -404,7 +404,7 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         return new_account
 
     def to_sqlite(self, sqlite_handle):
-        pass
+        raise NotImplementedError
 
     def get_account_guids(self, account_guids=None):
         if account_guids is None:

@@ -9,7 +9,7 @@ Module containing classes that read, manipulate, and write commodities.
 from xml.etree import ElementTree
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction, GnuCashXMLObject, GnuCashSQLiteObject
 
 
 class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
@@ -130,7 +130,19 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return new_commodities[0]
 
     def to_sqlite(self, sqlite_cursor):
-        raise NotImplementedError
+        db_action = self.get_db_action(sqlite_cursor, 'commodities', 'guid', self.guid)
+        if db_action == DBAction.INSERT:
+            sql = 'INSERT INTO commodities(guid, namespace, mnemonic, fullname, cusip, fraction, quote_flag, '\
+                  'quote_source, quote_tz) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            sql_args = (self.guid, self.space, self.commodity_id, self.name, self.xcode, self.fraction,
+                        1 if self.get_quotes else 0, self.quote_source, self.quote_tz,)
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = 'UPDATE commodities SET namespace = ?, mnemonic = ?, fullname = ?, cusip = ?, fraction = ?, '\
+                  'quote_flag = ?, quote_source = ?, quote_tz = ? WHERE guid = ?'
+            sql_args = (self.space, self.commodity_id, self.name, self.xcode, self.fraction,
+                        1 if self.get_quotes else 0, self.quote_source, self.quote_tz, self.guid,)
+            sqlite_cursor.execute(sql, sql_args)
 
 
 GnuCashSQLiteObject.register(Commodity)

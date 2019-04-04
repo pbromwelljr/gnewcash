@@ -4,6 +4,7 @@ import os
 import unittest
 from xml.etree import ElementTree
 
+import gnewcash.file_formats as gff
 import gnewcash.gnucash_file as gcf
 import gnewcash.transaction as trn
 
@@ -105,4 +106,5 @@ class TestGnuCashFile(unittest.TestCase):
 
     def test_read_write_sqlite(self):
         gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.sqlite.gnucash', sort_transactions=False)
+        gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash', file_format=gff.FileFormat.SQLITE)
         # gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash')

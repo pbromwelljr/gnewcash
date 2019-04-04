@@ -9,6 +9,11 @@ class FileFormat(enum.Enum):
     UNKNOWN = 99
 
 
+class DBAction(enum.Enum):
+    INSERT = 1
+    UPDATE = 2
+
+
 class GnuCashXMLObject(abc.ABC):
     @classmethod
     @abc.abstractmethod
@@ -46,3 +51,14 @@ class GnuCashSQLiteObject(abc.ABC):
             row_data = dict(zip(column_names, row))
             rows.append(row_data)
         return rows
+
+    @classmethod
+    def get_db_action(cls, sqlite_cursor, table_name, column_name, column_identifier):
+        sql = 'SELECT 1 FROM {} WHERE {} = ?'.format(table_name, column_name)
+        sqlite_cursor.execute(sql, (column_identifier,))
+
+        record = sqlite_cursor.fetchone()
+        if record is None:
+            return DBAction.INSERT
+        else:
+            return DBAction.UPDATE

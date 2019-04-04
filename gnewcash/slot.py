@@ -112,6 +112,8 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
         return new_slots
 
     def to_sqlite(self, sqlite_cursor):
+        # slot_action = self.get_db_action(sqlite_cursor, 'slots', )
+        # TODO: Slots don't have GUIDs. Need to store the DB ID in the object.
         raise NotImplementedError
 
 
