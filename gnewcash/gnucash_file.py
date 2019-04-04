@@ -394,10 +394,8 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
             new_book.slots = Slot.from_sqlite(sqlite_cursor, book['guid'])
 
-            # TODO: commodities
-            # commodities = book_node.findall('gnc:commodity', namespaces)
-            # for commodity in commodities:
-            #     new_book.commodities.append(Commodity.from_xml(commodity, namespaces))
+            new_book.commodities = Commodity.from_sqlite(sqlite_cursor)
+
             transaction_manager = TransactionManager()
             transaction_manager.disable_sort = not sort_transactions
             template_transactions = []

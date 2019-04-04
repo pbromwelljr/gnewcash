@@ -8,15 +8,15 @@ Module containing classes that read, manipulate, and write commodities.
 
 from xml.etree import ElementTree
 
-from gnewcash.file_formats import GnuCashXMLObject
+from gnewcash.guid_object import GuidObject
+from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
 
 
-class Commodity(GnuCashXMLObject):
+class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents a Commodity in GnuCash."""
 
-    # TODO: SQLite support
-
     def __init__(self, commodity_id, space):
+        super().__init__()
         self.commodity_id = commodity_id
         self.space = space
         self.get_quotes = False
@@ -102,3 +102,29 @@ class Commodity(GnuCashXMLObject):
         ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
         ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.commodity_id
         return commodity_node
+
+    @classmethod
+    def from_sqlite(cls, sqlite_cursor):
+        commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities')
+        new_commodities = []
+        for commodity in commodity_data:
+            commodity_id = commodity['mnemonic']
+            space = commodity['namespace']
+
+            new_commodity = cls(commodity_id, space)
+            new_commodity.guid = commodity['guid']
+            new_commodity.get_quotes = commodity['quote_flag'] == 1
+            new_commodity.quote_source = commodity['quote_source']
+            new_commodity.quote_tz = commodity['quote_tz']
+            new_commodity.name = commodity['fullname']
+            new_commodity.xcode = commodity['cusip']
+            new_commodity.fraction = commodity['fraction']
+            new_commodities.append(new_commodity)
+
+        return new_commodities
+
+    def to_sqlite(self, sqlite_cursor):
+        raise NotImplementedError
+
+
+GnuCashSQLiteObject.register(Commodity)
