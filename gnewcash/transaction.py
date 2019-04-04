@@ -229,13 +229,7 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
             new_transaction.date_posted = datetime.strptime(transaction['post_date'], '%Y-%m-%d %H:%M:%S')
             new_transaction.date_entered = datetime.strptime(transaction['enter_date'], '%Y-%m-%d %H:%M:%S')
             new_transaction.description = transaction['description']
-
-            # TODO: currency
-            # currency_node = transaction_node.find('trn:currency', namespaces)
-            # if currency_node is not None:
-            #     transaction.currency = Commodity(currency_node.find('cmdty:id', namespaces).text,
-            #                                      currency_node.find('cmdty:space', namespaces).text)
-
+            new_transaction.currency = Commodity.from_sqlite(sqlite_cursor, commodity_guid=transaction['currency_guid'])
             new_transaction.slots = Slot.from_sqlite(sqlite_cursor, transaction['guid'])
             new_transaction.splits = Split.from_sqlite(sqlite_cursor, transaction['guid'], root_account,
                                                        template_root_account)

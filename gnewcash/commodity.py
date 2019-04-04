@@ -104,8 +104,12 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return commodity_node
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor):
-        commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities')
+    def from_sqlite(cls, sqlite_cursor, commodity_guid=None):
+        if commodity_guid is None:
+            commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities')
+        else:
+            commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities', 'guid = ?', (commodity_guid,))
+
         new_commodities = []
         for commodity in commodity_data:
             commodity_id = commodity['mnemonic']
@@ -121,7 +125,9 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_commodity.fraction = commodity['fraction']
             new_commodities.append(new_commodity)
 
-        return new_commodities
+        if commodity_guid is None:
+            return new_commodities
+        return new_commodities[0]
 
     def to_sqlite(self, sqlite_cursor):
         raise NotImplementedError

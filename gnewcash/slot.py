@@ -107,17 +107,11 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
                 slot_value = datetime.strptime(slot['gdate_val'], '%Y%m%d')
             else:
                 raise NotImplementedError('Slot type {} is not implemented.'.format(slot['slot_type']))
-        # 1: 'integer',
-        # 2: 'double',
-        # 3: 'numeric',
-        # 4: 'string',
-        # 10: 'gdate'
             new_slot = cls(slot_name, slot_value, slot_type)
             new_slots.append(new_slot)
         return new_slots
 
     def to_sqlite(self, sqlite_cursor):
-        # TODO: to_sqlite
         raise NotImplementedError
 
 

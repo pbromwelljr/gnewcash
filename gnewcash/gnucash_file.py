@@ -132,7 +132,6 @@ class GnuCashFile(object):
             sqlite_handle = sqlite3.connect(source_file)
             cursor = sqlite_handle.cursor()
             built_file.books = Book.from_sqlite(cursor)
-            raise NotImplementedError('SQLite support not implemented yet')
 
         return built_file
 
@@ -422,7 +421,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return new_books
 
     def to_sqlite(self, sqlite_handle):
-        pass
+        raise NotImplementedError
 
 
 GnuCashSQLiteObject.register(Book)
@@ -545,7 +544,7 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
             new_budget.recurrence_start = datetime.strptime(recurrence_data['recurrence_period_start'],
                                                             '%Y%m%d')
 
-            # TODO: Slots
+            new_budget.slots = Slot.from_sqlite(sqlite_cursor, new_budget.guid)
 
             new_budgets.append(new_budget)
         return new_budgets

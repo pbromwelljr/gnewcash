@@ -393,11 +393,14 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         if account_data['placeholder'] is not None and account_data['placeholder'] == 1:
             new_account.placeholder = True
         new_account.slots = Slot.from_sqlite(sqlite_cursor, account_data['guid'])
-        # TODO: commodity_guid
-        # TODO: commodity_scu
+
+        new_account.commodity = Commodity.from_sqlite(sqlite_cursor, commodity_guid=account_data['commodity_guid'])
+        new_account.commodity_scu = account_data['commodity_scu']
         # TODO: non_std_scu
+
         for subaccount in cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'parent_guid = ?', (account_id,)):
             new_account.children.append(cls.from_sqlite(sqlite_cursor, subaccount['guid']))
+
         return new_account
 
     def to_sqlite(self, sqlite_handle):
