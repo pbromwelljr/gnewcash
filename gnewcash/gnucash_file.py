@@ -418,11 +418,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
                                                                           new_book.template_root_account):
                 new_book.scheduled_transactions.append(scheduled_transaction)
 
-            # TODO: budgets
-            # budgets = book_node.findall('gnc:budget', namespaces)
-            # if budgets is not None:
-            #     for budget in budgets:
-            #         new_book.budgets.append(Budget.from_xml(budget, namespaces))
+            new_book.budgets = Budget.from_sqlite(sqlite_cursor)
 
             new_books.append(new_book)
         return new_books
@@ -434,10 +430,8 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
 GnuCashSQLiteObject.register(Book)
 
 
-class Budget(GuidObject, SlottableObject, GnuCashXMLObject):
+class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Class object representing a Budget in GnuCash."""
-
-    # TODO: SQLite support
 
     def __init__(self):
         super(Budget, self).__init__()
@@ -534,3 +528,32 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject):
                 new_obj.slots.append(Slot.from_xml(slot, namespaces))
 
         return new_obj
+
+    @classmethod
+    def from_sqlite(cls, sqlite_cursor):
+        budget_data = cls.get_sqlite_table_data(sqlite_cursor, 'budgets')
+        new_budgets = []
+        for budget in budget_data:
+            new_budget = cls()
+            new_budget.guid = budget['guid']
+            new_budget.name = budget['name']
+            new_budget.description = budget['description']
+            new_budget.period_count = budget['num_periods']
+
+            recurrence_data, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
+                                                         (new_budget.guid,))
+            new_budget.recurrence_multiplier = recurrence_data['recurrence_mult']
+            new_budget.recurrence_period_type = recurrence_data['recurrence_period_type']
+            new_budget.recurrence_start = datetime.strptime(recurrence_data['recurrence_period_start'],
+                                                            '%Y%m%d')
+
+            # TODO: Slots
+
+            new_budgets.append(new_budget)
+        return new_budgets
+
+    def to_sqlite(self, sqlite_cursor):
+        raise NotImplementedError
+
+
+GnuCashSQLiteObject.register(Budget)

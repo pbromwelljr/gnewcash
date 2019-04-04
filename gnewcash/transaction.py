@@ -478,8 +478,6 @@ class TransactionManager:
 class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Class that represents a scheduled transaction in Gnucash."""
 
-    # TODO: SQLite support
-
     def __init__(self):
         super(ScheduledTransaction, self).__init__()
         self.name = None
