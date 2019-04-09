@@ -1,0 +1,32 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Poetry Shell",
+            "type": "shell",
+            "command": "poetry shell"
+        },
+        {
+            "label": "Flake8",
+            "type": "shell",
+            "command": "poetry run flake8 gnewcash"
+        },
+        {
+            "label": "PyLint",
+            "type": "shell",
+            "command": "poetry run pylint gnewcash"
+        },
+        {
+            "label": "Unit Tests",
+            "type": "shell",
+            "command": "poetry run coverage run -m unittest discover"
+        },
+        {
+            "label": "Poetry Install",
+            "type": "shell",
+            "command": "poetry install"
+        }
+    ]
+}
