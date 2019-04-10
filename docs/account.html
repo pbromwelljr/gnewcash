@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="GnuCash File" href="gnucash_file.html" />
+    <link rel="next" title="Commodity" href="commodity.html" />
     <link rel="prev" title="Code Documentation" href="code_documentation.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -89,12 +91,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#special-accounts">Special Accounts</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
@@ -171,7 +174,7 @@
 <dl class="class">
 <dt id="account.Account">
 <em class="property">class </em><code class="descclassname">account.</code><code class="descname">Account</code><a class="reference internal" href="_modules/account.html#Account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gnewcash.guid_object.GuidObject</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">gnewcash.slot.SlottableObject</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gnewcash.guid_object.GuidObject</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">gnewcash.slot.SlottableObject</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">gnewcash.file_formats.GnuCashXMLObject</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">gnewcash.file_formats.GnuCashSQLiteObject</span></code></p>
 <p>Represents an account in GnuCash.</p>
 <dl class="method">
 <dt id="account.Account.as_dict">
@@ -249,6 +252,20 @@
 </dd></dl>
 
 <dl class="classmethod">
+<dt id="account.Account.from_sqlite">
+<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>account_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for creating an object from a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="account.Account.from_xml">
 <em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>account_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an Account object from the GnuCash XML.</p>
@@ -268,6 +285,24 @@
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#account.Account" title="account.Account">Account</a></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="account.Account.get_account_guids">
+<code class="descname">get_account_guids</code><span class="sig-paren">(</span><em>account_guids=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_account_guids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_account_guids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a flat list of account GUIDs under the current account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account_guids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – Running list of account GUIDs (should be None on first call)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of account GUIDs under the current account</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]</td>
 </tr>
 </tbody>
 </table>
@@ -452,6 +487,20 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the account is a placeholder, otherwise False</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="account.Account.to_sqlite">
+<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_handle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for writing an object to a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
 </tr>
 </tbody>
 </table>
@@ -696,10 +745,10 @@ and “payment_date” for the date the additional amount was paid.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gnucash_file.html" class="btn btn-neutral float-right" title="GnuCash File" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="commodity.html" class="btn btn-neutral float-right" title="Commodity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="code_documentation.html" class="btn btn-neutral" title="Code Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="code_documentation.html" class="btn btn-neutral float-left" title="Code Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -725,26 +774,16 @@ and “payment_date” for the date the additional amount was paid.</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

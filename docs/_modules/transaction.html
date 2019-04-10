@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -159,12 +161,13 @@
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
+<span class="kn">from</span> <span class="nn">gnewcash.file_formats</span> <span class="k">import</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.utils</span> <span class="k">import</span> <span class="n">safe_iso_date_parsing</span><span class="p">,</span> <span class="n">safe_iso_date_formatting</span>
 
 
-<div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a transaction in GnuCash.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -362,10 +365,34 @@
 
     <span class="nd">@associated_uri</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;assoc_uri&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;assoc_uri&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Transaction.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">root_account</span><span class="p">,</span> <span class="n">template_root_account</span><span class="p">):</span>
+        <span class="n">transaction_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;transactions&#39;</span><span class="p">)</span>
+        <span class="n">new_transactions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">transaction_data</span><span class="p">:</span>
+            <span class="n">new_transaction</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;num&#39;</span><span class="p">]</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;post_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;enter_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">currency</span> <span class="o">=</span> <span class="n">Commodity</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">commodity_guid</span><span class="o">=</span><span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;currency_guid&#39;</span><span class="p">])</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">Slot</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">])</span>
+            <span class="n">new_transaction</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="n">Split</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">],</span> <span class="n">root_account</span><span class="p">,</span>
+                                                       <span class="n">template_root_account</span><span class="p">)</span>
+            <span class="n">new_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_transaction</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_transactions</span></div>
+
+<div class="viewcode-block" id="Transaction.to_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="Split"><a class="viewcode-back" href="../transaction.html#transaction.Split">[docs]</a><span class="k">class</span> <span class="nc">Split</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Transaction</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Split"><a class="viewcode-back" href="../transaction.html#transaction.Split">[docs]</a><span class="k">class</span> <span class="nc">Split</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a split in GnuCash.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">reconciled_state</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>
@@ -443,7 +470,32 @@
             <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">quantity</span><span class="p">:</span>
                 <span class="n">new_split</span><span class="o">.</span><span class="n">quantity_denominator</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">new_split</span></div></div>
+        <span class="k">return</span> <span class="n">new_split</span></div>
+
+<div class="viewcode-block" id="Split.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Split.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">transaction_guid</span><span class="p">,</span> <span class="n">root_account</span><span class="p">,</span> <span class="n">template_root_account</span><span class="p">):</span>
+        <span class="n">split_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;splits&#39;</span><span class="p">,</span> <span class="s1">&#39;tx_guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">transaction_guid</span><span class="p">,))</span>
+        <span class="n">new_splits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">split_data</span><span class="p">:</span>
+            <span class="n">account_object</span> <span class="o">=</span> <span class="n">root_account</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="s1">&#39;account_guid&#39;</span><span class="p">])</span> <span class="ow">or</span> \
+                <span class="n">template_root_account</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span><span class="n">split</span><span class="p">[</span><span class="s1">&#39;account_guid&#39;</span><span class="p">])</span>
+            <span class="n">new_split</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">account_object</span><span class="p">,</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;value_num&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;value_denom&#39;</span><span class="p">],</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;reconcile_state&#39;</span><span class="p">])</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;memo&#39;</span><span class="p">]</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]</span>
+            <span class="c1"># TODO: reconcile_date</span>
+            <span class="c1"># TODO: quantity_num</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">quantity_denominator</span> <span class="o">=</span> <span class="n">split</span><span class="p">[</span><span class="s1">&#39;quantity_denom&#39;</span><span class="p">]</span>
+            <span class="c1"># TODO: lot_guid</span>
+
+            <span class="n">new_splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_split</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_splits</span></div>
+
+<div class="viewcode-block" id="Split.to_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Split.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Split</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TransactionManager"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager">[docs]</a><span class="k">class</span> <span class="nc">TransactionManager</span><span class="p">:</span>
@@ -566,7 +618,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="ScheduledTransaction"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction">[docs]</a><span class="k">class</span> <span class="nc">ScheduledTransaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ScheduledTransaction"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction">[docs]</a><span class="k">class</span> <span class="nc">ScheduledTransaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class that represents a scheduled transaction in Gnucash.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -758,7 +810,47 @@
         <span class="k">if</span> <span class="n">date_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">date_node</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">date_node</span><span class="o">.</span><span class="n">text</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ScheduledTransaction.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">template_root_account</span><span class="p">):</span>
+        <span class="n">scheduled_transactions</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;schedxactions&#39;</span><span class="p">)</span>
+        <span class="n">new_scheduled_transactions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">scheduled_transaction</span> <span class="ow">in</span> <span class="n">scheduled_transactions</span><span class="p">:</span>
+            <span class="n">new_scheduled_transaction</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;end_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">last_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;last_occur&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1"># TODO: num_occur</span>
+            <span class="c1"># TODO: rem_occur</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">auto_create</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;auto_create&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">auto_create_notify</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;auto_notify&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">advance_create_days</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;adv_creation&#39;</span><span class="p">]</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">advance_remind_days</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;adv_notify&#39;</span><span class="p">]</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">instance_count</span> <span class="o">=</span> <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;instance_count&#39;</span><span class="p">]</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">template_account</span> <span class="o">=</span> <span class="n">template_root_account</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span>
+                <span class="n">scheduled_transaction</span><span class="p">[</span><span class="s1">&#39;template_act_guid&#39;</span><span class="p">])</span>
+
+            <span class="n">recurrence_info</span><span class="p">,</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;recurrences&#39;</span><span class="p">,</span> <span class="s1">&#39;obj_guid = ?&#39;</span><span class="p">,</span>
+                                                         <span class="p">(</span><span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">,))</span>
+
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="n">recurrence_info</span><span class="p">[</span><span class="s1">&#39;recurrence_mult&#39;</span><span class="p">]</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">recurrence_info</span><span class="p">[</span><span class="s1">&#39;recurrence_period_start&#39;</span><span class="p">],</span>
+                                                                           <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">new_scheduled_transaction</span><span class="o">.</span><span class="n">recurrence_period</span> <span class="o">=</span> <span class="n">recurrence_info</span><span class="p">[</span><span class="s1">&#39;recurrence_period_type&#39;</span><span class="p">]</span>
+            <span class="c1"># TODO: recurrence_weekend_adjust</span>
+
+            <span class="n">new_scheduled_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_scheduled_transaction</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_scheduled_transactions</span></div>
+
+<div class="viewcode-block" id="ScheduledTransaction.to_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">ScheduledTransaction</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SimpleTransaction"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction">[docs]</a><span class="k">class</span> <span class="nc">SimpleTransaction</span><span class="p">(</span><span class="n">Transaction</span><span class="p">):</span>
@@ -887,26 +979,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

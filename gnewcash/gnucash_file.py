@@ -204,7 +204,7 @@ class GnuCashFile(object):
         Creates the SQLite schema using the provided SQLite cursor
 
         :param sqlite_cursor: Open cursor to a SQLite database.
-        :type sqlite_cursor: sqlite.Cursor
+        :type sqlite_cursor: sqlite3.Cursor
         """
         # Note: To update the GnuCash schema, connect to an existing GnuCash SQLite file and run ".schema".
         # Make sure to remove sqlite_sequence from the schema statements

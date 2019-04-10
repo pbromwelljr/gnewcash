@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Utils" href="utils.html" />
-    <link rel="prev" title="GUID Object" href="guid_object.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+    <link rel="prev" title="Slot" href="slot.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -84,12 +86,13 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Transaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
@@ -214,6 +217,20 @@
 </dd></dl>
 
 <dl class="classmethod">
+<dt id="transaction.Transaction.from_sqlite">
+<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>root_account</em>, <em>template_root_account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for creating an object from a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="transaction.Transaction.from_xml">
 <em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Transaction object from the GnuCash XML.</p>
@@ -271,6 +288,20 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Transaction GUID</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.Transaction.to_sqlite">
+<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for writing an object to a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
 </tr>
 </tbody>
 </table>
@@ -347,6 +378,20 @@
 </dd></dl>
 
 <dl class="classmethod">
+<dt id="transaction.Split.from_sqlite">
+<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>transaction_guid</em>, <em>root_account</em>, <em>template_root_account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for creating an object from a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="transaction.Split.from_xml">
 <em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>split_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an Split object from the GnuCash XML.</p>
@@ -366,6 +411,20 @@
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.Split" title="transaction.Split">Split</a></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="transaction.Split.to_sqlite">
+<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for writing an object to a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
 </tr>
 </tbody>
 </table>
@@ -531,6 +590,20 @@
 </dd></dl>
 
 <dl class="classmethod">
+<dt id="transaction.ScheduledTransaction.from_sqlite">
+<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>template_root_account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for creating an object from a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="transaction.ScheduledTransaction.from_xml">
 <em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>xml_obj</em>, <em>namespaces</em>, <em>template_account_root</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a ScheduledTransaction object from the GnuCash XML.</p>
@@ -655,6 +728,20 @@
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="transaction.ScheduledTransaction.to_sqlite">
+<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for writing an object to a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -749,7 +836,7 @@
         <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guid_object.html" class="btn btn-neutral" title="GUID Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="slot.html" class="btn btn-neutral float-left" title="Slot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -775,26 +862,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

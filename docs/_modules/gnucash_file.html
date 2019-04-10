@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -157,14 +159,17 @@
 <span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">getLogger</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 <span class="kn">from</span> <span class="nn">xml.dom</span> <span class="k">import</span> <span class="n">minidom</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">,</span> <span class="n">ScheduledTransaction</span>
 <span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="k">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
+<span class="kn">from</span> <span class="nn">gnewcash.file_formats</span> <span class="k">import</span> <span class="n">DBAction</span><span class="p">,</span> <span class="n">FileFormat</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span>
+<span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
+<span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="k">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">,</span> <span class="n">ScheduledTransaction</span>
 
 
 <div class="viewcode-block" id="GnuCashFile"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a><span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -218,8 +223,28 @@
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
+<div class="viewcode-block" id="GnuCashFile.detect_file_format"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.detect_file_format">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">detect_file_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detects the file format of the provided source file.</span>
+
+<span class="sd">        :param source_file: File to detect the format of.</span>
+<span class="sd">        :type source_file: str</span>
+<span class="sd">        :return: Format of the file, or raises RuntimeError if unable to detect</span>
+<span class="sd">        :rtype: FileFormat</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source_file_handle</span><span class="p">:</span>
+            <span class="n">first_bytes</span> <span class="o">=</span> <span class="n">source_file_handle</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">first_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&lt;?xml&#39;</span><span class="p">):</span>  <span class="c1">#pylint: disable=R1705</span>
+                <span class="k">return</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">XML</span>
+            <span class="k">elif</span> <span class="n">first_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x1f\x8b</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">GZIP_XML</span>
+            <span class="k">elif</span> <span class="n">first_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;SQLite&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">SQLITE</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not detect file format of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_file</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="GnuCashFile.read_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.read_file">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the specified .gnucash file and loads it into memory.</span>
 
@@ -229,6 +254,9 @@
 <span class="sd">        :type sort_transactions: bool</span>
 <span class="sd">        :param transaction_class: Class to use when initializing transactions</span>
 <span class="sd">        :type transaction_class: type</span>
+<span class="sd">        :param file_format: File format of the file being uploaded.</span>
+<span class="sd">        If no format is provided, GNewCash will try to detect the file format,</span>
+<span class="sd">        :type file_format: FileFormat</span>
 <span class="sd">        :return: New GnuCashFile object</span>
 <span class="sd">        :rtype: GnuCashFile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -237,27 +265,37 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">()</span>
         <span class="n">built_file</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source_file</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source_file</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">built_file</span>
+
+        <span class="n">file_format</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">detect_file_format</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_format</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">file_format</span>
+        <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not detect file format of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_file</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">file_format</span> <span class="ow">in</span> <span class="p">[</span><span class="n">FileFormat</span><span class="o">.</span><span class="n">XML</span><span class="p">,</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">GZIP_XML</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">XML</span><span class="p">:</span>
                 <span class="n">xml_tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source_file</span><span class="p">)</span>
                 <span class="n">root</span> <span class="o">=</span> <span class="n">xml_tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
-            <span class="k">except</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">GZIP_XML</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzipped_file</span><span class="p">:</span>
                     <span class="n">contents</span> <span class="o">=</span> <span class="n">gzipped_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
                 <span class="n">xml_tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
                 <span class="n">root</span> <span class="o">=</span> <span class="n">xml_tree</span>
             <span class="n">namespaces</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">namespace_data</span>
-
             <span class="n">books</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;gnc:book&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
                 <span class="n">new_book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="n">sort_transactions</span><span class="p">,</span>
                                          <span class="n">transaction_class</span><span class="o">=</span><span class="n">transaction_class</span><span class="p">)</span>
                 <span class="n">built_file</span><span class="o">.</span><span class="n">books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_book</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">SQLITE</span><span class="p">:</span>
+            <span class="n">sqlite_handle</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">sqlite_handle</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">built_file</span><span class="o">.</span><span class="n">books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">built_file</span></div>
 
-<div class="viewcode-block" id="GnuCashFile.build_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.build_file">[docs]</a>    <span class="k">def</span> <span class="nf">build_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_file</span><span class="p">,</span> <span class="n">prettify_xml</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_gzip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="GnuCashFile.build_file"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.build_file">[docs]</a>    <span class="k">def</span> <span class="nf">build_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_file</span><span class="p">,</span> <span class="n">prettify_xml</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_gzip</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the contents of the GnuCashFile object out to a .gnucash file on disk.</span>
 
@@ -269,30 +307,62 @@
 <span class="sd">        :type use_gzip: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">namespace_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace_data</span>
-        <span class="n">root_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc-v2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;xmlns:&#39;</span> <span class="o">+</span> <span class="n">identifier</span><span class="p">:</span> <span class="n">value</span>
-                                                   <span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">namespace_info</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-        <span class="n">book_count_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:count-data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cd:type&#39;</span><span class="p">:</span> <span class="s1">&#39;book&#39;</span><span class="p">})</span>
-        <span class="n">book_count_node</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">))</span>
-        <span class="n">root_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">book_count_node</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span>
-            <span class="n">root_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_format</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">XML</span><span class="p">,</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">GZIP_XML</span><span class="p">]:</span>
+            <span class="n">root_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc-v2&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;xmlns:&#39;</span> <span class="o">+</span> <span class="n">identifier</span><span class="p">:</span> <span class="n">value</span>
+                                                       <span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">namespace_info</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+            <span class="n">book_count_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:count-data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cd:type&#39;</span><span class="p">:</span> <span class="s1">&#39;book&#39;</span><span class="p">})</span>
+            <span class="n">book_count_node</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">))</span>
+            <span class="n">root_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">book_count_node</span><span class="p">)</span>
 
-        <span class="n">file_contents</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">root_node</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span>
+                <span class="n">root_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
 
-        <span class="c1"># Making our resulting XML pretty</span>
-        <span class="k">if</span> <span class="n">prettify_xml</span><span class="p">:</span>
-            <span class="n">file_contents</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span><span class="o">.</span><span class="n">toprettyxml</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">file_contents</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">root_node</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">use_gzip</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">,</span> <span class="n">compresslevel</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzip_file</span><span class="p">:</span>
-                <span class="n">gzip_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span>
+            <span class="c1"># Making our resulting XML pretty</span>
+            <span class="k">if</span> <span class="n">prettify_xml</span><span class="p">:</span>
+                <span class="n">file_contents</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span><span class="o">.</span><span class="n">toprettyxml</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">use_gzip</span> <span class="ow">or</span> <span class="n">file_format</span> <span class="o">==</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">GZIP_XML</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">use_gzip</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;The &quot;use_gzip&quot; parameter is deprecated. &#39;</span>
+                                  <span class="s1">&#39;Use file_format=FileFormat.GZIP_XML for gzipped XML files.&#39;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">,</span> <span class="n">compresslevel</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzip_file</span><span class="p">:</span>
+                    <span class="n">gzip_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">target_file_handle</span><span class="p">:</span>
+                    <span class="n">target_file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">SQLITE</span><span class="p">:</span>
+            <span class="n">create_schema</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">target_file</span><span class="p">)</span>
+            <span class="n">sqlite_handle</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">target_file</span><span class="p">)</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">sqlite_handle</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">create_schema</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">create_sqlite_schema</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span>
+                <span class="n">book</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;SQLite support not implemented&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">target_file_handle</span><span class="p">:</span>
-                <span class="n">target_file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_contents</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid file format type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_format</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GnuCashFile.create_sqlite_schema"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.create_sqlite_schema">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_sqlite_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the SQLite schema using the provided SQLite cursor</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to a SQLite database.</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Note: To update the GnuCash schema, connect to an existing GnuCash SQLite file and run &quot;.schema&quot;.</span>
+        <span class="c1"># Make sure to remove sqlite_sequence from the schema statements</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;sqlite_schema.sql&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">schema_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">schema_file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="n">sqlite_cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Book"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Book"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a Book in GnuCash.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_account</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">commodities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -498,10 +568,100 @@
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> transactions&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Book.from_sqlite"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">transaction_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transaction_class</span> <span class="o">=</span> <span class="n">Transaction</span>
+
+        <span class="n">new_books</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">books</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;books&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+            <span class="n">new_book</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+            <span class="n">new_book</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">book</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
+            <span class="n">new_book</span><span class="o">.</span><span class="n">root_account</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">book</span><span class="p">[</span><span class="s1">&#39;root_account_guid&#39;</span><span class="p">])</span>
+            <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">book</span><span class="p">[</span><span class="s1">&#39;root_template_guid&#39;</span><span class="p">])</span>
+
+            <span class="n">new_book</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">Slot</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">book</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">])</span>
+
+            <span class="n">new_book</span><span class="o">.</span><span class="n">commodities</span> <span class="o">=</span> <span class="n">Commodity</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">)</span>
+
+            <span class="n">transaction_manager</span> <span class="o">=</span> <span class="n">TransactionManager</span><span class="p">()</span>
+            <span class="n">transaction_manager</span><span class="o">.</span><span class="n">disable_sort</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">sort_transactions</span>
+            <span class="n">template_transactions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">template_account_guids</span> <span class="o">=</span> <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span><span class="o">.</span><span class="n">get_account_guids</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">transaction_class</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">new_book</span><span class="o">.</span><span class="n">root_account</span><span class="p">,</span>
+                                                             <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span><span class="p">):</span>
+                <span class="n">transaction_account_guids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">template_account_guids</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">,</span> <span class="n">transaction_account_guids</span><span class="p">)):</span>
+                    <span class="n">template_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">transaction_manager</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+
+            <span class="n">new_book</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transaction_manager</span>
+            <span class="n">new_book</span><span class="o">.</span><span class="n">template_transactions</span> <span class="o">=</span> <span class="n">template_transactions</span>
+
+            <span class="k">for</span> <span class="n">scheduled_transaction</span> <span class="ow">in</span> <span class="n">ScheduledTransaction</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span>
+                                                                          <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span><span class="p">):</span>
+                <span class="n">new_book</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scheduled_transaction</span><span class="p">)</span>
+
+            <span class="n">new_book</span><span class="o">.</span><span class="n">budgets</span> <span class="o">=</span> <span class="n">Budget</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">)</span>
+
+            <span class="n">new_books</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_book</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_books</span></div>
+
+<div class="viewcode-block" id="Book.to_sqlite"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_handle</span><span class="p">):</span>
+        <span class="n">book_db_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_handle</span><span class="p">,</span> <span class="s1">&#39;books&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">book_db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
+            <span class="n">sqlite_handle</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;INSERT INTO books (guid, root_account_guid, root_template_guid) VALUES (?, ?, ?)&#39;</span><span class="p">,</span>
+                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span><span class="o">.</span><span class="n">guid</span><span class="p">,))</span>
+        <span class="k">elif</span> <span class="n">book_db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">UPDATE</span><span class="p">:</span>
+            <span class="n">sqlite_handle</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?&#39;</span><span class="p">,</span>
+                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">,))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">sqlite_handle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">sqlite_handle</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Re-enable slots when slots are implemented</span>
+        <span class="c1"># for slot in self.slots:</span>
+        <span class="c1">#     slot.to_sqlite(sqlite_handle)</span>
+
+        <span class="k">for</span> <span class="n">commodity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodities</span><span class="p">:</span>
+            <span class="n">commodity</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">sqlite_handle</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Implement the rest</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        transaction_manager = TransactionManager()</span>
+<span class="sd">        transaction_manager.disable_sort = not sort_transactions</span>
+<span class="sd">        template_transactions = []</span>
+<span class="sd">        template_account_guids = new_book.template_root_account.get_account_guids()</span>
+
+<span class="sd">        for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account,</span>
+<span class="sd">                                                         new_book.template_root_account):</span>
+<span class="sd">            transaction_account_guids = [x.account.guid for x in transaction.splits]</span>
+<span class="sd">            if any(map(lambda x: x in template_account_guids, transaction_account_guids)):</span>
+<span class="sd">                template_transactions.append(transaction)</span>
+<span class="sd">            else:</span>
+<span class="sd">                transaction_manager.add(transaction)</span>
+
+<span class="sd">        new_book.transactions = transaction_manager</span>
+<span class="sd">        new_book.template_transactions = template_transactions</span>
+
+<span class="sd">        for scheduled_transaction in ScheduledTransaction.from_sqlite(sqlite_cursor,</span>
+<span class="sd">                                                                      new_book.template_root_account):</span>
+<span class="sd">            new_book.scheduled_transactions.append(scheduled_transaction)</span>
+
+<span class="sd">        new_book.budgets = Budget.from_sqlite(sqlite_cursor)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="Budget"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a><span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
+<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Budget"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a><span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class object representing a Budget in GnuCash.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -598,7 +758,36 @@
             <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
                 <span class="n">new_obj</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">new_obj</span></div></div>
+        <span class="k">return</span> <span class="n">new_obj</span></div>
+
+<div class="viewcode-block" id="Budget.from_sqlite"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="n">budget_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;budgets&#39;</span><span class="p">)</span>
+        <span class="n">new_budgets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">budget</span> <span class="ow">in</span> <span class="n">budget_data</span><span class="p">:</span>
+            <span class="n">new_budget</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">budget</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">budget</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">budget</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">period_count</span> <span class="o">=</span> <span class="n">budget</span><span class="p">[</span><span class="s1">&#39;num_periods&#39;</span><span class="p">]</span>
+
+            <span class="n">recurrence_data</span><span class="p">,</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;recurrences&#39;</span><span class="p">,</span> <span class="s1">&#39;obj_guid = ?&#39;</span><span class="p">,</span>
+                                                         <span class="p">(</span><span class="n">new_budget</span><span class="o">.</span><span class="n">guid</span><span class="p">,))</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="n">recurrence_data</span><span class="p">[</span><span class="s1">&#39;recurrence_mult&#39;</span><span class="p">]</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">=</span> <span class="n">recurrence_data</span><span class="p">[</span><span class="s1">&#39;recurrence_period_type&#39;</span><span class="p">]</span>
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">recurrence_data</span><span class="p">[</span><span class="s1">&#39;recurrence_period_start&#39;</span><span class="p">],</span>
+                                                            <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="n">new_budget</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">Slot</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">new_budget</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
+
+            <span class="n">new_budgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_budget</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_budgets</span></div>
+
+<div class="viewcode-block" id="Budget.to_sqlite"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Budget</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -628,26 +817,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

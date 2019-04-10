@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -156,9 +158,21 @@
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
+<span class="kn">from</span> <span class="nn">gnewcash.file_formats</span> <span class="k">import</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span>
 
-<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">(</span><span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a slot in GnuCash.&quot;&quot;&quot;</span>
+
+    <span class="n">sqlite_slot_type_mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;numeric&#39;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;gdate&#39;</span>
+    <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
@@ -225,7 +239,31 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Slot type </span><span class="si">{}</span><span class="s1"> is not implemented.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slot_type</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Slot.from_sqlite"><a class="viewcode-back" href="../slot.html#slot.Slot.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">object_id</span><span class="p">):</span>
+        <span class="n">slot_info</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;slots&#39;</span><span class="p">,</span> <span class="s1">&#39;obj_guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">object_id</span><span class="p">,))</span>
+        <span class="n">new_slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slot_info</span><span class="p">:</span>
+            <span class="n">slot_type</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">sqlite_slot_type_mapping</span><span class="p">[</span><span class="n">slot</span><span class="p">[</span><span class="s1">&#39;slot_type&#39;</span><span class="p">]]</span>
+            <span class="n">slot_name</span> <span class="o">=</span> <span class="n">slot</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;guid&#39;</span><span class="p">:</span>
+                <span class="n">slot_value</span> <span class="o">=</span> <span class="n">slot</span><span class="p">[</span><span class="s1">&#39;guid_val&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+                <span class="n">slot_value</span> <span class="o">=</span> <span class="n">slot</span><span class="p">[</span><span class="s1">&#39;string_val&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;gdate&#39;</span><span class="p">:</span>
+                <span class="n">slot_value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">slot</span><span class="p">[</span><span class="s1">&#39;gdate_val&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Slot type </span><span class="si">{}</span><span class="s1"> is not implemented.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">slot</span><span class="p">[</span><span class="s1">&#39;slot_type&#39;</span><span class="p">]))</span>
+            <span class="n">new_slot</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">slot_value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">)</span>
+            <span class="n">new_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_slot</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_slots</span></div>
+
+<div class="viewcode-block" id="Slot.to_sqlite"><a class="viewcode-back" href="../slot.html#slot.Slot.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="c1"># slot_action = self.get_db_action(sqlite_cursor, &#39;slots&#39;, )</span>
+        <span class="c1"># TODO: Slots don&#39;t have GUIDs. Need to store the DB ID in the object.</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="SlottableObject"><a class="viewcode-back" href="../slot.html#slot.SlottableObject">[docs]</a><span class="k">class</span> <span class="nc">SlottableObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -326,26 +364,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

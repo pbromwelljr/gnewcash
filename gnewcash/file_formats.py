@@ -54,7 +54,7 @@ class GnuCashSQLiteObject(abc.ABC):
         Abstract method for creating an object from a SQLite database.
 
         :param sqlite_cursor: Open cursor to a SQLite database.
-        :type sqlite_cursor: sqlite.Cursor
+        :type sqlite_cursor: sqlite3.Cursor
         """
         raise NotImplementedError
 
@@ -64,7 +64,7 @@ class GnuCashSQLiteObject(abc.ABC):
         Abstract method for writing an object to a SQLite database.
 
         :param sqlite_cursor: Open cursor to a SQLite database.
-        :type sqlite_cursor: sqlite.Cursor
+        :type sqlite_cursor: sqlite3.Cursor
         """
         raise NotImplementedError
 
@@ -74,7 +74,7 @@ class GnuCashSQLiteObject(abc.ABC):
         Helper method for retrieving data from a SQLite table.
 
         :param sqlite_cursor: Open cursor to a SQLite database.
-        :type sqlite_cursor: sqlite.Cursor
+        :type sqlite_cursor: sqlite3.Cursor
         :param table_name: SQLite table name
         :type table_name: str
         :param where_condition: SQL WHERE condition for the query (if any)
@@ -104,7 +104,7 @@ class GnuCashSQLiteObject(abc.ABC):
         Helper method for determining the appropriate operation on a SQL table.
 
         :param sqlite_cursor: Open cursor to a SQLite database.
-        :type sqlite_cursor: sqlite.Cursor
+        :type sqlite_cursor: sqlite3.Cursor
         :param table_name: SQLite table name
         :type table_name: str
         :param column_name: Column to be used for existence check
