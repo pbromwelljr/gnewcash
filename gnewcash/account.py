@@ -407,6 +407,14 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         raise NotImplementedError
 
     def get_account_guids(self, account_guids=None):
+        """
+        Gets a flat list of account GUIDs under the current account.
+
+        :param account_guids: Running list of account GUIDs (should be None on first call)
+        :type account_guids: list[str]
+        :return: List of account GUIDs under the current account
+        :rtype: list[str]
+        """
         if account_guids is None:
             account_guids = []
         account_guids.append(self.guid)

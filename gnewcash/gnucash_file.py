@@ -76,6 +76,14 @@ class GnuCashFile(object):
 
     @classmethod
     def detect_file_format(cls, source_file):
+        """
+        Detects the file format of the provided source file.
+
+        :param source_file: File to detect the format of.
+        :type source_file: str
+        :return: Format of the file, or raises RuntimeError if unable to detect
+        :rtype: FileFormat
+        """
         with open(source_file, 'rb') as source_file_handle:
             first_bytes = source_file_handle.read(10)
             if first_bytes.startswith(b'<?xml'):  #pylint: disable=R1705
@@ -192,6 +200,12 @@ class GnuCashFile(object):
 
     @classmethod
     def create_sqlite_schema(cls, sqlite_cursor):
+        """
+        Creates the SQLite schema using the provided SQLite cursor
+
+        :param sqlite_cursor: Open cursor to a SQLite database.
+        :type sqlite_cursor: sqlite.Cursor
+        """
         # Note: To update the GnuCash schema, connect to an existing GnuCash SQLite file and run ".schema".
         # Make sure to remove sqlite_sequence from the schema statements
         with open(os.path.join(os.path.dirname(__file__), 'sqlite_schema.sql')) as schema_file:
