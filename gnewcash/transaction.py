@@ -329,7 +329,7 @@ class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         new_splits = []
         for split in split_data:
             account_object = root_account.get_subaccount_by_id(split['account_guid']) or \
-                             template_root_account.get_subaccount_by_id(split['account_guid'])
+                template_root_account.get_subaccount_by_id(split['account_guid'])
             new_split = cls(account_object, split['value_num'] / split['value_denom'], split['reconcile_state'])
             new_split.guid = split['guid']
             new_split.memo = split['memo']

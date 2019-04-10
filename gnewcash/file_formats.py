@@ -60,5 +60,4 @@ class GnuCashSQLiteObject(abc.ABC):
         record = sqlite_cursor.fetchone()
         if record is None:
             return DBAction.INSERT
-        else:
-            return DBAction.UPDATE
+        return DBAction.UPDATE

@@ -76,14 +76,15 @@ class GnuCashFile(object):
 
     @classmethod
     def detect_file_format(cls, source_file):
-        with open(source_file, 'rb') as  source_file_handle:
+        with open(source_file, 'rb') as source_file_handle:
             first_bytes = source_file_handle.read(10)
-            if first_bytes.startswith(b'<?xml'):
+            if first_bytes.startswith(b'<?xml'):  #pylint: disable=R1705
                 return FileFormat.XML
             elif first_bytes.startswith(b'\x1f\x8b'):
                 return FileFormat.GZIP_XML
             elif first_bytes.startswith(b'SQLite'):
                 return FileFormat.SQLITE
+            raise RuntimeError('Could not detect file format of {}'.format(source_file))
 
     @classmethod
     def read_file(cls, source_file, sort_transactions=True, transaction_class=None, file_format=None):
@@ -114,7 +115,8 @@ class GnuCashFile(object):
         file_format = cls.detect_file_format(source_file) if file_format is None else file_format
         if file_format == FileFormat.UNKNOWN:
             raise RuntimeError('Could not detect file format of {}'.format(source_file))
-        elif file_format in [FileFormat.XML, FileFormat.GZIP_XML]:
+
+        if file_format in [FileFormat.XML, FileFormat.GZIP_XML]:
             if file_format == FileFormat.XML:
                 xml_tree = ElementTree.parse(source=source_file)
                 root = xml_tree.getroot()
@@ -192,8 +194,8 @@ class GnuCashFile(object):
     def create_sqlite_schema(cls, sqlite_cursor):
         # Note: To update the GnuCash schema, connect to an existing GnuCash SQLite file and run ".schema".
         # Make sure to remove sqlite_sequence from the schema statements
-        with open(os.path.join(os.path.dirname(__file__), 'sqlite_schema.sql')) as f:
-            for line in f.readlines():
+        with open(os.path.join(os.path.dirname(__file__), 'sqlite_schema.sql')) as schema_file:
+            for line in schema_file.readlines():
                 sqlite_cursor.execute(line)
 
 
@@ -430,7 +432,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
             for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account,
                                                              new_book.template_root_account):
                 transaction_account_guids = [x.account.guid for x in transaction.splits]
-                if any(map(lambda x: x in template_account_guids, transaction_account_guids)):
+                if any(map(lambda x, tag=template_account_guids: x in tag, transaction_account_guids)):
                     template_transactions.append(transaction)
                 else:
                     transaction_manager.add(transaction)
