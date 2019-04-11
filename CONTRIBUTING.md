@@ -27,3 +27,7 @@ After dependencies are installed, run ```poetry shell``` and run the following c
 3. ```coverage run -m unittest discover```
 
 All 3 should succeed without issues.
+
+**VS Code Users**
+
+I've provided a tasks.json file that includes the above commands for your convenience.
