@@ -254,6 +254,16 @@
 
 <div class="viewcode-block" id="Commodity.from_sqlite"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">commodity_guid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Commodity object from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param commodity_guid: Commodity to pull from the database. None pulls all commodities.</span>
+<span class="sd">        :type commodity_guid: str</span>
+<span class="sd">        :return: Commodity object(s) from SQLite</span>
+<span class="sd">        :rtype: Commodity or list[Commodity]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">commodity_guid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">commodity_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;commodities&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

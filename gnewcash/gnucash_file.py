@@ -86,7 +86,7 @@ class GnuCashFile(object):
         """
         with open(source_file, 'rb') as source_file_handle:
             first_bytes = source_file_handle.read(10)
-            if first_bytes.startswith(b'<?xml'):  #pylint: disable=R1705
+            if first_bytes.startswith(b'<?xml'):  # pylint: disable=R1705
                 return FileFormat.XML
             elif first_bytes.startswith(b'\x1f\x8b'):
                 return FileFormat.GZIP_XML
@@ -201,7 +201,7 @@ class GnuCashFile(object):
     @classmethod
     def create_sqlite_schema(cls, sqlite_cursor):
         """
-        Creates the SQLite schema using the provided SQLite cursor
+        Creates the SQLite schema using the provided SQLite cursor.
 
         :param sqlite_cursor: Open cursor to a SQLite database.
         :type sqlite_cursor: sqlite3.Cursor
@@ -423,6 +423,18 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, sort_transactions=True, transaction_class=None):
+        """
+        Creates Book objects from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from SQLite
+        :type sort_transactions: bool
+        :param transaction_class: Class to use when initializing transactions
+        :type transaction_class: type
+        :return: Book objects from SQLite
+        :rtype: list[Book]
+        """
         if transaction_class is None:
             transaction_class = Transaction
 
@@ -613,6 +625,14 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor):
+        """
+        Creates Budget objects from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        :return: Budget objects from SQLite
+        :rtype: list[Budget]
+        """
         budget_data = cls.get_sqlite_table_data(sqlite_cursor, 'budgets')
         new_budgets = []
         for budget in budget_data:

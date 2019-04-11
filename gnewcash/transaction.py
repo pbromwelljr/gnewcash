@@ -220,6 +220,18 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, root_account, template_root_account):
+        """
+        Creates Transaction objects from the GnuCash XML.
+
+        :param sqlite_cursor: Open cursor to the SQLite database.
+        :type sqlite_cursor: sqlite3.Cursor
+        :param root_account: Root account from the SQLite database
+        :type root_account: Account
+        :param template_root_account: Template root account from the SQLite database
+        :type template_root_account: Account
+        :return: Transaction objects from SQLite
+        :rtype: list[Transaction]
+        """
         transaction_data = cls.get_sqlite_table_data(sqlite_cursor, 'transactions')
         new_transactions = []
         for transaction in transaction_data:
@@ -325,6 +337,20 @@ class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, transaction_guid, root_account, template_root_account):
+        """
+        Creates Split objects from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the SQLite database.
+        :type sqlite_cursor: sqlite3.Cursor
+        :param transaction_guid: GUID of the transaction to load the splits of
+        :type transaction_guid: str
+        :param root_account: Root account from the SQLite database
+        :type root_account: Account
+        :param template_root_account: Template root account from the SQLite database
+        :type template_root_account: Account
+        :return: Split objects from XML
+        :rtype: list[Split]
+        """
         split_data = cls.get_sqlite_table_data(sqlite_cursor, 'splits', 'tx_guid = ?', (transaction_guid,))
         new_splits = []
         for split in split_data:
@@ -665,6 +691,16 @@ class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, template_root_account):
+        """
+        Creates ScheduledTransaction objects from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        :param template_account_root: Root template account
+        :type template_account_root: Account
+        :return: ScheduledTransaction objects from SQLite
+        :rtype: list[ScheduledTransaction]
+        """
         scheduled_transactions = cls.get_sqlite_table_data(sqlite_cursor, 'schedxactions')
         new_scheduled_transactions = []
         for scheduled_transaction in scheduled_transactions:

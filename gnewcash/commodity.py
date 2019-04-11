@@ -105,6 +105,16 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, commodity_guid=None):
+        """
+        Creates a Commodity object from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        :param commodity_guid: Commodity to pull from the database. None pulls all commodities.
+        :type commodity_guid: str
+        :return: Commodity object(s) from SQLite
+        :rtype: Commodity or list[Commodity]
+        """
         if commodity_guid is None:
             commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities')
         else:

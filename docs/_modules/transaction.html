@@ -369,6 +369,18 @@
 
 <div class="viewcode-block" id="Transaction.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">root_account</span><span class="p">,</span> <span class="n">template_root_account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates Transaction objects from the GnuCash XML.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database.</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param root_account: Root account from the SQLite database</span>
+<span class="sd">        :type root_account: Account</span>
+<span class="sd">        :param template_root_account: Template root account from the SQLite database</span>
+<span class="sd">        :type template_root_account: Account</span>
+<span class="sd">        :return: Transaction objects from SQLite</span>
+<span class="sd">        :rtype: list[Transaction]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">transaction_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;transactions&#39;</span><span class="p">)</span>
         <span class="n">new_transactions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">transaction_data</span><span class="p">:</span>
@@ -474,6 +486,20 @@
 
 <div class="viewcode-block" id="Split.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Split.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">transaction_guid</span><span class="p">,</span> <span class="n">root_account</span><span class="p">,</span> <span class="n">template_root_account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates Split objects from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database.</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param transaction_guid: GUID of the transaction to load the splits of</span>
+<span class="sd">        :type transaction_guid: str</span>
+<span class="sd">        :param root_account: Root account from the SQLite database</span>
+<span class="sd">        :type root_account: Account</span>
+<span class="sd">        :param template_root_account: Template root account from the SQLite database</span>
+<span class="sd">        :type template_root_account: Account</span>
+<span class="sd">        :return: Split objects from XML</span>
+<span class="sd">        :rtype: list[Split]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">split_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;splits&#39;</span><span class="p">,</span> <span class="s1">&#39;tx_guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">transaction_guid</span><span class="p">,))</span>
         <span class="n">new_splits</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">split_data</span><span class="p">:</span>
@@ -814,6 +840,16 @@
 
 <div class="viewcode-block" id="ScheduledTransaction.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">template_root_account</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates ScheduledTransaction objects from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param template_account_root: Root template account</span>
+<span class="sd">        :type template_account_root: Account</span>
+<span class="sd">        :return: ScheduledTransaction objects from SQLite</span>
+<span class="sd">        :rtype: list[ScheduledTransaction]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">scheduled_transactions</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;schedxactions&#39;</span><span class="p">)</span>
         <span class="n">new_scheduled_transactions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">scheduled_transaction</span> <span class="ow">in</span> <span class="n">scheduled_transactions</span><span class="p">:</span>

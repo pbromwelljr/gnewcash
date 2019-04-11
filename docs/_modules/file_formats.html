@@ -159,7 +159,8 @@
 
 
 <div class="viewcode-block" id="FileFormat"><a class="viewcode-back" href="../file_formats.html#file_formats.FileFormat">[docs]</a><span class="k">class</span> <span class="nc">FileFormat</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Enumeration class for supported file formats&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Enumeration class for supported file formats.&quot;&quot;&quot;</span>
+
     <span class="n">XML</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">GZIP_XML</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">SQLITE</span> <span class="o">=</span> <span class="mi">3</span>
@@ -167,13 +168,15 @@
 
 
 <div class="viewcode-block" id="DBAction"><a class="viewcode-back" href="../file_formats.html#file_formats.DBAction">[docs]</a><span class="k">class</span> <span class="nc">DBAction</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Enumeration class for record operations in databases&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Enumeration class for record operations in databases.&quot;&quot;&quot;</span>
+
     <span class="n">INSERT</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">UPDATE</span> <span class="o">=</span> <span class="mi">2</span></div>
 
 
 <div class="viewcode-block" id="GnuCashXMLObject"><a class="viewcode-back" href="../file_formats.html#file_formats.GnuCashXMLObject">[docs]</a><span class="k">class</span> <span class="nc">GnuCashXMLObject</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Abstract base classes for objects that can read from and write to XML&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base classes for objects that can read from and write to XML.&quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="GnuCashXMLObject.from_xml"><a class="viewcode-back" href="../file_formats.html#file_formats.GnuCashXMLObject.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -195,7 +198,8 @@
 
 
 <div class="viewcode-block" id="GnuCashSQLiteObject"><a class="viewcode-back" href="../file_formats.html#file_formats.GnuCashSQLiteObject">[docs]</a><span class="k">class</span> <span class="nc">GnuCashSQLiteObject</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Abstract base classes for objects that can read from and write to SQLite&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base classes for objects that can read from and write to SQLite.&quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="GnuCashSQLiteObject.from_sqlite"><a class="viewcode-back" href="../file_formats.html#file_formats.GnuCashSQLiteObject.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>

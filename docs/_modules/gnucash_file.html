@@ -235,7 +235,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source_file_handle</span><span class="p">:</span>
             <span class="n">first_bytes</span> <span class="o">=</span> <span class="n">source_file_handle</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">first_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&lt;?xml&#39;</span><span class="p">):</span>  <span class="c1">#pylint: disable=R1705</span>
+            <span class="k">if</span> <span class="n">first_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&lt;?xml&#39;</span><span class="p">):</span>  <span class="c1"># pylint: disable=R1705</span>
                 <span class="k">return</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">XML</span>
             <span class="k">elif</span> <span class="n">first_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x1f\x8b</span><span class="s1">&#39;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">FileFormat</span><span class="o">.</span><span class="n">GZIP_XML</span>
@@ -350,7 +350,7 @@
 <div class="viewcode-block" id="GnuCashFile.create_sqlite_schema"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.create_sqlite_schema">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_sqlite_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates the SQLite schema using the provided SQLite cursor</span>
+<span class="sd">        Creates the SQLite schema using the provided SQLite cursor.</span>
 
 <span class="sd">        :param sqlite_cursor: Open cursor to a SQLite database.</span>
 <span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
@@ -572,6 +572,18 @@
 
 <div class="viewcode-block" id="Book.from_sqlite"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transaction_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates Book objects from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from SQLite</span>
+<span class="sd">        :type sort_transactions: bool</span>
+<span class="sd">        :param transaction_class: Class to use when initializing transactions</span>
+<span class="sd">        :type transaction_class: type</span>
+<span class="sd">        :return: Book objects from SQLite</span>
+<span class="sd">        :rtype: list[Book]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">transaction_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">transaction_class</span> <span class="o">=</span> <span class="n">Transaction</span>
 
@@ -762,6 +774,14 @@
 
 <div class="viewcode-block" id="Budget.from_sqlite"><a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates Budget objects from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :return: Budget objects from SQLite</span>
+<span class="sd">        :rtype: list[Budget]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">budget_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;budgets&#39;</span><span class="p">)</span>
         <span class="n">new_budgets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">budget</span> <span class="ow">in</span> <span class="n">budget_data</span><span class="p">:</span>

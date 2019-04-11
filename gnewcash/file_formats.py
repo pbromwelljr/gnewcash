@@ -10,7 +10,8 @@ import enum
 
 
 class FileFormat(enum.Enum):
-    """Enumeration class for supported file formats"""
+    """Enumeration class for supported file formats."""
+
     XML = 1
     GZIP_XML = 2
     SQLITE = 3
@@ -18,13 +19,15 @@ class FileFormat(enum.Enum):
 
 
 class DBAction(enum.Enum):
-    """Enumeration class for record operations in databases"""
+    """Enumeration class for record operations in databases."""
+
     INSERT = 1
     UPDATE = 2
 
 
 class GnuCashXMLObject(abc.ABC):
-    """Abstract base classes for objects that can read from and write to XML"""
+    """Abstract base classes for objects that can read from and write to XML."""
+
     @classmethod
     @abc.abstractmethod
     def from_xml(cls, node, namespaces, *args, **kwargs):
@@ -46,7 +49,8 @@ class GnuCashXMLObject(abc.ABC):
 
 
 class GnuCashSQLiteObject(abc.ABC):
-    """Abstract base classes for objects that can read from and write to SQLite"""
+    """Abstract base classes for objects that can read from and write to SQLite."""
+
     @classmethod
     @abc.abstractmethod
     def from_sqlite(cls, sqlite_cursor):

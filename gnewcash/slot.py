@@ -94,6 +94,16 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, object_id):
+        """
+        Creates Slot objects from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        :param object_id: ID of the object that the slot belongs to
+        :type object_id: str
+        :return: Slot objects from SQLite
+        :rtype: list[Slot]
+        """
         slot_info = cls.get_sqlite_table_data(sqlite_cursor, 'slots', 'obj_guid = ?', (object_id,))
         new_slots = []
         for slot in slot_info:

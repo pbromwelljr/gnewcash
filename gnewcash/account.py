@@ -378,6 +378,16 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor, account_id):
+        """
+        Creates an Account object from the GnuCash SQLite database.
+
+        :param sqlite_cursor: Open cursor to the GnuCash SQLite database.
+        :type sqlite_cursor: sqlite3.Cursor
+        :param account_id: ID of the account to load from the SQLite database
+        :type account_id: str
+        :return: Account object from SQLite
+        :rtype: Account
+        """
         account_data = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
         if not account_data:
             raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))

@@ -243,6 +243,16 @@
 
 <div class="viewcode-block" id="Slot.from_sqlite"><a class="viewcode-back" href="../slot.html#slot.Slot.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">object_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates Slot objects from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param object_id: ID of the object that the slot belongs to</span>
+<span class="sd">        :type object_id: str</span>
+<span class="sd">        :return: Slot objects from SQLite</span>
+<span class="sd">        :rtype: list[Slot]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">slot_info</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;slots&#39;</span><span class="p">,</span> <span class="s1">&#39;obj_guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">object_id</span><span class="p">,))</span>
         <span class="n">new_slots</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slot_info</span><span class="p">:</span>

@@ -203,12 +203,22 @@
 <dl class="classmethod">
 <dt id="commodity.Commodity.from_sqlite">
 <em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>commodity_guid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity.from_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract method for creating an object from a SQLite database.</p>
+<dd><p>Creates a Commodity object from the GnuCash SQLite database.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
+<li><strong>commodity_guid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Commodity to pull from the database. None pulls all commodities.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Commodity object(s) from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#commodity.Commodity" title="commodity.Commodity">Commodity</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="#commodity.Commodity" title="commodity.Commodity">Commodity</a>]</p>
+</td>
 </tr>
 </tbody>
 </table>
