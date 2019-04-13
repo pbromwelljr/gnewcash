@@ -166,7 +166,7 @@
 <p>Catch-all ,odule containing methods that might be helpful to GNewCash users.</p>
 <span class="target" id="module-account"></span><dl class="function">
 <dt id="utils.delete_log_files">
-<code class="descclassname">utils.</code><code class="descname">delete_log_files</code><span class="sig-paren">(</span><em>gnucash_file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#delete_log_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.delete_log_files" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">utils.</code><code class="descname">delete_log_files</code><span class="sig-paren">(</span><em>gnucash_file_path: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/utils.html#delete_log_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.delete_log_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes log files at the specified directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -180,7 +180,7 @@
 
 <dl class="function">
 <dt id="utils.safe_iso_date_formatting">
-<code class="descclassname">utils.</code><code class="descname">safe_iso_date_formatting</code><span class="sig-paren">(</span><em>date_obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#safe_iso_date_formatting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.safe_iso_date_formatting" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">utils.</code><code class="descname">safe_iso_date_formatting</code><span class="sig-paren">(</span><em>date_obj: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/utils.html#safe_iso_date_formatting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.safe_iso_date_formatting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempts for format a date with timezone information. If it fails, it tries to format without timezone information.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -198,7 +198,7 @@
 
 <dl class="function">
 <dt id="utils.safe_iso_date_parsing">
-<code class="descclassname">utils.</code><code class="descname">safe_iso_date_parsing</code><span class="sig-paren">(</span><em>date_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#safe_iso_date_parsing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.safe_iso_date_parsing" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">utils.</code><code class="descname">safe_iso_date_parsing</code><span class="sig-paren">(</span><em>date_string: str</em><span class="sig-paren">)</span> &#x2192; datetime.datetime<a class="reference internal" href="_modules/utils.html#safe_iso_date_parsing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.safe_iso_date_parsing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempts to parse a date with timezone information. If it fails, it tries to parse without timezone information.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
