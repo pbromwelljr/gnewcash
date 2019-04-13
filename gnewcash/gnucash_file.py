@@ -7,14 +7,16 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
 """
 
 from datetime import datetime
+from decimal import Decimal
 import gzip
 import os.path
 from logging import getLogger
+from typing import Dict, Optional, List, Type
 from xml.etree import ElementTree
 from xml.dom import minidom
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
+from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.slot import Slot, SlottableObject
@@ -23,7 +25,7 @@ from gnewcash.slot import Slot, SlottableObject
 class GnuCashFile:
     """Class representing a GnuCash file on disk."""
 
-    namespace_data = {
+    namespace_data: Dict[str, str] = {
         'gnc': 'http://www.gnucash.org/XML/gnc',
         'act': 'http://www.gnucash.org/XML/act',
         'book': 'http://www.gnucash.org/XML/book',
@@ -55,24 +57,25 @@ class GnuCashFile:
         'vendor': 'http://www.gnucash.org/XML/vendor'
     }
 
-    def __init__(self, books=None):
+    def __init__(self, books: Optional[List['Book']] = None) -> None:
         if not books:
             books = []
-        self.books = books
-        self.file_name = None
+        self.books: List['Book'] = books
+        self.file_name: Optional[str] = None
 
-    def __str__(self):
-        as_string = ''
+    def __str__(self) -> str:
+        as_string: str = ''
         if self.file_name:
             as_string = self.file_name + ', '
         as_string += '{} books'.format(len(self.books))
         return as_string
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file, sort_transactions=True, transaction_class=None):
+    def read_file(cls, source_file: str, sort_transactions: bool = True,
+                  transaction_class: Type = None) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -88,29 +91,27 @@ class GnuCashFile:
         if transaction_class is None:
             transaction_class = Transaction
         logger = getLogger()
-        built_file = cls()
+        built_file: 'GnuCashFile' = cls()
         built_file.file_name = source_file
         if os.path.exists(source_file):
             try:
-                xml_tree = ElementTree.parse(source=source_file)
-                root = xml_tree.getroot()
+                root: ElementTree.Element = ElementTree.parse(source=source_file).getroot()
             except ElementTree.ParseError:
                 with gzip.open(source_file, 'rb') as gzipped_file:
                     contents = gzipped_file.read().decode('utf-8')
-                xml_tree = ElementTree.fromstring(contents)
-                root = xml_tree
-            namespaces = cls.namespace_data
+                root = ElementTree.fromstring(contents)
+            namespaces: Dict[str, str] = cls.namespace_data
 
-            books = root.findall('gnc:book', namespaces)
+            books: List[ElementTree.Element] = root.findall('gnc:book', namespaces)
             for book in books:
-                new_book = Book.from_xml(book, namespaces, sort_transactions=sort_transactions,
-                                         transaction_class=transaction_class)
+                new_book: 'Book' = Book.from_xml(book, namespaces, sort_transactions=sort_transactions,
+                                                 transaction_class=transaction_class)
                 built_file.books.append(new_book)
         else:
             logger.warning('Could not find %s', source_file)
         return built_file
 
-    def build_file(self, target_file, prettify_xml=False, use_gzip=False):
+    def build_file(self, target_file: str, prettify_xml: bool = False, use_gzip: bool = False) -> None:
         """
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk.
 
@@ -121,17 +122,18 @@ class GnuCashFile:
         :param use_gzip: Use GZip compression when writing file to disk. Default False.
         :type use_gzip: bool
         """
-        namespace_info = self.namespace_data
-        root_node = ElementTree.Element('gnc-v2', {'xmlns:' + identifier: value
-                                                   for identifier, value in namespace_info.items()})
-        book_count_node = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
+        namespace_info: Dict[str, str] = self.namespace_data
+        root_node: ElementTree.Element = ElementTree.Element(
+            'gnc-v2', {'xmlns:' + identifier: value for identifier, value in namespace_info.items()}
+        )
+        book_count_node: ElementTree.Element = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
         book_count_node.text = str(len(self.books))
         root_node.append(book_count_node)
 
         for book in self.books:
             root_node.append(book.as_xml)
 
-        file_contents = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
+        file_contents: bytes = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
 
         # Making our resulting XML pretty
         if prettify_xml:
@@ -148,32 +150,37 @@ class GnuCashFile:
 class Book(GuidObject, SlottableObject):
     """Represents a Book in GnuCash."""
 
-    def __init__(self, root_account=None, transactions=None, commodities=None, slots=None,
-                 template_root_account=None, template_transactions=None, scheduled_transactions=None,
-                 budgets=None):
+    def __init__(self, root_account: Optional[Account] = None, transactions: Optional[TransactionManager] = None,
+                 commodities: Optional[List[Commodity]] = None, slots: Optional[List[Slot]] = None,
+                 template_root_account: Optional[Account] = None,
+                 template_transactions: Optional[List[Transaction]] = None,
+                 scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
+                 budgets: Optional[List['Budget']] = None) -> None:
         super(Book, self).__init__()
-        self.root_account = root_account
-        self.transactions = transactions or TransactionManager()
-        self.commodities = commodities or []
-        self.slots = slots or []
-        self.template_root_account = template_root_account
-        self.template_transactions = template_transactions or []
-        self.scheduled_transactions = scheduled_transactions or []
-        self.budgets = budgets or []
+        self.root_account: Optional[Account] = root_account
+        self.transactions: TransactionManager = transactions or TransactionManager()
+        self.commodities: List[Commodity] = commodities or []
+        self.slots: List[Slot] = slots or []
+        self.template_root_account: Optional[Account] = template_root_account
+        self.template_transactions: List[Transaction] = template_transactions or []
+        self.scheduled_transactions: List[ScheduledTransaction] = scheduled_transactions or []
+        self.budgets: List['Budget'] = budgets or []
 
     @property
-    def as_xml(self):
+    def as_xml(self) -> ElementTree.Element:
         """
         Returns the current book as GnuCash-compatible XML.
 
         :return: ElementTree.Element object
         :rtype: xml.etree.ElementTree.Element
         """
-        book_node = ElementTree.Element('gnc:book', {'version': '2.0.0'})
+        book_node: ElementTree.Element = ElementTree.Element('gnc:book', {'version': '2.0.0'})
         book_id_node = ElementTree.SubElement(book_node, 'book:id', {'type': 'guid'})
         book_id_node.text = self.guid
 
-        accounts_xml = self.root_account.as_xml
+        accounts_xml: Optional[List[ElementTree.Element]] = None
+        if self.root_account:
+            accounts_xml = self.root_account.as_xml
 
         if self.slots:
             slot_node = ElementTree.SubElement(book_node, 'book:slots')
@@ -184,7 +191,7 @@ class Book(GuidObject, SlottableObject):
         commodity_count_node.text = str(len(list(filter(lambda x: x.commodity_id != 'template', self.commodities))))
 
         account_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'account'})
-        account_count_node.text = str(len(accounts_xml))
+        account_count_node.text = str(len(accounts_xml) if accounts_xml else 0)
 
         transaction_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'transaction'})
         transaction_count_node.text = str(len(self.transactions))
@@ -201,13 +208,14 @@ class Book(GuidObject, SlottableObject):
         for commodity in self.commodities:
             book_node.append(commodity.as_xml)
 
-        for account in accounts_xml:
-            book_node.append(account)
+        if accounts_xml:
+            for account in accounts_xml:
+                book_node.append(account)
 
         for transaction in self.transactions:
             book_node.append(transaction.as_xml)
 
-        if self.template_root_account or self.template_transactions:
+        if self.template_root_account and self.template_transactions:
             template_transactions_node = ElementTree.SubElement(book_node, 'gnc:template-transactions')
             for account in self.template_root_account.as_xml:
                 template_transactions_node.append(account)
@@ -223,7 +231,8 @@ class Book(GuidObject, SlottableObject):
         return book_node
 
     @classmethod
-    def from_xml(cls, book_node, namespaces, sort_transactions=True, transaction_class=None):
+    def from_xml(cls, book_node: ElementTree.Element, namespaces: Dict[str, str],
+                 sort_transactions: bool = True, transaction_class: Type = None):
         """
         Creates a Book object from the GnuCash XML.
 
@@ -241,23 +250,24 @@ class Book(GuidObject, SlottableObject):
         if transaction_class is None:
             transaction_class = Transaction
 
-        new_book = Book()
-        if book_node.find('book:id', namespaces) is not None:
-            new_book.guid = book_node.find('book:id', namespaces).text
-        accounts = book_node.findall('gnc:account', namespaces)
-        transactions = book_node.findall('gnc:transaction', namespaces)
-        slots = book_node.find('book:slots', namespaces)
+        new_book = cls()
+        book_id_node: Optional[ElementTree.Element] = book_node.find('book:id', namespaces)
+        if book_id_node is not None:
+            new_book.guid = book_id_node.text
+        accounts: List[ElementTree.Element] = book_node.findall('gnc:account', namespaces)
+        transactions: List[ElementTree.Element] = book_node.findall('gnc:transaction', namespaces)
+        slots: Optional[ElementTree.Element] = book_node.find('book:slots', namespaces)
 
         if slots is not None:
             for slot in slots.findall('slot'):
                 new_book.slots.append(Slot.from_xml(slot, namespaces))
 
-        commodities = book_node.findall('gnc:commodity', namespaces)
+        commodities: List[ElementTree.Element] = book_node.findall('gnc:commodity', namespaces)
         for commodity in commodities:
             new_book.commodities.append(Commodity.from_xml(commodity, namespaces))
 
-        account_objects = list()
-        transaction_manager = TransactionManager()
+        account_objects: List[Account] = list()
+        transaction_manager: TransactionManager = TransactionManager()
         transaction_manager.disable_sort = not sort_transactions
 
         for account in accounts:
@@ -269,10 +279,11 @@ class Book(GuidObject, SlottableObject):
         new_book.root_account = [x for x in account_objects if x.type == 'ROOT'][0]
         new_book.transactions = transaction_manager
 
-        template_transactions_xml = book_node.findall('gnc:template-transactions', namespaces)
+        template_transactions_xml: Optional[List[ElementTree.Element]] = book_node.findall('gnc:template-transactions',
+                                                                                           namespaces)
         if template_transactions_xml is not None:
-            template_accounts = []
-            template_transactions = []
+            template_accounts: List[Account] = []
+            template_transactions: List[Transaction] = []
             for template_transaction in template_transactions_xml:
                 # Process accounts before transactions
                 for subelement in template_transaction:
@@ -285,11 +296,11 @@ class Book(GuidObject, SlottableObject):
                         continue
                     template_transactions.append(transaction_class.from_xml(subelement, namespaces, template_accounts))
             new_book.template_transactions = template_transactions
-            template_root_accounts = [x for x in template_accounts if x.type == 'ROOT']
+            template_root_accounts: List[Account] = [x for x in template_accounts if x.type == 'ROOT']
             if template_root_accounts:
                 new_book.template_root_account = template_root_accounts[0]
 
-        scheduled_transactions = book_node.findall('gnc:schedxaction', namespaces)
+        scheduled_transactions: Optional[List[ElementTree.Element]] = book_node.findall('gnc:schedxaction', namespaces)
         if scheduled_transactions is not None:
             for scheduled_transaction in scheduled_transactions:
                 new_book.scheduled_transactions.append(
@@ -297,14 +308,14 @@ class Book(GuidObject, SlottableObject):
                                                   namespaces,
                                                   new_book.template_root_account))
 
-        budgets = book_node.findall('gnc:budget', namespaces)
+        budgets: Optional[List[ElementTree.Element]] = book_node.findall('gnc:budget', namespaces)
         if budgets is not None:
             for budget in budgets:
                 new_book.budgets.append(Budget.from_xml(budget, namespaces))
 
         return new_book
 
-    def get_account(self, *paths_to_account, **kwargs):
+    def get_account(self, *paths_to_account: str, **kwargs) -> Optional[Account]:
         """
         Retrieves an account based on a path of account names.
 
@@ -312,7 +323,7 @@ class Book(GuidObject, SlottableObject):
         :param kwargs: Keyword arguments.
         :type kwargs: dict
         :return: Account object if found, otherwise None
-        :rtype: Account
+        :rtype: NoneType|Account
 
         Example: ``get_account('Assets', 'Current Assets', 'Checking Account')``
 
@@ -320,17 +331,17 @@ class Book(GuidObject, SlottableObject):
 
         * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.
         """
-        current_level = kwargs.get('current_level', self.root_account)
-        paths_to_account = list(paths_to_account)
-        next_level = paths_to_account.pop(0)
+        current_level: Account = kwargs.get('current_level', self.root_account)
+        paths_to_account_list: List[str] = list(paths_to_account)
+        next_level: str = paths_to_account_list.pop(0)
         for account in current_level.children:
             if account.name == next_level:
-                if not paths_to_account:
+                if not paths_to_account_list:
                     return account
-                return self.get_account(*paths_to_account, current_level=account)
+                return self.get_account(*paths_to_account_list, current_level=account)
         return None
 
-    def get_account_balance(self, account):
+    def get_account_balance(self, account: Account) -> Decimal:
         """
         Retrieves the balance for a specified account based on the transactions in the Book.
 
@@ -339,42 +350,42 @@ class Book(GuidObject, SlottableObject):
         :return: Account balance if applicable transactions found, otherwise 0.
         :rtype: decimal.Decimal or int
         """
-        account_balance = 0
-        account_transactions = list(filter(lambda x: account in [y.account for y in x.splits], self.transactions))
-        # account_transactions = [x for x in self.transactions if account in [x.from_account, x.to_account]]
+        account_balance: Decimal = Decimal(0)
+        account_transactions: List[Transaction] = list(filter(lambda x: account in [y.account for y in x.splits],
+                                                              self.transactions))
         for transaction in account_transactions:
-            split = next(filter(lambda x: x.account == account, transaction.splits))
+            split: Split = next(filter(lambda x: x.account == account, transaction.splits))
             account_balance += split.amount
         return account_balance
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '{} transactions'.format(len(self.transactions))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
 
 class Budget(GuidObject, SlottableObject):
     """Class object representing a Budget in GnuCash."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Budget, self).__init__()
-        self.name = None
-        self.description = None
-        self.period_count = None
-        self.recurrence_multiplier = None
-        self.recurrence_period_type = None
-        self.recurrence_start = None
+        self.name: Optional[str] = None
+        self.description: Optional[str] = None
+        self.period_count: Optional[int] = None
+        self.recurrence_multiplier: Optional[int] = None
+        self.recurrence_period_type: Optional[str] = None
+        self.recurrence_start: Optional[datetime] = None
 
     @property
-    def as_xml(self):
+    def as_xml(self) -> ElementTree.Element:
         """
         Returns the current budget as GnuCash-compatible XML.
 
         :return: Current budget as XML
         :rtype: xml.etree.ElementTree.Element
         """
-        budget_node = ElementTree.Element('gnc:budget', attrib={'version': '2.0.0'})
+        budget_node: ElementTree.Element = ElementTree.Element('gnc:budget', attrib={'version': '2.0.0'})
         ElementTree.SubElement(budget_node, 'bgt:id', {'type': 'guid'}).text = self.guid
         ElementTree.SubElement(budget_node, 'bgt:name').text = self.name
         ElementTree.SubElement(budget_node, 'bgt:description').text = self.description
@@ -401,7 +412,7 @@ class Budget(GuidObject, SlottableObject):
         return budget_node
 
     @classmethod
-    def from_xml(cls, budget_node, namespaces):
+    def from_xml(cls, budget_node: ElementTree.Element, namespaces: Dict[str, str]) -> 'Budget':
         """
         Creates a Budget object from the GnuCash XML.
 
@@ -414,39 +425,39 @@ class Budget(GuidObject, SlottableObject):
         """
         new_obj = cls()
 
-        id_node = budget_node.find('bgt:id', namespaces)
+        id_node: Optional[ElementTree.Element] = budget_node.find('bgt:id', namespaces)
         if id_node is not None:
             new_obj.guid = id_node.text
 
-        name_node = budget_node.find('bgt:name', namespaces)
+        name_node: Optional[ElementTree.Element] = budget_node.find('bgt:name', namespaces)
         if name_node is not None:
             new_obj.name = name_node.text
 
-        description_node = budget_node.find('bgt:description', namespaces)
+        description_node: Optional[ElementTree.Element] = budget_node.find('bgt:description', namespaces)
         if description_node is not None:
             new_obj.description = description_node.text
 
-        period_count_node = budget_node.find('bgt:num-periods', namespaces)
-        if period_count_node is not None:
+        period_count_node: Optional[ElementTree.Element] = budget_node.find('bgt:num-periods', namespaces)
+        if period_count_node is not None and period_count_node.text:
             new_obj.period_count = int(period_count_node.text)
 
-        recurrence_node = budget_node.find('bgt:recurrence', namespaces)
+        recurrence_node: Optional[ElementTree.Element] = budget_node.find('bgt:recurrence', namespaces)
         if recurrence_node is not None:
-            multiplier_node = recurrence_node.find('recurrence:mult', namespaces)
-            if multiplier_node is not None:
+            multiplier_node: Optional[ElementTree.Element] = recurrence_node.find('recurrence:mult', namespaces)
+            if multiplier_node is not None and multiplier_node.text:
                 new_obj.recurrence_multiplier = int(multiplier_node.text)
 
-            period_type_node = recurrence_node.find('recurrence:period_type', namespaces)
+            period_type_node: Optional[ElementTree.Element] = recurrence_node.find('recurrence:period_type', namespaces)
             if period_type_node is not None:
                 new_obj.recurrence_period_type = period_type_node.text
 
-            recurrence_start_node = recurrence_node.find('recurrence:start', namespaces)
+            recurrence_start_node: Optional[ElementTree.Element] = recurrence_node.find('recurrence:start', namespaces)
             if recurrence_start_node is not None:
-                gdate_node = recurrence_start_node.find('gdate', namespaces)
-                if gdate_node is not None:
+                gdate_node: Optional[ElementTree.Element] = recurrence_start_node.find('gdate', namespaces)
+                if gdate_node is not None and gdate_node.text:
                     new_obj.recurrence_start = datetime.strptime(gdate_node.text, '%Y-%m-%d')
 
-        slots = budget_node.find('bgt:slots', namespaces)
+        slots: Optional[ElementTree.Element] = budget_node.find('bgt:slots', namespaces)
         if slots:
             for slot in slots.findall('slot', namespaces):
                 new_obj.slots.append(Slot.from_xml(slot, namespaces))
