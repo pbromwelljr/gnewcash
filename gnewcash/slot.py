@@ -48,7 +48,7 @@ class Slot:
         return slot_node
 
     @classmethod
-    def from_xml(cls, slot_node: ElementTree.Element, namespaces: Dict[str, str]):
+    def from_xml(cls, slot_node: ElementTree.Element, namespaces: Dict[str, str]) -> 'Slot':
         """
         Creates a Slot object from the GnuCash XML.
 

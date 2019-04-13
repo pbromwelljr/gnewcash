@@ -51,7 +51,7 @@ class Commodity:
         return commodity_node
 
     @classmethod
-    def from_xml(cls, commodity_node, namespaces: Dict[str, str]) -> 'Commodity':
+    def from_xml(cls, commodity_node: ElementTree.Element, namespaces: Dict[str, str]) -> 'Commodity':
         """
         Creates a Commodity object from the GnuCash XML.
 
@@ -62,8 +62,14 @@ class Commodity:
         :return: Commodity object from XML
         :rtype: Commodity
         """
-        commodity_id: str = commodity_node.find('cmdty:id', namespaces).text
-        space: str = commodity_node.find('cmdty:space', namespaces).text
+        commodity_id_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:id', namespaces)
+        if commodity_id_node is None or not commodity_id_node.text:
+            raise ValueError('Commodity node is missing id')
+        commodity_id: str = commodity_id_node.text
+        commodity_space_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:space', namespaces)
+        if commodity_space_node is None or not commodity_space_node.text:
+            raise ValueError('Commodity node is missing space')
+        space: str = commodity_space_node.text
         new_commodity: 'Commodity' = cls(commodity_id, space)
         if commodity_node.find('cmdty:get_quotes', namespaces) is not None:
             new_commodity.get_quotes = True

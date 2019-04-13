@@ -11,7 +11,7 @@ from decimal import Decimal
 import gzip
 import os.path
 from logging import getLogger
-from typing import Dict, Optional, List, Type
+from typing import Dict, Optional, List, Type, Any
 from xml.etree import ElementTree
 from xml.dom import minidom
 
@@ -232,7 +232,7 @@ class Book(GuidObject, SlottableObject):
 
     @classmethod
     def from_xml(cls, book_node: ElementTree.Element, namespaces: Dict[str, str],
-                 sort_transactions: bool = True, transaction_class: Type = None):
+                 sort_transactions: bool = True, transaction_class: Type = None) -> 'Book':
         """
         Creates a Book object from the GnuCash XML.
 
@@ -315,7 +315,7 @@ class Book(GuidObject, SlottableObject):
 
         return new_book
 
-    def get_account(self, *paths_to_account: str, **kwargs) -> Optional[Account]:
+    def get_account(self, *paths_to_account: str, **kwargs: Any) -> Optional[Account]:
         """
         Retrieves an account based on a path of account names.
 

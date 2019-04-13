@@ -56,7 +56,9 @@ class Account(GuidObject, SlottableObject):
     def __repr__(self) -> str:
         return str(self)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(object, Account):
+            return NotImplemented
         return self.guid == getattr(other, 'guid', None)
 
     def __hash__(self) -> int:
@@ -192,7 +194,7 @@ class Account(GuidObject, SlottableObject):
         return node_and_children
 
     @classmethod
-    def from_xml(cls, account_node, namespaces: Dict[str, str],
+    def from_xml(cls, account_node: ElementTree.Element, namespaces: Dict[str, str],
                  account_objects: List['Account']) -> 'Account':
         """
         Creates an Account object from the GnuCash XML.
@@ -207,9 +209,16 @@ class Account(GuidObject, SlottableObject):
         :rtype: Account
         """
         account_object: 'Account' = cls()
-        account_object.guid = account_node.find('act:id', namespaces).text
-        account_object.name = account_node.find('act:name', namespaces).text
-        account_object.type = account_node.find('act:type', namespaces).text
+        account_guid_node = account_node.find('act:id', namespaces)
+        if account_guid_node is None or not account_guid_node.text:
+            raise ValueError('Account guid node is missing or empty')
+        account_object.guid = account_guid_node.text
+        account_name_node = account_node.find('act:name', namespaces)
+        if account_name_node is not None and account_name_node.text:
+            account_object.name = account_name_node.text
+        account_type_node = account_node.find('act:type', namespaces)
+        if account_type_node is not None and account_type_node.text:
+            account_object.type = account_type_node.text
 
         commodity: Optional[ElementTree.Element] = account_node.find('act:commodity', namespaces)
         if commodity is not None and commodity.find('cmdty:id', namespaces) is not None:
