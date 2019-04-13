@@ -252,7 +252,7 @@ class Book(GuidObject, SlottableObject):
 
         new_book = cls()
         book_id_node: Optional[ElementTree.Element] = book_node.find('book:id', namespaces)
-        if book_id_node is not None:
+        if book_id_node is not None and book_id_node.text:
             new_book.guid = book_id_node.text
         accounts: List[ElementTree.Element] = book_node.findall('gnc:account', namespaces)
         transactions: List[ElementTree.Element] = book_node.findall('gnc:transaction', namespaces)
@@ -426,7 +426,7 @@ class Budget(GuidObject, SlottableObject):
         new_obj = cls()
 
         id_node: Optional[ElementTree.Element] = budget_node.find('bgt:id', namespaces)
-        if id_node is not None:
+        if id_node is not None and id_node.text:
             new_obj.guid = id_node.text
 
         name_node: Optional[ElementTree.Element] = budget_node.find('bgt:name', namespaces)
