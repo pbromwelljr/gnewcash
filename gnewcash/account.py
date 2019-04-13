@@ -23,7 +23,7 @@ LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'int
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])
 
 
-class AccountType(object):
+class AccountType:
     """Enumeration class to indicate the types of accounts available in GnuCash."""
 
     ROOT: str = 'ROOT'

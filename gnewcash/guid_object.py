@@ -8,7 +8,7 @@ Module containing classes that manage GUID objects.
 import uuid
 
 
-class GuidObject(object):
+class GuidObject:
     """Class used to generate unique GUIDs for various GNewCash objects."""
 
     used_guids = []

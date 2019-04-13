@@ -10,7 +10,7 @@ from decimal import Decimal
 from xml.etree import ElementTree
 
 
-class Slot(object):
+class Slot:
     """Represents a slot in GnuCash."""
 
     def __init__(self, key, value, slot_type):
@@ -81,7 +81,7 @@ class Slot(object):
         return cls(key, value, slot_type)
 
 
-class SlottableObject(object):
+class SlottableObject:
     """Class used to consolidate storing and retrieving slot values."""
 
     def __init__(self):

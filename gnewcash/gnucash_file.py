@@ -20,7 +20,7 @@ from gnewcash.commodity import Commodity
 from gnewcash.slot import Slot, SlottableObject
 
 
-class GnuCashFile(object):
+class GnuCashFile:
     """Class representing a GnuCash file on disk."""
 
     namespace_data = {

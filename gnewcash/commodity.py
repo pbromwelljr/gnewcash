@@ -9,7 +9,7 @@ Module containing classes that read, manipulate, and write commodities.
 from xml.etree import ElementTree
 
 
-class Commodity(object):
+class Commodity:
     """Represents a Commodity in GnuCash."""
 
     def __init__(self, commodity_id, space):
