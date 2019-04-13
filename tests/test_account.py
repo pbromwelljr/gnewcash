@@ -151,11 +151,7 @@ class TestAccount(unittest.TestCase):
                                            starting_date=datetime(2018, 1, 1),
                                            interest_percentage=Decimal('0.02'),
                                            payment_amount=Decimal('50'))
-        interest_account = acc.InterestAccount(starting_balance=None,
-                                               starting_date=None,
-                                               interest_percentage=None,
-                                               payment_amount=None,
-                                               subaccounts=[subaccount_1, subaccount_2])
+        interest_account = acc.InterestAccountWithSubaccounts([subaccount_1, subaccount_2])
         self.assertEqual(interest_account.starting_date, datetime(2018, 1, 1))
         self.assertEqual(interest_account.interest_percentage, Decimal('0.07'))
         self.assertEqual(interest_account.payment_amount, Decimal('150'))
@@ -259,8 +255,10 @@ class TestAccount(unittest.TestCase):
                                  skip_payment_dates=[datetime(2018, 7, 1),
                                                      datetime(2019, 7, 1)],
                                  additional_payments=[
-                                     {'amount': Decimal(500), 'payment_date': datetime(2018, 9, 20)},
-                                     {'amount': Decimal(500), 'payment_date': datetime(2019, 9, 20)}
+                                     acc.LoanExtraPayment(payment_date=datetime(2018, 9, 20), 
+                                                          payment_amount=Decimal(500)),
+                                     acc.LoanExtraPayment(payment_date=datetime(2019, 9, 20), 
+                                                          payment_amount=Decimal(500)),
                                  ])
         # Get the balance after one of our payment skips
         after_skip = ia.get_info_at_date(datetime(2018, 8, 1))

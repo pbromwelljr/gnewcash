@@ -302,6 +302,10 @@ Trying to add one of the special accounts to a GnuCash file would result in an e
 
 The purpose of an interest account is to calculate balances and payment schedules for loans that accumulate interest.
 
+There are two types of interest accounts: `InterestAccount <account.html#account.InterestAccount>`__ and `InterestAccountWithSubaccounts <account.html#account.InterestAccountWithSubaccounts>`__.
+
+For most purposes you just need the InterestAccount class. For loans where your overall loan is comprised of several smaller loans, you'd use the InterestAccountWithSubaccounts.
+
 Here's the general usage of an interest account:
 
 .. code:: python
@@ -347,22 +351,13 @@ Here's the general usage of an interest account:
 Interest accounts also take the following constructor parameters:
 
 - :code:`additional_payments`
-    List of dictionaries containing the following key-value pairs:
+    List of `LoanExtraPayment <account.html>`__ objects.
 
     Note: Additional payments are assumed to have no interest collected on them.
-
-    - :code:`amount`: Dollar amount for the additional payment (Decimal)
-    - :code:`payment_date`: Date of the additional payment (datetime)
 - :code:`skip_payment_dates`
     List of :code:`datetime` objects for dates that payments should be skipped.
 - :code:`interest_start_date`
-    :code:`datetime` object that designates when interest starts incurring on the loan.
-- :code:`subaccounts`
-    List of InterestAccount objects that make up the parent interest account.
-    This is helpful for things like school loans where your overall loan is comprised of multiple small loans.
-    When setting up subaccounts, pass :code:`None` for :code:`starting_balance`, :code:`starting_date`,
-    :code:`interest_percentage`, and :code:`payment_amount` in the parent InterestAccount. When accessing those fields,
-    they will be derived from their child accounts' information.
+    :code:`datetime` object that designates when interest starts incurring on the loan. (InterestAccount only)
 
 Transaction
 -----------

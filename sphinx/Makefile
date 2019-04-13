@@ -12,7 +12,11 @@ help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 docs:
-	cp -rv ./_build/html/* ../docs/
+	ifeq ($(OS),Windows_NT)
+		copy /Y .\_build\html\ ..\docs
+	else
+		cp -rv ./_build/html/* ../docs/
+	endif
 
 .PHONY: help Makefile
 

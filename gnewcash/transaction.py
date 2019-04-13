@@ -418,6 +418,9 @@ class TransactionManager:
                 return False
         return True
 
+    def __iter__(self):
+        yield from self.transactions
+
 
 class ScheduledTransaction(GuidObject):
     """Class that represents a scheduled transaction in Gnucash."""
