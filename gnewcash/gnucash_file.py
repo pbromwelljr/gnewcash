@@ -355,7 +355,7 @@ class Book(GuidObject, SlottableObject):
                                                               self.transactions))
         for transaction in account_transactions:
             split: Split = next(filter(lambda x: x.account == account, transaction.splits))
-            account_balance += split.amount
+            account_balance += split.amount or Decimal(0)
         return account_balance
 
     def __str__(self) -> str:

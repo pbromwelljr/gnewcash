@@ -1,5 +1,5 @@
 {
     "python.linting.flake8Enabled": true,
     "python.linting.mypyEnabled": true,
-    "python.pythonPath": "C:\\Users\\pbrom\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\gnewcash-py3.7\\Scripts\\python.exe"
+    "python.pythonPath": "/home/paul/.cache/pypoetry/virtualenvs/gnewcash-py3.7"
 }

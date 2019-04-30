@@ -64,7 +64,7 @@ class Account(GuidObject, SlottableObject):
     def __hash__(self) -> int:
         return hash(self.guid)
 
-    def get_starting_balance(self, transactions: TransactionManager) -> Decimal:
+    def get_starting_balance(self, transactions: Union[TransactionManager, List[Transaction]]) -> Decimal:
         """
         Retrieves the starting balance for the current account, given the list of transactions.
 
@@ -74,14 +74,17 @@ class Account(GuidObject, SlottableObject):
         :rtype: decimal.Decimal
         """
         account_transactions: List[Transaction] = [x for x in transactions
-                                                   if self in [y.account for y in x.splits if y.amount >= 0]]
+                                                   if self in [y.account for y in x.splits
+                                                               if y.amount is not None and y.amount >= 0]]
         amount: Decimal = Decimal(0)
         if account_transactions:
             first_transaction: Transaction = account_transactions[0]
-            amount = next(filter(lambda x: x.account == self and x.amount >= 0, first_transaction.splits)).amount
+            amount = next(filter(lambda x: x.account == self and x.amount is not None and x.amount >= 0,
+                                 first_transaction.splits)).amount or Decimal(0)
         return amount
 
-    def get_balance_at_date(self, transactions: TransactionManager, date: datetime = None) -> Decimal:
+    def get_balance_at_date(self, transactions: Union[TransactionManager, List[Transaction]],
+                            date: datetime = None) -> Decimal:
         """
         Retrieves the account balance for the current account at a certain date, given the list of transactions.
 
@@ -98,21 +101,22 @@ class Account(GuidObject, SlottableObject):
         applicable_transactions: List[Transaction] = []
         for transaction in transactions:
             transaction_accounts = list(map(lambda y: y.account, transaction.splits))
-            if date is not None and self in transaction_accounts and transaction.date_posted <= date:
+            if date is not None and self in transaction_accounts and transaction.date_posted is not None and \
+                    transaction.date_posted <= date:
                 applicable_transactions.append(transaction)
             elif date is None and self in transaction_accounts:
                 applicable_transactions.append(transaction)
 
         for transaction in applicable_transactions:
-            if date is None or transaction.date_posted <= date:
+            if date is None or (transaction.date_posted is not None and transaction.date_posted <= date):
                 applicable_split: Split = next(filter(lambda x: x.account == self, transaction.splits))
-                amount: Decimal = applicable_split.amount
+                amount: Decimal = applicable_split.amount or Decimal(0)
                 if self.type == AccountType.CREDIT:
                     amount = amount * -1
                 balance += amount
         return balance
 
-    def get_ending_balance(self, transactions: TransactionManager) -> Decimal:
+    def get_ending_balance(self, transactions: Union[TransactionManager, List[Transaction]]) -> Decimal:
         """
         Retrieves the ending balance for the current account, given the list of transactions.
 
@@ -138,7 +142,9 @@ class Account(GuidObject, SlottableObject):
         minimum_balance: Optional[Decimal] = None
         minimum_balance_date: Optional[datetime] = None
         iterator_date: datetime = start_date
-        end_date: datetime = max(map(lambda x: x.date_posted, transactions))
+        end_date: Optional[datetime] = max(map(lambda x: x.date_posted, transactions))
+        if end_date is None:
+            return None, None
         while iterator_date < end_date:
             iterator_date += timedelta(days=1)
             current_balance: Decimal = self.get_balance_at_date(transactions, iterator_date)
