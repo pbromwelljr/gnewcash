@@ -7,33 +7,20 @@ Module containing classes that read, manipulate, and write accounts.
 """
 import abc
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal, ROUND_UP
 from xml.etree import ElementTree
 from collections import namedtuple
 from typing import List, Tuple, Dict, Optional, Union, Pattern
 
 from gnewcash.commodity import Commodity
+from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
-from gnewcash.transaction import TransactionManager, Transaction, Split
 from gnewcash.slot import Slot, SlottableObject
 
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])
-
-
-class AccountType:
-    """Enumeration class to indicate the types of accounts available in GnuCash."""
-
-    ROOT: str = 'ROOT'
-    BANK: str = 'BANK'
-    INCOME: str = 'INCOME'
-    ASSET: str = 'ASSET'
-    CREDIT: str = 'CREDIT'
-    EXPENSE: str = 'EXPENSE'
-    EQUITY: str = 'EQUITY'
-    LIABILITY: str = 'LIABILITY'
 
 
 class Account(GuidObject, SlottableObject):
@@ -63,96 +50,6 @@ class Account(GuidObject, SlottableObject):
 
     def __hash__(self) -> int:
         return hash(self.guid)
-
-    def get_starting_balance(self, transactions: Union[TransactionManager, List[Transaction]]) -> Decimal:
-        """
-        Retrieves the starting balance for the current account, given the list of transactions.
-
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
-        :return: First transaction amount if the account has transactions, otherwise 0.
-        :rtype: decimal.Decimal
-        """
-        account_transactions: List[Transaction] = [x for x in transactions
-                                                   if self in [y.account for y in x.splits
-                                                               if y.amount is not None and y.amount >= 0]]
-        amount: Decimal = Decimal(0)
-        if account_transactions:
-            first_transaction: Transaction = account_transactions[0]
-            amount = next(filter(lambda x: x.account == self and x.amount is not None and x.amount >= 0,
-                                 first_transaction.splits)).amount or Decimal(0)
-        return amount
-
-    def get_balance_at_date(self, transactions: Union[TransactionManager, List[Transaction]],
-                            date: datetime = None) -> Decimal:
-        """
-        Retrieves the account balance for the current account at a certain date, given the list of transactions.
-
-        If the provided date is None, it will retrieve the ending balance.
-
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
-        :param date: Last date to consider when determining the account balance.
-        :type date: datetime.datetime
-        :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
-        :rtype: decimal.Decimal
-        """
-        balance: Decimal = Decimal(0)
-        applicable_transactions: List[Transaction] = []
-        for transaction in transactions:
-            transaction_accounts = list(map(lambda y: y.account, transaction.splits))
-            if date is not None and self in transaction_accounts and transaction.date_posted is not None and \
-                    transaction.date_posted <= date:
-                applicable_transactions.append(transaction)
-            elif date is None and self in transaction_accounts:
-                applicable_transactions.append(transaction)
-
-        for transaction in applicable_transactions:
-            if date is None or (transaction.date_posted is not None and transaction.date_posted <= date):
-                applicable_split: Split = next(filter(lambda x: x.account == self, transaction.splits))
-                amount: Decimal = applicable_split.amount or Decimal(0)
-                if self.type == AccountType.CREDIT:
-                    amount = amount * -1
-                balance += amount
-        return balance
-
-    def get_ending_balance(self, transactions: Union[TransactionManager, List[Transaction]]) -> Decimal:
-        """
-        Retrieves the ending balance for the current account, given the list of transactions.
-
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
-        :return: Ending balance if the account has transactions, otherwise 0.
-        :rtype: decimal.Decimal
-        """
-        return self.get_balance_at_date(transactions)
-
-    def minimum_balance_past_date(self, transactions: TransactionManager,
-                                  start_date: datetime) -> Tuple[Optional[Decimal], Optional[datetime]]:
-        """
-        Gets the minimum balance for the account after a certain date, given the list of transactions.
-
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
-        :param start_date: datetime object representing the date you want to find the minimum balance for.
-        :type start_date: datetime.datetime
-        :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
-        :rtype: tuple
-        """
-        minimum_balance: Optional[Decimal] = None
-        minimum_balance_date: Optional[datetime] = None
-        iterator_date: datetime = start_date
-        end_date: Optional[datetime] = max(map(lambda x: x.date_posted, transactions))
-        if end_date is None:
-            return None, None
-        while iterator_date < end_date:
-            iterator_date += timedelta(days=1)
-            current_balance: Decimal = self.get_balance_at_date(transactions, iterator_date)
-            if minimum_balance is None or current_balance < minimum_balance:
-                minimum_balance, minimum_balance_date = current_balance, iterator_date
-        if minimum_balance_date and minimum_balance_date > end_date:
-            minimum_balance_date = end_date
-        return minimum_balance, minimum_balance_date
 
     @property
     def as_xml(self) -> List[ElementTree.Element]:

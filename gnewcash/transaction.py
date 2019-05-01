@@ -5,13 +5,15 @@ Module containing classes that read, manipulate, and write transactions.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Dict, Iterator, List, Optional, Tuple
 from xml.etree import ElementTree
 from warnings import warn
 
+from gnewcash.account import Account
 from gnewcash.commodity import Commodity
+from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
@@ -76,7 +78,7 @@ class Transaction(GuidObject, SlottableObject):
 
     @classmethod
     def from_xml(cls, transaction_node: ElementTree.Element, namespaces: Dict[str, str],
-                 account_objects: List['Account']) -> 'Transaction':
+                 account_objects: List[Account]) -> 'Transaction':
         """
         Creates a Transaction object from the GnuCash XML.
 
@@ -250,11 +252,11 @@ class Transaction(GuidObject, SlottableObject):
 class Split(GuidObject):
     """Represents a split in GnuCash."""
 
-    def __init__(self, account: Optional['Account'], amount: Optional[Decimal], reconciled_state: str = 'n'):
+    def __init__(self, account: Optional[Account], amount: Optional[Decimal], reconciled_state: str = 'n'):
         super(Split, self).__init__()
         self.reconciled_state: str = reconciled_state
         self.amount: Optional[Decimal] = amount
-        self.account: Optional['Account'] = account
+        self.account: Optional[Account] = account
         self.action: Optional[str] = None
         self.memo: Optional[str] = None
         self.quantity_denominator: str = '100'
@@ -292,7 +294,7 @@ class Split(GuidObject):
 
     @classmethod
     def from_xml(cls, split_node: ElementTree.Element, namespaces: Dict[str, str],
-                 account_objects: List['Account']) -> 'Split':
+                 account_objects: List[Account]) -> 'Split':
         """
         Creates an Split object from the GnuCash XML.
 
@@ -316,9 +318,9 @@ class Split(GuidObject):
         value_str: str = value_node.text
         value: Decimal = Decimal(value_str[:value_str.find('/')]) / Decimal(100)
 
-        reconciled_state_node: Optional[ElementTree.Element] = split_node.find('split:reconcilced-state', namespaces)
+        reconciled_state_node: Optional[ElementTree.Element] = split_node.find('split:reconciled-state', namespaces)
         if reconciled_state_node is None or not reconciled_state_node.text:
-            raise ValueError('Invalid or mossing split:reconciled-state node')
+            raise ValueError('Invalid or missing split:reconciled-state node')
         new_split = cls([x for x in account_objects if x.guid == account][0],
                         value, reconciled_state_node.text)
         guid_node = split_node.find('split:id', namespaces)
@@ -385,7 +387,7 @@ class TransactionManager:
                 del self.transactions[index]
                 break
 
-    def get_transactions(self, account: Optional['Account'] = None) -> Iterator[Transaction]:
+    def get_transactions(self, account: Optional[Account] = None) -> Iterator[Transaction]:
         """
         Generator function that gets transactions based on a from account and/or to account for the transaction.
 
@@ -398,18 +400,26 @@ class TransactionManager:
             if account is None or account in list(map(lambda x: x.account, transaction.splits)):
                 yield transaction
 
-    def get_account_starting_balance(self, account: 'Account') -> Decimal:
+    def get_account_starting_balance(self, account: Account) -> Decimal:
         """
-        Retrieves the starting balance for the provided account given the list of transactions in the manager.
+        Retrieves the starting balance for the current account, given the list of transactions.
 
-        :param account: Account to get the starting balance for
-        :type account: Account
-        :return: Account starting balance
+        :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
+        :return: First transaction amount if the account has transactions, otherwise 0.
         :rtype: decimal.Decimal
         """
-        return account.get_starting_balance(list(self.get_transactions(account)))
+        account_transactions: List[Transaction] = [x for x in self.transactions
+                                                   if account in [y.account for y in x.splits
+                                                                  if y.amount is not None and y.amount >= 0]]
+        amount: Decimal = Decimal(0)
+        if account_transactions:
+            first_transaction: Transaction = account_transactions[0]
+            amount = next(filter(lambda x: x.account == account and x.amount is not None and x.amount >= 0,
+                                 first_transaction.splits)).amount or Decimal(0)
+        return amount
 
-    def get_account_ending_balance(self, account: 'Account') -> Decimal:
+    def get_account_ending_balance(self, account: Account) -> Decimal:
         """
         Retrieves the ending balance for the provided account given the list of transactions in the manager.
 
@@ -418,36 +428,66 @@ class TransactionManager:
         :return: Account starting balance
         :rtype: decimal.Decimal
         """
-        return account.get_ending_balance(list(self.get_transactions(account)))
+        return self.get_balance_at_date(account)
 
-    def minimum_balance_past_date(self, account: 'Account',
+    def minimum_balance_past_date(self, account: Account,
                                   date: datetime) -> Tuple[Optional[Decimal], Optional[datetime]]:
         """
-        Retrieves the minimum balance past a certain date for the given account.
+        Gets the minimum balance for the account after a certain date, given the list of transactions.
 
-        :param account: Account to get the minimum balance for
-        :type account: Account
-        :param date: datetime object representing the date you want to find the minimum balance for.
-        :type date: datetime.datetime
+        :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
+        :param start_date: datetime object representing the date you want to find the minimum balance for.
+        :type start_date: datetime.datetime
         :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
         :rtype: tuple
         """
-        return account.minimum_balance_past_date(self, date)
+        minimum_balance: Optional[Decimal] = None
+        minimum_balance_date: Optional[datetime] = None
+        iterator_date: datetime = date
+        end_date: Optional[datetime] = max(map(lambda x: x.date_posted, self.transactions))
+        if end_date is None:
+            return None, None
+        while iterator_date < end_date:
+            iterator_date += timedelta(days=1)
+            current_balance: Decimal = self.get_balance_at_date(account, iterator_date)
+            if minimum_balance is None or current_balance < minimum_balance:
+                minimum_balance, minimum_balance_date = current_balance, iterator_date
+        if minimum_balance_date and minimum_balance_date > end_date:
+            minimum_balance_date = end_date
+        return minimum_balance, minimum_balance_date
 
-    def get_balance_at_date(self, account: 'Account', date: datetime) -> Decimal:
+    def get_balance_at_date(self, account: Account, date: Optional[datetime] = None) -> Decimal:
         """
-        Retrieves the account balance for the specified account at a certain date.
+        Retrieves the account balance for the current account at a certain date, given the list of transactions.
 
         If the provided date is None, it will retrieve the ending balance.
 
-        :param account: List of transactions or TransactionManager
-        :type account: Account
+        :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
         :param date: Last date to consider when determining the account balance.
         :type date: datetime.datetime
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
         :rtype: decimal.Decimal
         """
-        return account.get_balance_at_date(self, date)
+        balance: Decimal = Decimal(0)
+        applicable_transactions: List[Transaction] = []
+        for transaction in self.transactions:
+            transaction_accounts = list(map(lambda y: y.account, transaction.splits))
+            if date is not None and account in transaction_accounts and transaction.date_posted is not None and \
+                    transaction.date_posted <= date:
+                applicable_transactions.append(transaction)
+            elif date is None and self in transaction_accounts:
+                applicable_transactions.append(transaction)
+
+        for transaction in applicable_transactions:
+            if date is None or (transaction.date_posted is not None and transaction.date_posted <= date):
+                applicable_split: Split = next(filter(lambda x: x.account == account, transaction.splits))
+                amount: Decimal = applicable_split.amount or Decimal(0)
+                if account.type == AccountType.CREDIT:
+                    amount = amount * -1
+                balance += amount
+        return balance
 
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:
@@ -485,7 +525,7 @@ class ScheduledTransaction(GuidObject):
         self.start_date: Optional[datetime] = None
         self.last_date: Optional[datetime] = None
         self.end_date: Optional[datetime] = None
-        self.template_account: Optional['Account'] = None
+        self.template_account: Optional[Account] = None
         self.recurrence_multiplier: Optional[int] = 0
         self.recurrence_period: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
@@ -538,7 +578,7 @@ class ScheduledTransaction(GuidObject):
 
     @classmethod
     def from_xml(cls, xml_obj: ElementTree.Element, namespaces: Dict[str, str],
-                 template_account_root: Optional['Account']) -> 'ScheduledTransaction':
+                 template_account_root: Optional[Account]) -> 'ScheduledTransaction':
         """
         Creates a ScheduledTransaction object from the GnuCash XML.
 
@@ -683,7 +723,7 @@ class SimpleTransaction(Transaction):
 
     @classmethod
     def from_xml(cls, transaction_node: ElementTree.Element, namespaces: Dict[str, str],
-                 account_objects: List['Account']) -> 'SimpleTransaction':
+                 account_objects: List[Account]) -> 'SimpleTransaction':
         """
         Creates a SimpleTransaction object from the GnuCash XML.
 
@@ -731,7 +771,7 @@ class SimpleTransaction(Transaction):
         return new_object
 
     @property
-    def from_account(self) -> Optional['Account']:
+    def from_account(self) -> Optional[Account]:
         """
         Account which the transaction transfers funds from.
 
@@ -745,7 +785,7 @@ class SimpleTransaction(Transaction):
         self.from_split.account = value
 
     @property
-    def to_account(self) -> Optional['Account']:
+    def to_account(self) -> Optional[Account]:
         """
         Account which the transaction transfers funds to.
 
@@ -755,7 +795,7 @@ class SimpleTransaction(Transaction):
         return self.to_split.account
 
     @to_account.setter
-    def to_account(self, value: 'Account') -> None:
+    def to_account(self, value: Account) -> None:
         self.to_split.account = value
 
     @property
