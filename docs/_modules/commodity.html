@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -153,24 +155,26 @@
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
+
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
 
-<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../commodity.html#commodity.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../commodity.html#commodity.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Represents a Commodity in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quote_source</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quote_tz</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xcode</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commodity_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">commodity_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quote_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quote_tz</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xcode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current commodity as GnuCash-compatible XML.</span>
 
@@ -196,7 +200,7 @@
         <span class="k">return</span> <span class="n">commodity_node</span>
 
 <div class="viewcode-block" id="Commodity.from_xml"><a class="viewcode-back" href="../commodity.html#commodity.Commodity.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">commodity_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">commodity_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Commodity&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Commodity object from the GnuCash XML.</span>
 
@@ -207,9 +211,15 @@
 <span class="sd">        :return: Commodity object from XML</span>
 <span class="sd">        :rtype: Commodity</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">space</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:space&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">new_commodity</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
+        <span class="n">commodity_id_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">commodity_id_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">commodity_id_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Commodity node is missing id&#39;</span><span class="p">)</span>
+        <span class="n">commodity_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">commodity_id_node</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">commodity_space_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:space&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">commodity_space_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">commodity_space_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Commodity node is missing space&#39;</span><span class="p">)</span>
+        <span class="n">space</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">commodity_space_node</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">new_commodity</span><span class="p">:</span> <span class="s1">&#39;Commodity&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:get_quotes&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_commodity</span><span class="o">.</span><span class="n">get_quotes</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -220,28 +230,30 @@
         <span class="k">if</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;quote_tz&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_commodity</span><span class="o">.</span><span class="n">quote_tz</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">name_node</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">name_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_commodity</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name_node</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="n">xcode_node</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:xcode&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">xcode_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:xcode&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">xcode_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_commodity</span><span class="o">.</span><span class="n">xcode</span> <span class="o">=</span> <span class="n">xcode_node</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="n">fraction_node</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:fraction&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">fraction_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:fraction&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fraction_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_commodity</span><span class="o">.</span><span class="n">fraction</span> <span class="o">=</span> <span class="n">fraction_node</span><span class="o">.</span><span class="n">text</span>
 
         <span class="k">return</span> <span class="n">new_commodity</span></div>
 
-<div class="viewcode-block" id="Commodity.as_short_xml"><a class="viewcode-back" href="../commodity.html#commodity.Commodity.as_short_xml">[docs]</a>    <span class="k">def</span> <span class="nf">as_short_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tag</span><span class="p">):</span>
+<div class="viewcode-block" id="Commodity.as_short_xml"><a class="viewcode-back" href="../commodity.html#commodity.Commodity.as_short_xml">[docs]</a>    <span class="k">def</span> <span class="nf">as_short_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current commodity as GnuCash-compatible XML (short version used for accounts).</span>
 
+<span class="sd">        :param node_tag: XML element tag name for the commodity</span>
+<span class="sd">        :type node_tag: str</span>
 <span class="sd">        :return: Current commodity as short XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">commodity_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">node_tag</span><span class="p">)</span>
+        <span class="n">commodity_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">node_tag</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span>
         <span class="k">return</span> <span class="n">commodity_node</span></div></div>
@@ -274,26 +286,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

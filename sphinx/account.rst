@@ -40,11 +40,23 @@ Shortcut Accounts
 Special Accounts
 ----------------
 
+.. autoclass:: InterestAccountBase
+   :members:
+
 .. autoclass:: InterestAccount
    :members:
    :special-members:
    :exclude-members: __repr__,__str__,__weakref__
 
+.. autoclass:: InterestAccountWithSubaccounts
+   :members:
+   :special-members:
+   :exclude-members: __repr__,__str__,__weakref__
+
 .. autoclass:: LoanStatus
+   :show-inheritance:
+   :members:
+
+.. autoclass:: LoanExtraPayment
    :show-inheritance:
    :members:

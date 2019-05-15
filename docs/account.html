@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="GnuCash File" href="gnucash_file.html" />
     <link rel="prev" title="Code Documentation" href="code_documentation.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -175,7 +177,7 @@
 <p>Represents an account in GnuCash.</p>
 <dl class="method">
 <dt id="account.Account.as_dict">
-<code class="descname">as_dict</code><span class="sig-paren">(</span><em>account_hierarchy=None</em>, <em>path_to_self='/'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.as_dict" title="Permalink to this definition">¶</a></dt>
+<code class="descname">as_dict</code><span class="sig-paren">(</span><em>account_hierarchy: Dict[str</em>, <em>Account] = None</em>, <em>path_to_self: str = '/'</em><span class="sig-paren">)</span> &#x2192; Dict[str, account.Account]<a class="reference internal" href="_modules/account.html#Account.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.as_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the current account hierarchy as a dictionary.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -250,7 +252,7 @@
 
 <dl class="classmethod">
 <dt id="account.Account.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>account_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>account_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[Account]</em><span class="sig-paren">)</span> &#x2192; account.Account<a class="reference internal" href="_modules/account.html#Account.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an Account object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -274,51 +276,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="account.Account.get_balance_at_date">
-<code class="descname">get_balance_at_date</code><span class="sig-paren">(</span><em>transactions</em>, <em>date=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_balance_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_balance_at_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the account balance for the current account at a certain date, given the list of transactions.</p>
-<p>If the provided date is None, it will retrieve the ending balance.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
-<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – Last date to consider when determining the account balance.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="account.Account.get_ending_balance">
-<code class="descname">get_ending_balance</code><span class="sig-paren">(</span><em>transactions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_ending_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_ending_balance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the ending balance for the current account, given the list of transactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Ending balance if the account has transactions, otherwise 0.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="account.Account.get_parent_commodity">
-<code class="descname">get_parent_commodity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_parent_commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_parent_commodity" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_parent_commodity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[gnewcash.commodity.Commodity]<a class="reference internal" href="_modules/account.html#Account.get_parent_commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_parent_commodity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the commodity for the account.</p>
 <p>If none is provided, it will look at it’s parent (and ancestors recursively) to find it.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -327,25 +286,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Commodity object, or None if no commodity was found in the ancestry chain.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity">Commodity</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="account.Account.get_starting_balance">
-<code class="descname">get_starting_balance</code><span class="sig-paren">(</span><em>transactions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_starting_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_starting_balance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the starting balance for the current account, given the list of transactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">First transaction amount if the account has transactions, otherwise 0.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">NoneType|Commodity</td>
 </tr>
 </tbody>
 </table>
@@ -353,7 +294,7 @@
 
 <dl class="method">
 <dt id="account.Account.get_subaccount_by_id">
-<code class="descname">get_subaccount_by_id</code><span class="sig-paren">(</span><em>subaccount_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.get_subaccount_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_subaccount_by_id" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_subaccount_by_id</code><span class="sig-paren">(</span><em>subaccount_id: str</em><span class="sig-paren">)</span> &#x2192; Optional[account.Account]<a class="reference internal" href="_modules/account.html#Account.get_subaccount_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_subaccount_by_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds a subaccount by its guid field.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -363,7 +304,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Account object for that guid or None if no account was found</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#account.Account" title="account.Account">Account</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">NoneType|Account</td>
 </tr>
 </tbody>
 </table>
@@ -380,30 +321,6 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if account is marked hidden, otherwise False.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="account.Account.minimum_balance_past_date">
-<code class="descname">minimum_balance_past_date</code><span class="sig-paren">(</span><em>transactions</em>, <em>start_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#Account.minimum_balance_past_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.minimum_balance_past_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the minimum balance for the account after a certain date, given the list of transactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
-<li><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tuple containing the minimum balance (element 0) and the date it’s at that balance (element 1)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</td>
 </tr>
 </tbody>
 </table>
@@ -435,7 +352,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Account’s parent</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#account.Account" title="account.Account">Account</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">NoneType|Account</td>
 </tr>
 </tbody>
 </table>
@@ -461,7 +378,7 @@
 
 <dl class="class">
 <dt id="account.AccountType">
-<em class="property">class </em><code class="descclassname">account.</code><code class="descname">AccountType</code><a class="reference internal" href="_modules/account.html#AccountType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.AccountType" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">account.</code><code class="descname">AccountType</code><a class="reference internal" href="_modules/gnewcash/enums.html#AccountType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.AccountType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enumeration class to indicate the types of accounts available in GnuCash.</p>
 </dd></dl>
 
@@ -521,12 +438,70 @@
 <div class="section" id="special-accounts">
 <h2>Special Accounts<a class="headerlink" href="#special-accounts" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="account.InterestAccountBase">
+<em class="property">class </em><code class="descclassname">account.</code><code class="descname">InterestAccountBase</code><a class="reference internal" href="_modules/account.html#InterestAccountBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class defining the API for Interest accounts.</p>
+<dl class="method">
+<dt id="account.InterestAccountBase.get_all_payments">
+<code class="descname">get_all_payments</code><span class="sig-paren">(</span><em>skip_additional_payments: bool = False</em><span class="sig-paren">)</span> &#x2192; List[Tuple[datetime.datetime, decimal.Decimal, decimal.Decimal]]<a class="reference internal" href="_modules/account.html#InterestAccountBase.get_all_payments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountBase.get_all_payments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for retrieving all payments for the loan plan.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>skip_additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Skips additional payments if True.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="account.InterestAccountBase.get_info_at_date">
+<code class="descname">get_info_at_date</code><span class="sig-paren">(</span><em>date: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; account.LoanStatus<a class="reference internal" href="_modules/account.html#InterestAccountBase.get_info_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountBase.get_info_at_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for retrieving the loan info at a specified date for the account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object indicating the date you want the loan status of</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountBase.interest_percentage">
+<code class="descname">interest_percentage</code><a class="headerlink" href="#account.InterestAccountBase.interest_percentage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for retrieving the interest percentage for the account.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountBase.payment_amount">
+<code class="descname">payment_amount</code><a class="headerlink" href="#account.InterestAccountBase.payment_amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for retrieving the payment amount for the account.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountBase.starting_balance">
+<code class="descname">starting_balance</code><a class="headerlink" href="#account.InterestAccountBase.starting_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for retrieving the starting balance for the account.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountBase.starting_date">
+<code class="descname">starting_date</code><a class="headerlink" href="#account.InterestAccountBase.starting_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for retrieving the starting date for the account.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="account.InterestAccount">
-<em class="property">class </em><code class="descclassname">account.</code><code class="descname">InterestAccount</code><span class="sig-paren">(</span><em>starting_balance</em>, <em>starting_date</em>, <em>interest_percentage</em>, <em>payment_amount</em>, <em>*</em>, <em>additional_payments=None</em>, <em>skip_payment_dates=None</em>, <em>interest_start_date=None</em>, <em>subaccounts=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">account.</code><code class="descname">InterestAccount</code><span class="sig-paren">(</span><em>starting_balance: decimal.Decimal</em>, <em>starting_date: datetime.datetime</em>, <em>interest_percentage: decimal.Decimal</em>, <em>payment_amount: decimal.Decimal</em>, <em>additional_payments: Optional[List[account.LoanExtraPayment]] = None</em>, <em>skip_payment_dates: Optional[List[datetime.datetime]] = None</em>, <em>interest_start_date: Optional[datetime.datetime] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class used to calculate interest balances.</p>
 <dl class="method">
 <dt id="account.InterestAccount.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>starting_balance</em>, <em>starting_date</em>, <em>interest_percentage</em>, <em>payment_amount</em>, <em>*</em>, <em>additional_payments=None</em>, <em>skip_payment_dates=None</em>, <em>interest_start_date=None</em>, <em>subaccounts=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>starting_balance: decimal.Decimal</em>, <em>starting_date: datetime.datetime</em>, <em>interest_percentage: decimal.Decimal</em>, <em>payment_amount: decimal.Decimal</em>, <em>additional_payments: Optional[List[account.LoanExtraPayment]] = None</em>, <em>skip_payment_dates: Optional[List[datetime.datetime]] = None</em>, <em>interest_start_date: Optional[datetime.datetime] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class initializer.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -537,11 +512,9 @@
 <li><strong>starting_date</strong> (<em>datetime.datetime|NoneType</em>) – datetime object indicating the date of the starting balance.</li>
 <li><strong>interest_percentage</strong> (<em>decimal.Decimal|NoneType</em>) – Percentage to interest on the loan.</li>
 <li><strong>payment_amount</strong> (<em>decimal.Decimal|NoneType</em>) – Payment amount on the loan.</li>
-<li><strong>additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>]</em><em>|NoneType</em>) – List of dictionaries containing an “amount” key for additional amount paid,
-and “payment_date” for the date the additional amount was paid.</li>
+<li><strong>additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#account.LoanExtraPayment" title="account.LoanExtraPayment"><em>LoanExtraPayment</em></a><em>]</em><em>|NoneType</em>) – List of LoanExtraPayment objects indicating extra payments to the loan.</li>
 <li><strong>skip_payment_dates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a><em>]</em><em>|NoneType</em>) – List of datetime objects that the loan payment should be skipped</li>
 <li><strong>interest_start_date</strong> (<em>datetime.datetime|NoneType</em>) – datetime object that interest starts on</li>
-<li><strong>subaccounts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#account.InterestAccount" title="account.InterestAccount"><em>InterestAccount</em></a><em>]</em><em>|NoneType</em>) – List of InterestAccount objects that are subaccounts of this InterestAccount</li>
 </ul>
 </td>
 </tr>
@@ -551,7 +524,7 @@ and “payment_date” for the date the additional amount was paid.</li>
 
 <dl class="method">
 <dt id="account.InterestAccount.get_all_payments">
-<code class="descname">get_all_payments</code><span class="sig-paren">(</span><em>skip_additional_payments=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount.get_all_payments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.get_all_payments" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_all_payments</code><span class="sig-paren">(</span><em>skip_additional_payments: bool = False</em><span class="sig-paren">)</span> &#x2192; List[Tuple[datetime.datetime, decimal.Decimal, decimal.Decimal]]<a class="reference internal" href="_modules/account.html#InterestAccount.get_all_payments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.get_all_payments" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves a list of tuples that show all payments for the loan plan.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -569,8 +542,8 @@ and “payment_date” for the date the additional amount was paid.</li>
 
 <dl class="method">
 <dt id="account.InterestAccount.get_info_at_date">
-<code class="descname">get_info_at_date</code><span class="sig-paren">(</span><em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccount.get_info_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.get_info_at_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the loan info at a specified date for the current account, or all subaccounts (if specified).</p>
+<code class="descname">get_info_at_date</code><span class="sig-paren">(</span><em>date: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; account.LoanStatus<a class="reference internal" href="_modules/account.html#InterestAccount.get_info_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccount.get_info_at_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the loan info at a specified date for the current account.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -589,12 +562,11 @@ and “payment_date” for the date the additional amount was paid.</li>
 <dt id="account.InterestAccount.interest_percentage">
 <code class="descname">interest_percentage</code><a class="headerlink" href="#account.InterestAccount.interest_percentage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the interest percentage for the account.</p>
-<p>If there are subaccounts specified, the sum of the subaccounts’ interest percentage is used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sum of interest percentages, or current InterestAccount object’s percentage.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current InterestAccount object’s percentage.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
 </tr>
@@ -606,12 +578,11 @@ and “payment_date” for the date the additional amount was paid.</li>
 <dt id="account.InterestAccount.payment_amount">
 <code class="descname">payment_amount</code><a class="headerlink" href="#account.InterestAccount.payment_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the payment amount for the account.</p>
-<p>If there are subaccounts specified, the sum of the subaccounts’ payment amount is used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sum of the payment amounts, or current InterestAccount object’s payment amount.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current InterestAccount object’s payment amount.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
 </tr>
@@ -623,12 +594,11 @@ and “payment_date” for the date the additional amount was paid.</li>
 <dt id="account.InterestAccount.starting_balance">
 <code class="descname">starting_balance</code><a class="headerlink" href="#account.InterestAccount.starting_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the starting balance for the account.</p>
-<p>If there are subaccounts specified, the sum of the subaccounts’ starting balance is used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sum of the starting balances, or current InterestAccount object’s starting balance.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current InterestAccount object’s starting balance.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
 </tr>
@@ -640,12 +610,137 @@ and “payment_date” for the date the additional amount was paid.</li>
 <dt id="account.InterestAccount.starting_date">
 <code class="descname">starting_date</code><a class="headerlink" href="#account.InterestAccount.starting_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the starting date for the account.</p>
-<p>If there are subaccounts specified, the minimum starting date of the subaccounts is used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Minimum starting date, or current InterestAccount’s starting date.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current InterestAccount’s starting date.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)">datetime.datetime</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="account.InterestAccountWithSubaccounts">
+<em class="property">class </em><code class="descclassname">account.</code><code class="descname">InterestAccountWithSubaccounts</code><span class="sig-paren">(</span><em>subaccounts: List[account.InterestAccount], additional_payments: Optional[List[Dict[str, Union[decimal.Decimal, datetime.datetime]]]] = None, skip_payment_dates: Optional[List[datetime.datetime]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccountWithSubaccounts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountWithSubaccounts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class used to calculate interest balances based off of balances of subaccounts.</p>
+<dl class="method">
+<dt id="account.InterestAccountWithSubaccounts.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>subaccounts: List[account.InterestAccount], additional_payments: Optional[List[Dict[str, Union[decimal.Decimal, datetime.datetime]]]] = None, skip_payment_dates: Optional[List[datetime.datetime]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/account.html#InterestAccountWithSubaccounts.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountWithSubaccounts.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class initializer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>subaccounts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#account.InterestAccount" title="account.InterestAccount"><em>InterestAccount</em></a><em>]</em>) – List of InterestAccount objects that are subaccounts of this InterestAccount</li>
+<li><strong>additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>]</em><em>|NoneType</em>) – List of dictionaries containing an “amount” key for additional amount paid,
+and “payment_date” for the date the additional amount was paid.</li>
+<li><strong>skip_payment_dates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a><em>]</em><em>|NoneType</em>) – List of datetime objects that the loan payment should be skipped</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="account.InterestAccountWithSubaccounts.get_all_payments">
+<code class="descname">get_all_payments</code><span class="sig-paren">(</span><em>skip_additional_payments: bool = False</em><span class="sig-paren">)</span> &#x2192; List[Tuple[datetime.datetime, decimal.Decimal, decimal.Decimal]]<a class="reference internal" href="_modules/account.html#InterestAccountWithSubaccounts.get_all_payments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountWithSubaccounts.get_all_payments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of tuples that show all payments for the loan plan.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>skip_additional_payments</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Skips additional payments if True.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of tuples with the date (index 0), balance (index 1) and amount to capital (index 2)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="account.InterestAccountWithSubaccounts.get_info_at_date">
+<code class="descname">get_info_at_date</code><span class="sig-paren">(</span><em>date: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; account.LoanStatus<a class="reference internal" href="_modules/account.html#InterestAccountWithSubaccounts.get_info_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.InterestAccountWithSubaccounts.get_info_at_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the loan info at a specified date for all subaccounts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object indicating the date you want the loan status of</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">LoanStatus object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#account.LoanStatus" title="account.LoanStatus">LoanStatus</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountWithSubaccounts.interest_percentage">
+<code class="descname">interest_percentage</code><a class="headerlink" href="#account.InterestAccountWithSubaccounts.interest_percentage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the sum of the subaccounts’ interest percentage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sum of interest percentages.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountWithSubaccounts.payment_amount">
+<code class="descname">payment_amount</code><a class="headerlink" href="#account.InterestAccountWithSubaccounts.payment_amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the sum of the subaccounts’ payment amount.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sum of the payment amounts.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountWithSubaccounts.starting_balance">
+<code class="descname">starting_balance</code><a class="headerlink" href="#account.InterestAccountWithSubaccounts.starting_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the sum of the subaccounts’ starting balance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sum of the starting balances.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.InterestAccountWithSubaccounts.starting_date">
+<code class="descname">starting_date</code><a class="headerlink" href="#account.InterestAccountWithSubaccounts.starting_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the minimum starting date of the subaccounts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Minimum starting date.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)">datetime.datetime</a></td>
 </tr>
@@ -685,6 +780,24 @@ and “payment_date” for the date the additional amount was paid.</li>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="account.LoanExtraPayment">
+<em class="property">class </em><code class="descclassname">account.</code><code class="descname">LoanExtraPayment</code><span class="sig-paren">(</span><em>payment_date</em>, <em>payment_amount</em><span class="sig-paren">)</span><a class="headerlink" href="#account.LoanExtraPayment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="attribute">
+<dt id="account.LoanExtraPayment.payment_amount">
+<code class="descname">payment_amount</code><a class="headerlink" href="#account.LoanExtraPayment.payment_amount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="account.LoanExtraPayment.payment_date">
+<code class="descname">payment_date</code><a class="headerlink" href="#account.LoanExtraPayment.payment_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -699,7 +812,7 @@ and “payment_date” for the date the additional amount was paid.</li>
         <a href="gnucash_file.html" class="btn btn-neutral float-right" title="GnuCash File" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="code_documentation.html" class="btn btn-neutral" title="Code Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="code_documentation.html" class="btn btn-neutral float-left" title="Code Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -725,26 +838,16 @@ and “payment_date” for the date the additional amount was paid.</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

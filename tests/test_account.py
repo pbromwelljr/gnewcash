@@ -12,54 +12,6 @@ import gnewcash.account as acc
 class TestAccount(unittest.TestCase):
     def setUp(self):
         os.chdir(os.path.realpath(os.path.dirname(__file__)))
-
-    def test_get_starting_balance(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        book = gnucash_file.books[0]
-        account = book.get_account('Assets', 'Current Assets', 'Checking Account')
-        self.assertEqual(account.get_starting_balance(book.transactions), 2000)
-
-    def test_get_balance_at_date_checking(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        book = gnucash_file.books[0]
-        account = book.get_account('Assets', 'Current Assets', 'Checking Account')
-        test_date = datetime(2019, 6, 1, 0, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
-        balance_at_date = account.get_balance_at_date(book.transactions, test_date)
-        self.assertEqual(balance_at_date, 480)
-
-    def test_get_balance_at_date_credit(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        book = gnucash_file.books[0]
-        account = book.get_account('Assets', 'Current Assets', 'Credit Card')
-        test_date = datetime(2019, 6, 30, 0, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
-        balance_at_date = account.get_balance_at_date(book.transactions, test_date)
-        self.assertEqual(balance_at_date, 860)
-
-    def test_minimum_balance_past_date(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        book = gnucash_file.books[0]
-        account = book.get_account('Assets', 'Current Assets', 'Checking Account')
-        test_date = datetime(2019, 12, 1, 0, 0, 0, 0, tzinfo=pytz.timezone('US/Eastern'))
-        minimum_balance, minimum_balance_date = account.minimum_balance_past_date(book.transactions, test_date)
-        self.assertEqual(minimum_balance, 1240)
-        # Not worried about timezones
-        minimum_balance_date = minimum_balance_date.replace(tzinfo=None)
-        self.assertEqual(minimum_balance_date, datetime(2019, 12, 31, 5, 59, 0, 0))
-
-    def test_get_ending_balance_checking(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        book = gnucash_file.books[0]
-        account = book.get_account('Assets', 'Current Assets', 'Checking Account')
-        ending_balance = account.get_ending_balance(book.transactions)
-        self.assertEqual(ending_balance, Decimal('1240'))
-
-    def test_get_ending_balance_credit_card(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
-        book = gnucash_file.books[0]
-        account = book.get_account('Assets', 'Current Assets', 'Credit Card')
-        ending_balance = account.get_ending_balance(book.transactions)
-        self.assertEqual(ending_balance, Decimal('0'))
-
     def test_account_shortcut_classes(self):
         ba = acc.BankAccount()
         self.assertEqual(ba.type, acc.AccountType.BANK)
@@ -151,11 +103,7 @@ class TestAccount(unittest.TestCase):
                                            starting_date=datetime(2018, 1, 1),
                                            interest_percentage=Decimal('0.02'),
                                            payment_amount=Decimal('50'))
-        interest_account = acc.InterestAccount(starting_balance=None,
-                                               starting_date=None,
-                                               interest_percentage=None,
-                                               payment_amount=None,
-                                               subaccounts=[subaccount_1, subaccount_2])
+        interest_account = acc.InterestAccountWithSubaccounts([subaccount_1, subaccount_2])
         self.assertEqual(interest_account.starting_date, datetime(2018, 1, 1))
         self.assertEqual(interest_account.interest_percentage, Decimal('0.07'))
         self.assertEqual(interest_account.payment_amount, Decimal('150'))
@@ -259,8 +207,10 @@ class TestAccount(unittest.TestCase):
                                  skip_payment_dates=[datetime(2018, 7, 1),
                                                      datetime(2019, 7, 1)],
                                  additional_payments=[
-                                     {'amount': Decimal(500), 'payment_date': datetime(2018, 9, 20)},
-                                     {'amount': Decimal(500), 'payment_date': datetime(2019, 9, 20)}
+                                     acc.LoanExtraPayment(payment_date=datetime(2018, 9, 20), 
+                                                          payment_amount=Decimal(500)),
+                                     acc.LoanExtraPayment(payment_date=datetime(2019, 9, 20), 
+                                                          payment_amount=Decimal(500)),
                                  ])
         # Get the balance after one of our payment skips
         after_skip = ia.get_info_at_date(datetime(2018, 8, 1))

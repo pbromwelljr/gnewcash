@@ -5,26 +5,27 @@ Module containing classes that manage GUID objects.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
+from typing import List
 import uuid
 
 
-class GuidObject(object):
+class GuidObject:
     """Class used to generate unique GUIDs for various GNewCash objects."""
 
-    used_guids = []
+    used_guids: List[str] = []
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(GuidObject, self).__init__()
-        self.guid = self.get_guid()
+        self.guid: str = self.get_guid()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.guid)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
     @classmethod
-    def get_guid(cls):
+    def get_guid(cls) -> str:
         """
         Retrieves a unique GUID and returns it.
 
@@ -32,8 +33,8 @@ class GuidObject(object):
         :rtype: str
         """
         while True:
-            random_uuid = uuid.uuid4()
-            new_guid = str(random_uuid).replace('-', '').lower()
+            random_uuid: uuid.UUID = uuid.uuid4()
+            new_guid: str = str(random_uuid).replace('-', '').lower()
             if new_guid not in GuidObject.used_guids:
                 GuidObject.used_guids.append(new_guid)
                 return new_guid

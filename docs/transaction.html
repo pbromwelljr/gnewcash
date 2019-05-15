@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Utils" href="utils.html" />
     <link rel="prev" title="GUID Object" href="guid_object.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -215,7 +217,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.Transaction.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.Transaction<a class="reference internal" href="_modules/transaction.html#Transaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Transaction object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -240,7 +242,7 @@
 
 <dl class="method">
 <dt id="transaction.Transaction.mark_transaction_cleared">
-<code class="descname">mark_transaction_cleared</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.mark_transaction_cleared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.mark_transaction_cleared" title="Permalink to this definition">¶</a></dt>
+<code class="descname">mark_transaction_cleared</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/transaction.html#Transaction.mark_transaction_cleared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.mark_transaction_cleared" title="Permalink to this definition">¶</a></dt>
 <dd><p>Marks all splits in the transaction as cleared (reconciled_state = ‘c’).</p>
 </dd></dl>
 
@@ -328,7 +330,7 @@
 
 <dl class="class">
 <dt id="transaction.Split">
-<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">Split</code><span class="sig-paren">(</span><em>account</em>, <em>amount</em>, <em>reconciled_state='n'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">Split</code><span class="sig-paren">(</span><em>account: Optional[gnewcash.account.Account], amount: Optional[decimal.Decimal], reconciled_state: str = 'n'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a split in GnuCash.</p>
 <dl class="attribute">
 <dt id="transaction.Split.as_xml">
@@ -348,7 +350,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.Split.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>split_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>split_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.Split<a class="reference internal" href="_modules/transaction.html#Split.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an Split object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -379,7 +381,7 @@
 <dd><p>Class used to add/remove transactions, maintaining a chronological order based on transaction posted date.</p>
 <dl class="method">
 <dt id="transaction.TransactionManager.add">
-<code class="descname">add</code><span class="sig-paren">(</span><em>new_transaction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.add" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add</code><span class="sig-paren">(</span><em>new_transaction: transaction.Transaction</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/transaction.html#TransactionManager.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a transaction to the transaction manager.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -393,7 +395,7 @@
 
 <dl class="method">
 <dt id="transaction.TransactionManager.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><em>transaction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.delete" title="Permalink to this definition">¶</a></dt>
+<code class="descname">delete</code><span class="sig-paren">(</span><em>transaction: transaction.Transaction</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/transaction.html#TransactionManager.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes a transaction from the transaction manager.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -407,7 +409,7 @@
 
 <dl class="method">
 <dt id="transaction.TransactionManager.get_account_ending_balance">
-<code class="descname">get_account_ending_balance</code><span class="sig-paren">(</span><em>account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_account_ending_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_account_ending_balance" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_account_ending_balance</code><span class="sig-paren">(</span><em>account: gnewcash.account.Account</em><span class="sig-paren">)</span> &#x2192; decimal.Decimal<a class="reference internal" href="_modules/transaction.html#TransactionManager.get_account_ending_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_account_ending_balance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the ending balance for the provided account given the list of transactions in the manager.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -425,15 +427,15 @@
 
 <dl class="method">
 <dt id="transaction.TransactionManager.get_account_starting_balance">
-<code class="descname">get_account_starting_balance</code><span class="sig-paren">(</span><em>account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_account_starting_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_account_starting_balance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the starting balance for the provided account given the list of transactions in the manager.</p>
+<code class="descname">get_account_starting_balance</code><span class="sig-paren">(</span><em>account: gnewcash.account.Account</em><span class="sig-paren">)</span> &#x2192; decimal.Decimal<a class="reference internal" href="_modules/transaction.html#TransactionManager.get_account_starting_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_account_starting_balance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the starting balance for the current account, given the list of transactions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the starting balance for</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Account starting balance</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">First transaction amount if the account has transactions, otherwise 0.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
 </tr>
@@ -443,15 +445,15 @@
 
 <dl class="method">
 <dt id="transaction.TransactionManager.get_balance_at_date">
-<code class="descname">get_balance_at_date</code><span class="sig-paren">(</span><em>account</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_balance_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_balance_at_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the account balance for the specified account at a certain date.</p>
+<code class="descname">get_balance_at_date</code><span class="sig-paren">(</span><em>account: gnewcash.account.Account</em>, <em>date: Optional[datetime.datetime] = None</em><span class="sig-paren">)</span> &#x2192; decimal.Decimal<a class="reference internal" href="_modules/transaction.html#TransactionManager.get_balance_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_balance_at_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the account balance for the current account at a certain date, given the list of transactions.</p>
 <p>If the provided date is None, it will retrieve the ending balance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – List of transactions or TransactionManager</li>
+<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
 <li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – Last date to consider when determining the account balance.</li>
 </ul>
 </td>
@@ -459,7 +461,7 @@
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></p>
 </td>
 </tr>
 </tbody>
@@ -468,7 +470,7 @@
 
 <dl class="method">
 <dt id="transaction.TransactionManager.get_transactions">
-<code class="descname">get_transactions</code><span class="sig-paren">(</span><em>account=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.get_transactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_transactions" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_transactions</code><span class="sig-paren">(</span><em>account: Optional[gnewcash.account.Account] = None</em><span class="sig-paren">)</span> &#x2192; Iterator[transaction.Transaction]<a class="reference internal" href="_modules/transaction.html#TransactionManager.get_transactions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.get_transactions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator function that gets transactions based on a from account and/or to account for the transaction.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -486,15 +488,15 @@
 
 <dl class="method">
 <dt id="transaction.TransactionManager.minimum_balance_past_date">
-<code class="descname">minimum_balance_past_date</code><span class="sig-paren">(</span><em>account</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#TransactionManager.minimum_balance_past_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.minimum_balance_past_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the minimum balance past a certain date for the given account.</p>
+<code class="descname">minimum_balance_past_date</code><span class="sig-paren">(</span><em>account: gnewcash.account.Account</em>, <em>date: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; Tuple[Optional[decimal.Decimal], Optional[datetime.datetime]]<a class="reference internal" href="_modules/transaction.html#TransactionManager.minimum_balance_past_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.TransactionManager.minimum_balance_past_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the minimum balance for the account after a certain date, given the list of transactions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the minimum balance for</li>
-<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
+<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
+<li><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
 </ul>
 </td>
 </tr>
@@ -532,7 +534,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.ScheduledTransaction.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>xml_obj</em>, <em>namespaces</em>, <em>template_account_root</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>xml_obj: xml.etree.ElementTree.Element, namespaces: Dict[str, str], template_account_root: Optional[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.ScheduledTransaction<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a ScheduledTransaction object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -557,7 +559,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.ScheduledTransaction.read_xml_child_boolean">
-<em class="property">classmethod </em><code class="descname">read_xml_child_boolean</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_boolean" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">read_xml_child_boolean</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[bool]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_boolean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the text from a specific child XML element and returns a Boolean if the text is “Y” or “y”.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -582,7 +584,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.ScheduledTransaction.read_xml_child_date">
-<em class="property">classmethod </em><code class="descname">read_xml_child_date</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_date" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">read_xml_child_date</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[datetime.datetime]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the text from a specific child XML element and returns its inner gdate text as a datetime.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -607,7 +609,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.ScheduledTransaction.read_xml_child_int">
-<em class="property">classmethod </em><code class="descname">read_xml_child_int</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_int" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">read_xml_child_int</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[int]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_int" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the text from a specific child XML element and returns its text as an integer value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -632,7 +634,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.ScheduledTransaction.read_xml_child_text">
-<em class="property">classmethod </em><code class="descname">read_xml_child_text</code><span class="sig-paren">(</span><em>xml_object</em>, <em>tag_name</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_text" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">read_xml_child_text</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[str]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the text from a specific child XML element.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -695,7 +697,7 @@
 
 <dl class="classmethod">
 <dt id="transaction.SimpleTransaction.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node</em>, <em>namespaces</em>, <em>account_objects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#SimpleTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.SimpleTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.SimpleTransaction<a class="reference internal" href="_modules/transaction.html#SimpleTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.SimpleTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a SimpleTransaction object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -749,7 +751,7 @@
         <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guid_object.html" class="btn btn-neutral" title="GUID Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guid_object.html" class="btn btn-neutral float-left" title="GUID Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -775,26 +777,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -154,26 +156,27 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
 
-<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../slot.html#slot.Slot">[docs]</a><span class="k">class</span> <span class="nc">Slot</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Represents a slot in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">slot_type</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">slot_type</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current slot as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current slot as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">slot_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">)</span>
+        <span class="n">slot_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">slot_node</span><span class="p">,</span> <span class="s1">&#39;slot:key&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
 
         <span class="n">slot_value_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">slot_node</span><span class="p">,</span> <span class="s1">&#39;slot:value&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">})</span>
@@ -194,7 +197,7 @@
         <span class="k">return</span> <span class="n">slot_node</span>
 
 <div class="viewcode-block" id="Slot.from_xml"><a class="viewcode-back" href="../slot.html#slot.Slot.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Slot&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Slot object from the GnuCash XML.</span>
 
@@ -205,19 +208,30 @@
 <span class="sd">        :return: Slot object from XML</span>
 <span class="sd">        :rtype: Slot</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">slot_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;slot:key&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">value_node</span> <span class="o">=</span> <span class="n">slot_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;slot:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">key_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;slot:key&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">key_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;slot:key missing or empty in slot node&#39;</span><span class="p">)</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">key_node</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">value_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;slot:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;slot:value missing in slot node&#39;</span><span class="p">)</span>
         <span class="n">slot_type</span> <span class="o">=</span> <span class="n">value_node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;gdate&#39;</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gdate&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">value_gdate_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gdate&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value_gdate_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;slot type is gdate but missing gdate node&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value_gdate_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;slot type is gdate but gdate node is empty&#39;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">value_gdate_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="s1">&#39;numeric&#39;</span><span class="p">]:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value_node</span><span class="o">.</span><span class="n">text</span>
-        <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span> <span class="ow">and</span> <span class="n">value_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;double&#39;</span> <span class="ow">and</span> <span class="n">value_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">value_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">child_tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">value_node</span><span class="p">)))</span>
+            <span class="n">child_tags</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">value_node</span><span class="p">)))</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">child_tags</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">child_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;slot&#39;</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">value_node</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">slot_type</span> <span class="o">==</span> <span class="s1">&#39;frame&#39;</span><span class="p">:</span>
@@ -228,14 +242,14 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SlottableObject"><a class="viewcode-back" href="../slot.html#slot.SlottableObject">[docs]</a><span class="k">class</span> <span class="nc">SlottableObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SlottableObject"><a class="viewcode-back" href="../slot.html#slot.SlottableObject">[docs]</a><span class="k">class</span> <span class="nc">SlottableObject</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class used to consolidate storing and retrieving slot values.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SlottableObject</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="SlottableObject.get_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.get_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="SlottableObject.get_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.get_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the value of the slot given a certain key.</span>
 
@@ -248,13 +262,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">target_slot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
+        <span class="n">target_slot</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">target_slot</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">target_slot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span></div>
 
-<div class="viewcode-block" id="SlottableObject.set_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
+<div class="viewcode-block" id="SlottableObject.set_slot_value"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the value of the slot given a certain key and slot type.</span>
 
@@ -265,13 +279,13 @@
 <span class="sd">        :param slot_type: Type of slot</span>
 <span class="sd">        :type slot_type: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_slot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
+        <span class="n">target_slot</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">target_slot</span><span class="p">:</span>
             <span class="n">target_slot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="SlottableObject.set_slot_value_bool"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value_bool">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value_bool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">slot_type</span><span class="p">):</span>
+<div class="viewcode-block" id="SlottableObject.set_slot_value_bool"><a class="viewcode-back" href="../slot.html#slot.SlottableObject.set_slot_value_bool">[docs]</a>    <span class="k">def</span> <span class="nf">set_slot_value_bool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">slot_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function for slots that expect &quot;true&quot; or &quot;false&quot; GnuCash-side.</span>
 
@@ -326,26 +340,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

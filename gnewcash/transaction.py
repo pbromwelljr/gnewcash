@@ -5,13 +5,15 @@ Module containing classes that read, manipulate, and write transactions.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import Dict, Iterator, List, Optional, Tuple
 from xml.etree import ElementTree
 from warnings import warn
 
+from gnewcash.account import Account
 from gnewcash.commodity import Commodity
+from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
@@ -20,30 +22,32 @@ from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 class Transaction(GuidObject, SlottableObject):
     """Represents a transaction in GnuCash."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Transaction, self).__init__()
-        self.currency = None
-        self.date_posted = None
-        self.date_entered = None
-        self.description = ''
-        self.splits = []
-        self.memo = None
+        self.currency: Optional[Commodity] = None
+        self.date_posted: Optional[datetime] = None
+        self.date_entered: Optional[datetime] = None
+        self.description: str = ''
+        self.splits: List[Split] = []
+        self.memo: Optional[str] = None
 
-    def __str__(self):
-        return '{} - {}'.format(self.date_posted.strftime('%m/%d/%Y'), self.description)
+    def __str__(self) -> str:
+        if self.date_posted:
+            return '{} - {}'.format(self.date_posted.strftime('%m/%d/%Y'), self.description)
+        return self.description
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
     @property
-    def as_xml(self):
+    def as_xml(self) -> ElementTree.Element:
         """
         Returns the current transaction as GnuCash-compatible XML.
 
         :return: Current transaction as XML
         :rtype: xml.etree.ElementTree.Element
         """
-        transaction_node = ElementTree.Element('gnc:transaction', {'version': '2.0.0'})
+        transaction_node: ElementTree.Element = ElementTree.Element('gnc:transaction', {'version': '2.0.0'})
         ElementTree.SubElement(transaction_node, 'trn:id', {'type': 'guid'}).text = self.guid
 
         if self.currency:
@@ -52,10 +56,12 @@ class Transaction(GuidObject, SlottableObject):
         if self.memo:
             ElementTree.SubElement(transaction_node, 'trn:num').text = self.memo
 
-        date_posted_node = ElementTree.SubElement(transaction_node, 'trn:date-posted')
-        ElementTree.SubElement(date_posted_node, 'ts:date').text = safe_iso_date_formatting(self.date_posted)
-        date_entered_node = ElementTree.SubElement(transaction_node, 'trn:date-entered')
-        ElementTree.SubElement(date_entered_node, 'ts:date').text = safe_iso_date_formatting(self.date_entered)
+        if self.date_posted:
+            date_posted_node = ElementTree.SubElement(transaction_node, 'trn:date-posted')
+            ElementTree.SubElement(date_posted_node, 'ts:date').text = safe_iso_date_formatting(self.date_posted)
+        if self.date_entered:
+            date_entered_node = ElementTree.SubElement(transaction_node, 'trn:date-entered')
+            ElementTree.SubElement(date_entered_node, 'ts:date').text = safe_iso_date_formatting(self.date_entered)
         ElementTree.SubElement(transaction_node, 'trn:description').text = self.description
 
         if self.slots:
@@ -71,7 +77,8 @@ class Transaction(GuidObject, SlottableObject):
         return transaction_node
 
     @classmethod
-    def from_xml(cls, transaction_node, namespaces, account_objects):
+    def from_xml(cls, transaction_node: ElementTree.Element, namespaces: Dict[str, str],
+                 account_objects: List[Account]) -> 'Transaction':
         """
         Creates a Transaction object from the GnuCash XML.
 
@@ -84,42 +91,66 @@ class Transaction(GuidObject, SlottableObject):
         :return: Transaction object from XML
         :rtype: Transaction
         """
-        transaction = cls()
-        transaction.guid = transaction_node.find('trn:id', namespaces).text
-        date_entered = transaction_node.find('trn:date-entered', namespaces).find('ts:date', namespaces).text
-        date_posted = transaction_node.find('trn:date-posted', namespaces).find('ts:date', namespaces).text
-        transaction.date_entered = safe_iso_date_parsing(date_entered)
-        transaction.date_posted = safe_iso_date_parsing(date_posted)
-        transaction.description = transaction_node.find('trn:description', namespaces).text
+        transaction: 'Transaction' = cls()
+        guid_node: Optional[ElementTree.Element] = transaction_node.find('trn:id', namespaces)
+        if guid_node is not None and guid_node.text:
+            transaction.guid = guid_node.text
+        date_entered_node: Optional[ElementTree.Element] = transaction_node.find('trn:date-entered', namespaces)
+        if date_entered_node is not None:
+            date_entered_ts_node: Optional[ElementTree.Element] = date_entered_node.find('ts:date', namespaces)
+            if date_entered_ts_node is not None and date_entered_ts_node.text:
+                transaction.date_entered = safe_iso_date_parsing(date_entered_ts_node.text)
+        date_posted_node: Optional[ElementTree.Element] = transaction_node.find('trn:date-posted', namespaces)
+        if date_posted_node is not None:
+            date_posted_ts_node: Optional[ElementTree.Element] = date_posted_node.find('ts:date', namespaces)
+            if date_posted_ts_node is not None and date_posted_ts_node.text:
+                transaction.date_posted = safe_iso_date_parsing(date_posted_ts_node.text)
 
-        memo = transaction_node.find('trn:num', namespaces)
+        description_node: Optional[ElementTree.Element] = transaction_node.find('trn:description', namespaces)
+        if description_node is not None and description_node.text:
+            transaction.description = description_node.text
+
+        memo: Optional[ElementTree.Element] = transaction_node.find('trn:num', namespaces)
         if memo is not None:
             transaction.memo = memo.text
 
         currency_node = transaction_node.find('trn:currency', namespaces)
         if currency_node is not None:
-            transaction.currency = Commodity(currency_node.find('cmdty:id', namespaces).text,
-                                             currency_node.find('cmdty:space', namespaces).text)
+            currency_id_node = currency_node.find('cmdty:id', namespaces)
+            currency_space_node = currency_node.find('cmdty:space', namespaces)
+            if currency_id_node is not None and currency_space_node is not None \
+                    and currency_id_node.text and currency_space_node.text:
+                transaction.currency = Commodity(currency_id_node.text,
+                                                 currency_space_node.text)
 
-        slots = transaction_node.find('trn:slots', namespaces)
+        slots: Optional[ElementTree.Element] = transaction_node.find('trn:slots', namespaces)
         if slots:
             for slot in slots.findall('slot', namespaces):
                 transaction.slots.append(Slot.from_xml(slot, namespaces))
 
-        splits = transaction_node.find('trn:splits', namespaces)
-        for split in list(splits):
-            transaction.splits.append(Split.from_xml(split, namespaces, account_objects))
+        splits: Optional[ElementTree.Element] = transaction_node.find('trn:splits', namespaces)
+        if splits is not None:
+            for split in list(splits):
+                transaction.splits.append(Split.from_xml(split, namespaces, account_objects))
 
         return transaction
 
-    def __lt__(self, other):
-        return self.date_posted < other.date_posted
+    def __lt__(self, other: 'Transaction') -> bool:
+        if self.date_posted is not None and other.date_posted is not None:
+            return self.date_posted < other.date_posted
+        if self.date_posted is not None and other.date_posted is None:
+            return False
+        if self.date_posted is None and other.date_posted is not None:
+            return True
+        return False
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Transaction):
+            return NotImplemented
         return self.date_posted == other.date_posted
 
     @property
-    def cleared(self):
+    def cleared(self) -> bool:
         """
         Checks if all splits in the transaction are cleared.
 
@@ -128,13 +159,13 @@ class Transaction(GuidObject, SlottableObject):
         """
         return sum([1 for split in self.splits if split.reconciled_state.lower() == 'c']) > 0
 
-    def mark_transaction_cleared(self):
+    def mark_transaction_cleared(self) -> None:
         """Marks all splits in the transaction as cleared (reconciled_state = 'c')."""
         for split in self.splits:
             split.reconciled_state = 'c'
 
     @property
-    def notes(self):
+    def notes(self) -> str:
         """
         Notes on the transaction.
 
@@ -144,11 +175,11 @@ class Transaction(GuidObject, SlottableObject):
         return super(Transaction, self).get_slot_value('notes')
 
     @notes.setter
-    def notes(self, value):
+    def notes(self, value: str) -> None:
         super(Transaction, self).set_slot_value('notes', value, 'string')
 
     @property
-    def reversed_by(self):
+    def reversed_by(self) -> str:
         """
         GUID of the transaction that reverses this transaction.
 
@@ -158,11 +189,11 @@ class Transaction(GuidObject, SlottableObject):
         return super(Transaction, self).get_slot_value('reversed-by')
 
     @reversed_by.setter
-    def reversed_by(self, value):
+    def reversed_by(self, value: str) -> None:
         super(Transaction, self).set_slot_value('reversed-by', value, 'guid')
 
     @property
-    def voided(self):
+    def voided(self) -> str:
         """
         Void status.
 
@@ -172,11 +203,11 @@ class Transaction(GuidObject, SlottableObject):
         return super(Transaction, self).get_slot_value('trans-read-only')
 
     @voided.setter
-    def voided(self, value):
+    def voided(self, value: str) -> None:
         super(Transaction, self).set_slot_value('trans-read-only', value, 'string')
 
     @property
-    def void_time(self):
+    def void_time(self) -> str:
         """
         Time that the transaction was voided.
 
@@ -186,11 +217,11 @@ class Transaction(GuidObject, SlottableObject):
         return super(Transaction, self).get_slot_value('void-time')
 
     @void_time.setter
-    def void_time(self, value):
+    def void_time(self, value: str) -> None:
         super(Transaction, self).set_slot_value('void-time', value, 'string')
 
     @property
-    def void_reason(self):
+    def void_reason(self) -> str:
         """
         Reason that the transaction was voided.
 
@@ -200,11 +231,11 @@ class Transaction(GuidObject, SlottableObject):
         return super(Transaction, self).get_slot_value('void-reason')
 
     @void_reason.setter
-    def void_reason(self, value):
+    def void_reason(self, value: str) -> None:
         super(Transaction, self).set_slot_value('void-reason', value, 'string')
 
     @property
-    def associated_uri(self):
+    def associated_uri(self) -> str:
         """
         URI associated with the transaction.
 
@@ -214,37 +245,37 @@ class Transaction(GuidObject, SlottableObject):
         return super(Transaction, self).get_slot_value('assoc_uri')
 
     @associated_uri.setter
-    def associated_uri(self, value):
+    def associated_uri(self, value: str) -> None:
         super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
 
 class Split(GuidObject):
     """Represents a split in GnuCash."""
 
-    def __init__(self, account, amount, reconciled_state='n'):
+    def __init__(self, account: Optional[Account], amount: Optional[Decimal], reconciled_state: str = 'n'):
         super(Split, self).__init__()
-        self.reconciled_state = reconciled_state
-        self.amount = amount
-        self.account = account
-        self.action = None
-        self.memo = None
-        self.quantity_denominator = '100'
+        self.reconciled_state: str = reconciled_state
+        self.amount: Optional[Decimal] = amount
+        self.account: Optional[Account] = account
+        self.action: Optional[str] = None
+        self.memo: Optional[str] = None
+        self.quantity_denominator: str = '100'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '{} - {}'.format(self.account, str(self.amount))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
     @property
-    def as_xml(self):
+    def as_xml(self) -> ElementTree.Element:
         """
         Returns the current split as GnuCash-compatible XML.
 
         :return: Current split as XML
         :rtype: xml.etree.ElementTree.Element
         """
-        split_node = ElementTree.Element('trn:split')
+        split_node: ElementTree.Element = ElementTree.Element('trn:split')
         ElementTree.SubElement(split_node, 'split:id', {'type': 'guid'}).text = self.guid
 
         if self.memo:
@@ -253,14 +284,17 @@ class Split(GuidObject):
             ElementTree.SubElement(split_node, 'split:action').text = self.action
 
         ElementTree.SubElement(split_node, 'split:reconciled-state').text = self.reconciled_state
-        ElementTree.SubElement(split_node, 'split:value').text = str(int(self.amount * 100)) + '/100'
-        ElementTree.SubElement(split_node, 'split:quantity').text = '/'.join([
-            str(int(self.amount * 100)), self.quantity_denominator])
-        ElementTree.SubElement(split_node, 'split:account', {'type': 'guid'}).text = self.account.guid
+        if self.amount is not None:
+            ElementTree.SubElement(split_node, 'split:value').text = str(int(self.amount * 100)) + '/100'
+            ElementTree.SubElement(split_node, 'split:quantity').text = '/'.join([
+                str(int(self.amount * 100)), self.quantity_denominator])
+        if self.account:
+            ElementTree.SubElement(split_node, 'split:account', {'type': 'guid'}).text = self.account.guid
         return split_node
 
     @classmethod
-    def from_xml(cls, split_node, namespaces, account_objects):
+    def from_xml(cls, split_node: ElementTree.Element, namespaces: Dict[str, str],
+                 account_objects: List[Account]) -> 'Split':
         """
         Creates an Split object from the GnuCash XML.
 
@@ -273,27 +307,38 @@ class Split(GuidObject):
         :return: Split object from XML
         :rtype: Split
         """
-        account = split_node.find('split:account', namespaces).text
+        account_node: Optional[ElementTree.Element] = split_node.find('split:account', namespaces)
+        if account_node is None or not account_node.text:
+            raise ValueError('Invalid or missing split:account node')
+        account: str = account_node.text
 
-        value = split_node.find('split:value', namespaces).text
-        value = Decimal(value[:value.find('/')]) / Decimal(100)
+        value_node: Optional[ElementTree.Element] = split_node.find('split:value', namespaces)
+        if value_node is None or not value_node.text:
+            raise ValueError('Invalid or missing split:value node')
+        value_str: str = value_node.text
+        value: Decimal = Decimal(value_str[:value_str.find('/')]) / Decimal(100)
 
+        reconciled_state_node: Optional[ElementTree.Element] = split_node.find('split:reconciled-state', namespaces)
+        if reconciled_state_node is None or not reconciled_state_node.text:
+            raise ValueError('Invalid or missing split:reconciled-state node')
         new_split = cls([x for x in account_objects if x.guid == account][0],
-                        value, split_node.find('split:reconciled-state', namespaces).text)
-        new_split.guid = split_node.find('split:id', namespaces).text
+                        value, reconciled_state_node.text)
+        guid_node = split_node.find('split:id', namespaces)
+        if guid_node is not None and guid_node.text:
+            new_split.guid = guid_node.text
 
-        split_memo = split_node.find('split:memo', namespaces)
+        split_memo: Optional[ElementTree.Element] = split_node.find('split:memo', namespaces)
         if split_memo is not None:
             new_split.memo = split_memo.text
 
-        split_action = split_node.find('split:action', namespaces)
+        split_action: Optional[ElementTree.Element] = split_node.find('split:action', namespaces)
         if split_action is not None:
             new_split.action = split_action.text
 
         quantity_node = split_node.find('split:quantity', namespaces)
         if quantity_node is not None:
             quantity = quantity_node.text
-            if '/' in quantity:
+            if quantity is not None and '/' in quantity:
                 new_split.quantity_denominator = quantity.split('/')[1]
 
         return new_split
@@ -302,20 +347,24 @@ class Split(GuidObject):
 class TransactionManager:
     """Class used to add/remove transactions, maintaining a chronological order based on transaction posted date."""
 
-    def __init__(self):
-        self.transactions = list()
-        self.disable_sort = False
+    def __init__(self) -> None:
+        self.transactions: List[Transaction] = list()
+        self.disable_sort: bool = False
 
-    def add(self, new_transaction):
+    def add(self, new_transaction: Transaction) -> None:
         """
         Adds a transaction to the transaction manager.
 
         :param new_transaction: Transaction to add
         :type new_transaction: Transaction
         """
-        if not self.disable_sort:
+        if new_transaction.date_posted is None or self.disable_sort:
+            self.transactions.append(new_transaction)
+        elif not self.disable_sort:
             # Inserting transactions in order
             for index, transaction in enumerate(self.transactions):
+                if not transaction.date_posted:
+                    continue
                 if transaction.date_posted > new_transaction.date_posted:
                     self.transactions.insert(index, new_transaction)
                     break
@@ -324,10 +373,8 @@ class TransactionManager:
                     break
             else:
                 self.transactions.append(new_transaction)
-        else:
-            self.transactions.append(new_transaction)
 
-    def delete(self, transaction):
+    def delete(self, transaction: Transaction) -> None:
         """
         Removes a transaction from the transaction manager.
 
@@ -340,7 +387,7 @@ class TransactionManager:
                 del self.transactions[index]
                 break
 
-    def get_transactions(self, account=None):
+    def get_transactions(self, account: Optional[Account] = None) -> Iterator[Transaction]:
         """
         Generator function that gets transactions based on a from account and/or to account for the transaction.
 
@@ -353,18 +400,26 @@ class TransactionManager:
             if account is None or account in list(map(lambda x: x.account, transaction.splits)):
                 yield transaction
 
-    def get_account_starting_balance(self, account):
+    def get_account_starting_balance(self, account: Account) -> Decimal:
         """
-        Retrieves the starting balance for the provided account given the list of transactions in the manager.
+        Retrieves the starting balance for the current account, given the list of transactions.
 
-        :param account: Account to get the starting balance for
-        :type account: Account
-        :return: Account starting balance
+        :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
+        :return: First transaction amount if the account has transactions, otherwise 0.
         :rtype: decimal.Decimal
         """
-        return account.get_starting_balance(list(self.get_transactions(account)))
+        account_transactions: List[Transaction] = [x for x in self.transactions
+                                                   if account in [y.account for y in x.splits
+                                                                  if y.amount is not None and y.amount >= 0]]
+        amount: Decimal = Decimal(0)
+        if account_transactions:
+            first_transaction: Transaction = account_transactions[0]
+            amount = next(filter(lambda x: x.account == account and x.amount is not None and x.amount >= 0,
+                                 first_transaction.splits)).amount or Decimal(0)
+        return amount
 
-    def get_account_ending_balance(self, account):
+    def get_account_ending_balance(self, account: Account) -> Decimal:
         """
         Retrieves the ending balance for the provided account given the list of transactions in the manager.
 
@@ -373,81 +428,117 @@ class TransactionManager:
         :return: Account starting balance
         :rtype: decimal.Decimal
         """
-        return account.get_ending_balance(list(self.get_transactions(account)))
+        return self.get_balance_at_date(account)
 
-    def minimum_balance_past_date(self, account, date):
+    def minimum_balance_past_date(self, account: Account,
+                                  date: datetime) -> Tuple[Optional[Decimal], Optional[datetime]]:
         """
-        Retrieves the minimum balance past a certain date for the given account.
+        Gets the minimum balance for the account after a certain date, given the list of transactions.
 
-        :param account: Account to get the minimum balance for
-        :type account: Account
-        :param date: datetime object representing the date you want to find the minimum balance for.
-        :type date: datetime.datetime
+        :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
+        :param start_date: datetime object representing the date you want to find the minimum balance for.
+        :type start_date: datetime.datetime
         :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
         :rtype: tuple
         """
-        return account.minimum_balance_past_date(self, date)
+        minimum_balance: Optional[Decimal] = None
+        minimum_balance_date: Optional[datetime] = None
+        iterator_date: datetime = date
+        end_date: Optional[datetime] = max(map(lambda x: x.date_posted, self.transactions))
+        if end_date is None:
+            return None, None
+        while iterator_date < end_date:
+            iterator_date += timedelta(days=1)
+            current_balance: Decimal = self.get_balance_at_date(account, iterator_date)
+            if minimum_balance is None or current_balance < minimum_balance:
+                minimum_balance, minimum_balance_date = current_balance, iterator_date
+        if minimum_balance_date and minimum_balance_date > end_date:
+            minimum_balance_date = end_date
+        return minimum_balance, minimum_balance_date
 
-    def get_balance_at_date(self, account, date):
+    def get_balance_at_date(self, account: Account, date: Optional[datetime] = None) -> Decimal:
         """
-        Retrieves the account balance for the specified account at a certain date.
+        Retrieves the account balance for the current account at a certain date, given the list of transactions.
 
         If the provided date is None, it will retrieve the ending balance.
 
-        :param account: List of transactions or TransactionManager
-        :type account: Account
+        :param transactions: List of transactions or TransactionManager
+        :type transactions: list[Transaction] or TransactionManager
         :param date: Last date to consider when determining the account balance.
         :type date: datetime.datetime
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
-        :rtype: decimal.Decimal or int
+        :rtype: decimal.Decimal
         """
-        return account.get_balance_at_date(self, date)
+        balance: Decimal = Decimal(0)
+        applicable_transactions: List[Transaction] = []
+        for transaction in self.transactions:
+            transaction_accounts = list(map(lambda y: y.account, transaction.splits))
+            if date is not None and account in transaction_accounts and transaction.date_posted is not None and \
+                    transaction.date_posted <= date:
+                applicable_transactions.append(transaction)
+            elif date is None and account in transaction_accounts:
+                applicable_transactions.append(transaction)
+
+        for transaction in applicable_transactions:
+            if date is None or (transaction.date_posted is not None and transaction.date_posted <= date):
+                applicable_split: Split = next(filter(lambda x: x.account == account, transaction.splits))
+                amount: Decimal = applicable_split.amount or Decimal(0)
+                if account.type == AccountType.CREDIT:
+                    amount = amount * -1
+                balance += amount
+        return balance
 
     # Making TransactionManager iterable
-    def __getitem__(self, item):
+    def __getitem__(self, item: int) -> Transaction:
         if item > len(self):
             raise IndexError
         return self.transactions[item]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.transactions)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, TransactionManager):
+            return NotImplemented
         for my_transaction, other_transaction in zip(self.transactions, other.transactions):
             if my_transaction != other_transaction:
                 return False
         return True
 
+    def __iter__(self) -> Iterator[Transaction]:
+        yield from self.transactions
+
 
 class ScheduledTransaction(GuidObject):
     """Class that represents a scheduled transaction in Gnucash."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(ScheduledTransaction, self).__init__()
-        self.name = None
-        self.enabled = False
-        self.auto_create = False
-        self.auto_create_notify = False
-        self.advance_create_days = -1
-        self.advance_remind_days = -1
-        self.instance_count = 0
-        self.start_date = None
-        self.last_date = None
-        self.end_date = None
-        self.template_account = None
-        self.recurrence_multiplier = 0
-        self.recurrence_period = None
-        self.recurrence_start = None
+        self.name: Optional[str] = None
+        self.enabled: Optional[bool] = False
+        self.auto_create: Optional[bool] = False
+        self.auto_create_notify: Optional[bool] = False
+        self.advance_create_days: Optional[int] = -1
+        self.advance_remind_days: Optional[int] = -1
+        self.instance_count: Optional[int] = 0
+        self.start_date: Optional[datetime] = None
+        self.last_date: Optional[datetime] = None
+        self.end_date: Optional[datetime] = None
+        self.template_account: Optional[Account] = None
+        self.recurrence_multiplier: Optional[int] = 0
+        self.recurrence_period: Optional[str] = None
+        self.recurrence_start: Optional[datetime] = None
 
     @property
-    def as_xml(self):
+    def as_xml(self) -> ElementTree.Element:
         """
         Returns the current scheduled transaction as GnuCash-compatible XML.
 
         :return: Current scheduled transaction as XML
         :rtype: xml.etree.ElementTree.Element
         """
-        xml_node = ElementTree.Element('gnc:schedxaction', attrib={'version': '2.0.0'})
+        xml_node: ElementTree.Element = ElementTree.Element('gnc:schedxaction', attrib={'version': '2.0.0'})
         if self.guid:
             ElementTree.SubElement(xml_node, 'sx:id', attrib={'type': 'guid'}).text = self.guid
         if self.name:
@@ -486,7 +577,8 @@ class ScheduledTransaction(GuidObject):
         return xml_node
 
     @classmethod
-    def from_xml(cls, xml_obj, namespaces, template_account_root):
+    def from_xml(cls, xml_obj: ElementTree.Element, namespaces: Dict[str, str],
+                 template_account_root: Optional[Account]) -> 'ScheduledTransaction':
         """
         Creates a ScheduledTransaction object from the GnuCash XML.
 
@@ -499,8 +591,10 @@ class ScheduledTransaction(GuidObject):
         :return: ScheduledTransaction object from XML
         :rtype: ScheduledTransaction
         """
-        new_obj = cls()
-        new_obj.guid = cls.read_xml_child_text(xml_obj, 'sx:id', namespaces)
+        new_obj: 'ScheduledTransaction' = cls()
+        sx_transaction_guid: Optional[str] = cls.read_xml_child_text(xml_obj, 'sx:id', namespaces)
+        if sx_transaction_guid is not None and sx_transaction_guid:
+            new_obj.guid = sx_transaction_guid
         new_obj.name = cls.read_xml_child_text(xml_obj, 'sx:name', namespaces)
         new_obj.enabled = cls.read_xml_child_boolean(xml_obj, 'sx:enabled', namespaces)
         new_obj.auto_create = cls.read_xml_child_boolean(xml_obj, 'sx:autoCreate', namespaces)
@@ -512,11 +606,11 @@ class ScheduledTransaction(GuidObject):
         new_obj.last_date = cls.read_xml_child_date(xml_obj, 'sx:last', namespaces)
         new_obj.end_date = cls.read_xml_child_date(xml_obj, 'sx:end', namespaces)
 
-        template_account_node = xml_obj.find('sx:templ-acct', namespaces)
-        if template_account_node is not None:
+        template_account_node: Optional[ElementTree.Element] = xml_obj.find('sx:templ-acct', namespaces)
+        if template_account_node is not None and template_account_node.text and template_account_root is not None:
             new_obj.template_account = template_account_root.get_subaccount_by_id(template_account_node.text)
 
-        schedule_node = xml_obj.find('sx:schedule', namespaces)
+        schedule_node: Optional[ElementTree.Element] = xml_obj.find('sx:schedule', namespaces)
         if schedule_node is not None:
             recurrence_node = schedule_node.find('gnc:recurrence', namespaces)
             if recurrence_node is not None:
@@ -531,7 +625,8 @@ class ScheduledTransaction(GuidObject):
         return new_obj
 
     @classmethod
-    def read_xml_child_text(cls, xml_object, tag_name, namespaces):
+    def read_xml_child_text(cls, xml_object: ElementTree.Element, tag_name: str,
+                            namespaces: Dict[str, str]) -> Optional[str]:
         """
         Reads the text from a specific child XML element.
 
@@ -544,13 +639,14 @@ class ScheduledTransaction(GuidObject):
         :return: Child node's text
         :rtype: str
         """
-        target_node = xml_object.find(tag_name, namespaces)
+        target_node: Optional[ElementTree.Element] = xml_object.find(tag_name, namespaces)
         if target_node is not None:
             return target_node.text
         return None
 
     @classmethod
-    def read_xml_child_boolean(cls, xml_object, tag_name, namespaces):
+    def read_xml_child_boolean(cls, xml_object: ElementTree.Element, tag_name: str,
+                               namespaces: Dict[str, str]) -> Optional[bool]:
         """
         Reads the text from a specific child XML element and returns a Boolean if the text is "Y" or "y".
 
@@ -563,7 +659,7 @@ class ScheduledTransaction(GuidObject):
         :return: True if child node's text is "Y" or "Y", otherwise False.
         :rtype: bool
         """
-        node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
+        node_text: Optional[str] = cls.read_xml_child_text(xml_object, tag_name, namespaces)
         if node_text and node_text.lower() == 'y':
             return True
         if node_text:
@@ -571,7 +667,8 @@ class ScheduledTransaction(GuidObject):
         return None
 
     @classmethod
-    def read_xml_child_int(cls, xml_object, tag_name, namespaces):
+    def read_xml_child_int(cls, xml_object: ElementTree.Element, tag_name: str,
+                           namespaces: Dict[str, str]) -> Optional[int]:
         """
         Reads the text from a specific child XML element and returns its text as an integer value.
 
@@ -584,13 +681,14 @@ class ScheduledTransaction(GuidObject):
         :return: Child's text as an integer value
         :rtype: int
         """
-        node_text = cls.read_xml_child_text(xml_object, tag_name, namespaces)
+        node_text: Optional[str] = cls.read_xml_child_text(xml_object, tag_name, namespaces)
         if node_text:
             return int(node_text)
         return None
 
     @classmethod
-    def read_xml_child_date(cls, xml_object, tag_name, namespaces):
+    def read_xml_child_date(cls, xml_object: ElementTree.Element, tag_name: str,
+                            namespaces: Dict[str, str]) -> Optional[datetime]:
         """
         Reads the text from a specific child XML element and returns its inner gdate text as a datetime.
 
@@ -603,11 +701,11 @@ class ScheduledTransaction(GuidObject):
         :return: Child's gdate's text as datetime
         :rtype: datetime.datetime
         """
-        target_node = xml_object.find(tag_name, namespaces)
+        target_node: Optional[ElementTree.Element] = xml_object.find(tag_name, namespaces)
         if target_node is None:
             return None
 
-        date_node = target_node.find('gdate', namespaces)
+        date_node: Optional[ElementTree.Element] = target_node.find('gdate', namespaces)
         if date_node is None:
             return None
 
@@ -617,14 +715,15 @@ class ScheduledTransaction(GuidObject):
 class SimpleTransaction(Transaction):
     """Class used to simplify creating and manipulating Transactions that only have 2 splits."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(SimpleTransaction, self).__init__()
-        self.from_split = Split(None, None)
-        self.to_split = Split(None, None)
-        self.splits = [self.from_split, self.to_split]
+        self.from_split: Split = Split(None, None)
+        self.to_split: Split = Split(None, None)
+        self.splits: List[Split] = [self.from_split, self.to_split]
 
     @classmethod
-    def from_xml(cls, transaction_node, namespaces, account_objects):
+    def from_xml(cls, transaction_node: ElementTree.Element, namespaces: Dict[str, str],
+                 account_objects: List[Account]) -> 'SimpleTransaction':
         """
         Creates a SimpleTransaction object from the GnuCash XML.
 
@@ -637,8 +736,10 @@ class SimpleTransaction(Transaction):
         :return: Transaction object from XML
         :rtype: Transaction
         """
-        # pylint: disable=E1101
-        new_object = super(SimpleTransaction, cls).from_xml(transaction_node, namespaces, account_objects)
+        transaction: Transaction = super(SimpleTransaction, cls).from_xml(transaction_node, namespaces, account_objects)
+        new_object: 'SimpleTransaction' = cls()
+        new_object.__dict__.update(transaction.__dict__)
+
         # Remove the two splits created by the SimpleTransaction constructor
         new_object.splits = list(filter(lambda x: x.account is not None and x.amount is not None,
                                         new_object.splits))
@@ -647,7 +748,7 @@ class SimpleTransaction(Transaction):
                  'Using the from_account, to_account, and amount SimpleTransaction fields will result in undesirable ' +
                  'behavior.')
 
-        from_split = list(filter(lambda x: x.amount < 0, new_object.splits))
+        from_split = list(filter(lambda x: x.amount is not None and x.amount < 0, new_object.splits))
         if from_split:
             new_object.from_split = from_split[0]
         elif new_object.splits:
@@ -657,7 +758,7 @@ class SimpleTransaction(Transaction):
         else:
             new_object.splits.append(new_object.from_split)
 
-        to_split = list(filter(lambda x: x.amount > 0, new_object.splits))
+        to_split = list(filter(lambda x: x.amount is not None and x.amount > 0, new_object.splits))
         if to_split:
             new_object.to_split = to_split[0]
         elif new_object.splits:
@@ -670,7 +771,7 @@ class SimpleTransaction(Transaction):
         return new_object
 
     @property
-    def from_account(self):
+    def from_account(self) -> Optional[Account]:
         """
         Account which the transaction transfers funds from.
 
@@ -680,11 +781,11 @@ class SimpleTransaction(Transaction):
         return self.from_split.account
 
     @from_account.setter
-    def from_account(self, value):
+    def from_account(self, value: 'Account') -> None:
         self.from_split.account = value
 
     @property
-    def to_account(self):
+    def to_account(self) -> Optional[Account]:
         """
         Account which the transaction transfers funds to.
 
@@ -694,11 +795,11 @@ class SimpleTransaction(Transaction):
         return self.to_split.account
 
     @to_account.setter
-    def to_account(self, value):
+    def to_account(self, value: Account) -> None:
         self.to_split.account = value
 
     @property
-    def amount(self):
+    def amount(self) -> Optional[Decimal]:
         """
         Dollar amount for funds transferred.
 
@@ -708,6 +809,6 @@ class SimpleTransaction(Transaction):
         return self.to_split.amount
 
     @amount.setter
-    def amount(self, value):
+    def amount(self, value: Decimal) -> None:
         self.from_split.amount = value * -1
         self.to_split.amount = value
