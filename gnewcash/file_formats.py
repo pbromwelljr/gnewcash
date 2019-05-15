@@ -8,6 +8,12 @@ Module containing classes to indicate different file formats and their required 
 import abc
 import enum
 
+from sqlite3 import Cursor
+
+from typing import Any, Dict, List, Optional, Tuple
+
+from xml.etree import ElementTree
+
 
 class FileFormat(enum.Enum):
     """Enumeration class for supported file formats."""
@@ -30,7 +36,7 @@ class GnuCashXMLObject(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def from_xml(cls, node, namespaces, *args, **kwargs):
+    def from_xml(cls, node: ElementTree.Element, namespaces: Dict[str, str], *args: Any, **kwargs: Any) -> Any:
         """
         Abstract method for creating an object from an XML node.
 
@@ -43,7 +49,7 @@ class GnuCashXMLObject(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def as_xml(self):
+    def as_xml(self) -> ElementTree.Element:
         """Abstract method for converting an object to an XML node."""
         raise NotImplementedError
 
@@ -53,7 +59,7 @@ class GnuCashSQLiteObject(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def from_sqlite(cls, sqlite_cursor):
+    def from_sqlite(cls, sqlite_cursor: Cursor) -> Any:
         """
         Abstract method for creating an object from a SQLite database.
 
@@ -63,7 +69,7 @@ class GnuCashSQLiteObject(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def to_sqlite(self, sqlite_cursor):
+    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         """
         Abstract method for writing an object to a SQLite database.
 
@@ -73,7 +79,8 @@ class GnuCashSQLiteObject(abc.ABC):
         raise NotImplementedError
 
     @classmethod
-    def get_sqlite_table_data(cls, sqlite_cursor, table_name, where_condition=None, where_parameters=None):
+    def get_sqlite_table_data(cls, sqlite_cursor: Cursor, table_name: str, where_condition: Optional[str] = None,
+                              where_parameters: Optional[Tuple[Any]] = None) -> List[Dict[str, Any]]:
         """
         Helper method for retrieving data from a SQLite table.
 
@@ -86,7 +93,7 @@ class GnuCashSQLiteObject(abc.ABC):
         :param where_parameters: SQL WHERE parameters for the query (if any)
         :type where_parameters: tuple
         :return: List of dictionaries (keys being the column names) for each row in the SQLite table
-        :rtype: dict[str, Any]
+        :rtype: list[dict[str, Any]]
         """
         sql = 'SELECT * FROM {}'.format(table_name)
         if where_condition is not None:
@@ -103,7 +110,7 @@ class GnuCashSQLiteObject(abc.ABC):
         return rows
 
     @classmethod
-    def get_db_action(cls, sqlite_cursor, table_name, column_name, row_identifier):
+    def get_db_action(cls, sqlite_cursor: Cursor, table_name: str, column_name: str, row_identifier: Any) -> DBAction:
         """
         Helper method for determining the appropriate operation on a SQL table.
 

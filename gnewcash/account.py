@@ -12,6 +12,7 @@ from decimal import Decimal, ROUND_UP
 from xml.etree import ElementTree
 from collections import namedtuple
 from typing import List, Tuple, Dict, Optional, Union, Pattern
+from sqlite3 import Cursor
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
@@ -298,7 +299,7 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         super(Account, self).set_slot_value_bool('placeholder', value, 'string')
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, account_id):
+    def from_sqlite(cls, sqlite_cursor: Cursor, account_id: str) -> 'Account':
         """
         Creates an Account object from the GnuCash SQLite database.
 
@@ -309,10 +310,10 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         :return: Account object from SQLite
         :rtype: Account
         """
-        account_data = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
-        if not account_data:
+        account_data_items = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
+        if not account_data_items:
             raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))
-        account_data, = account_data
+        account_data, = account_data_items
         new_account = cls()
         new_account.guid = account_data['guid']
         new_account.name = account_data['name']
@@ -334,10 +335,10 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
 
         return new_account
 
-    def to_sqlite(self, sqlite_handle):
+    def to_sqlite(self, sqlite_handle: Cursor) -> None:
         raise NotImplementedError
 
-    def get_account_guids(self, account_guids=None):
+    def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
         """
         Gets a flat list of account GUIDs under the current account.
 

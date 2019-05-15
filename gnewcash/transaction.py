@@ -10,6 +10,7 @@ from decimal import Decimal
 from typing import Dict, Iterator, List, Optional, Tuple
 from xml.etree import ElementTree
 from warnings import warn
+from sqlite3 import Cursor
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -250,7 +251,8 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
         super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, root_account, template_root_account):
+    def from_sqlite(cls, sqlite_cursor: Cursor, root_account: Account,
+                    template_root_account: Account) -> List['Transaction']:
         """
         Creates Transaction objects from the GnuCash XML.
 
@@ -279,7 +281,7 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
             new_transactions.append(new_transaction)
         return new_transactions
 
-    def to_sqlite(self, sqlite_cursor):
+    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         raise NotImplementedError
 
 
@@ -381,7 +383,8 @@ class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return new_split
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, transaction_guid, root_account, template_root_account):
+    def from_sqlite(cls, sqlite_cursor: Cursor, transaction_guid: str, root_account: Account,
+                    template_root_account: Account) -> List['Split']:
         """
         Creates Split objects from the GnuCash SQLite database.
 
@@ -413,7 +416,7 @@ class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_splits.append(new_split)
         return new_splits
 
-    def to_sqlite(self, sqlite_cursor):
+    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         raise NotImplementedError
 
 
@@ -788,7 +791,7 @@ class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return datetime.strptime(date_node.text, '%Y-%m-%d') if date_node.text else None
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, template_root_account):
+    def from_sqlite(cls, sqlite_cursor: Cursor, template_root_account: Account) -> List['ScheduledTransaction']:
         """
         Creates ScheduledTransaction objects from the GnuCash SQLite database.
 
@@ -831,7 +834,7 @@ class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_scheduled_transactions.append(new_scheduled_transaction)
         return new_scheduled_transactions
 
-    def to_sqlite(self, sqlite_cursor):
+    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         raise NotImplementedError
 
 

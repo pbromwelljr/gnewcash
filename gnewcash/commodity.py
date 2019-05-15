@@ -5,8 +5,9 @@ Module containing classes that read, manipulate, and write commodities.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
+from sqlite3 import Cursor
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, List
 
 from xml.etree import ElementTree
 
@@ -113,7 +114,7 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return commodity_node
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, commodity_guid=None):
+    def from_sqlite(cls, sqlite_cursor: Cursor, commodity_guid: str = None) -> Union['Commodity', List['Commodity']]:
         """
         Creates a Commodity object from the GnuCash SQLite database.
 

@@ -77,7 +77,7 @@ class GnuCashFile:
         return str(self)
 
     @classmethod
-    def detect_file_format(cls, source_file):
+    def detect_file_format(cls, source_file: str) -> FileFormat:
         """
         Detects the file format of the provided source file.
 
@@ -98,7 +98,7 @@ class GnuCashFile:
 
     @classmethod
     def read_file(cls, source_file: str, sort_transactions: bool = True,
-                  transaction_class: Type = None, file_format=None) -> 'GnuCashFile':
+                  transaction_class: Type = None, file_format: Optional[FileFormat] = None) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -149,7 +149,7 @@ class GnuCashFile:
         return built_file
 
     def build_file(self, target_file: str, prettify_xml: bool = False, use_gzip: bool = False,
-                   file_format=None) -> None:
+                   file_format: Optional[FileFormat] = None) -> None:
         """
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk.
 
@@ -203,7 +203,7 @@ class GnuCashFile:
             raise ValueError('Invalid file format type: {}'.format(file_format))
 
     @classmethod
-    def create_sqlite_schema(cls, sqlite_cursor):
+    def create_sqlite_schema(cls, sqlite_cursor: sqlite3.Cursor) -> None:
         """
         Creates the SQLite schema using the provided SQLite cursor.
 
@@ -435,7 +435,8 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
         return str(self)
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, sort_transactions=True, transaction_class=None):
+    def from_sqlite(cls, sqlite_cursor: sqlite3.Cursor, sort_transactions: bool = True,
+                    transaction_class: Optional[Type] = None) -> List['Book']:
         """
         Creates Book objects from the GnuCash SQLite database.
 
@@ -488,7 +489,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_books.append(new_book)
         return new_books
 
-    def to_sqlite(self, sqlite_handle):
+    def to_sqlite(self, sqlite_handle: sqlite3.Cursor) -> None:
         book_db_action = self.get_db_action(sqlite_handle, 'books', 'guid', self.guid)
         if book_db_action == DBAction.INSERT:
             sqlite_handle.execute('INSERT INTO books (guid, root_account_guid, root_template_guid) VALUES (?, ?, ?)',
@@ -637,7 +638,7 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
         return new_obj
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor):
+    def from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> List['Budget']:
         """
         Creates Budget objects from the GnuCash SQLite database.
 
@@ -667,7 +668,7 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
             new_budgets.append(new_budget)
         return new_budgets
 
-    def to_sqlite(self, sqlite_cursor):
+    def to_sqlite(self, sqlite_cursor: sqlite3.Cursor) -> None:
         raise NotImplementedError
 
 

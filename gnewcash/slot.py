@@ -7,6 +7,7 @@ Module containing classes that read, manipulate, and write slots.
 """
 from datetime import datetime
 from decimal import Decimal
+from sqlite3 import Cursor
 from typing import Any, Dict, Optional, List, Union
 from xml.etree import ElementTree
 
@@ -105,7 +106,7 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
         return cls(key, value, slot_type)
 
     @classmethod
-    def from_sqlite(cls, sqlite_cursor, object_id):
+    def from_sqlite(cls, sqlite_cursor: Cursor, object_id: str) -> List['Slot']:
         """
         Creates Slot objects from the GnuCash SQLite database.
 
@@ -133,7 +134,7 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
             new_slots.append(new_slot)
         return new_slots
 
-    def to_sqlite(self, sqlite_cursor):
+    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         # slot_action = self.get_db_action(sqlite_cursor, 'slots', )
         # TODO: Slots don't have GUIDs. Need to store the DB ID in the object.
         raise NotImplementedError
