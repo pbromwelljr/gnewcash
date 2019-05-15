@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -158,17 +160,19 @@
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">listdir</span><span class="p">,</span> <span class="n">remove</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Pattern</span>
 
-<div class="viewcode-block" id="delete_log_files"><a class="viewcode-back" href="../utils.html#utils.delete_log_files">[docs]</a><span class="k">def</span> <span class="nf">delete_log_files</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="delete_log_files"><a class="viewcode-back" href="../utils.html#utils.delete_log_files">[docs]</a><span class="k">def</span> <span class="nf">delete_log_files</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deletes log files at the specified directory.</span>
 
 <span class="sd">    :param gnucash_file_path: Directory to delete log files</span>
 <span class="sd">    :type gnucash_file_path: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">backup_file_format</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*[0-9]</span><span class="si">{14}</span><span class="s1">\.gnucash$&#39;</span><span class="p">)</span>
+    <span class="n">backup_file_format</span><span class="p">:</span> <span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*[0-9]</span><span class="si">{14}</span><span class="s1">\.gnucash$&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">,</span> <span class="n">x</span><span class="p">))]:</span>
-        <span class="n">full_file_path</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="n">full_file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">((</span><span class="s1">&#39;.gnucash&#39;</span> <span class="ow">in</span> <span class="n">file</span> <span class="ow">and</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.log&#39;</span><span class="p">))</span> <span class="ow">or</span> <span class="n">backup_file_format</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file</span><span class="p">))</span> \
                 <span class="ow">and</span> <span class="n">exists</span><span class="p">(</span><span class="n">full_file_path</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -178,7 +182,7 @@
                 <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="safe_iso_date_parsing"><a class="viewcode-back" href="../utils.html#utils.safe_iso_date_parsing">[docs]</a><span class="k">def</span> <span class="nf">safe_iso_date_parsing</span><span class="p">(</span><span class="n">date_string</span><span class="p">):</span>
+<div class="viewcode-block" id="safe_iso_date_parsing"><a class="viewcode-back" href="../utils.html#utils.safe_iso_date_parsing">[docs]</a><span class="k">def</span> <span class="nf">safe_iso_date_parsing</span><span class="p">(</span><span class="n">date_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempts to parse a date with timezone information. If it fails, it tries to parse without timezone information.</span>
 
@@ -194,7 +198,7 @@
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_string</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="safe_iso_date_formatting"><a class="viewcode-back" href="../utils.html#utils.safe_iso_date_formatting">[docs]</a><span class="k">def</span> <span class="nf">safe_iso_date_formatting</span><span class="p">(</span><span class="n">date_obj</span><span class="p">):</span>
+<div class="viewcode-block" id="safe_iso_date_formatting"><a class="viewcode-back" href="../utils.html#utils.safe_iso_date_formatting">[docs]</a><span class="k">def</span> <span class="nf">safe_iso_date_formatting</span><span class="p">(</span><span class="n">date_obj</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempts for format a date with timezone information. If it fails, it tries to format without timezone information.</span>
 
@@ -236,26 +240,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

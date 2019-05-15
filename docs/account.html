@@ -276,49 +276,6 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="account.Account.get_balance_at_date">
-<code class="descname">get_balance_at_date</code><span class="sig-paren">(</span><em>transactions: gnewcash.transaction.TransactionManager</em>, <em>date: datetime.datetime = None</em><span class="sig-paren">)</span> &#x2192; decimal.Decimal<a class="reference internal" href="_modules/account.html#Account.get_balance_at_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_balance_at_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the account balance for the current account at a certain date, given the list of transactions.</p>
-<p>If the provided date is None, it will retrieve the ending balance.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
-<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – Last date to consider when determining the account balance.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="account.Account.get_ending_balance">
-<code class="descname">get_ending_balance</code><span class="sig-paren">(</span><em>transactions: gnewcash.transaction.TransactionManager</em><span class="sig-paren">)</span> &#x2192; decimal.Decimal<a class="reference internal" href="_modules/account.html#Account.get_ending_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_ending_balance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the ending balance for the current account, given the list of transactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Ending balance if the account has transactions, otherwise 0.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="account.Account.get_parent_commodity">
 <code class="descname">get_parent_commodity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[gnewcash.commodity.Commodity]<a class="reference internal" href="_modules/account.html#Account.get_parent_commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_parent_commodity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the commodity for the account.</p>
@@ -330,24 +287,6 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Commodity object, or None if no commodity was found in the ancestry chain.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">NoneType|Commodity</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="account.Account.get_starting_balance">
-<code class="descname">get_starting_balance</code><span class="sig-paren">(</span><em>transactions: gnewcash.transaction.TransactionManager</em><span class="sig-paren">)</span> &#x2192; decimal.Decimal<a class="reference internal" href="_modules/account.html#Account.get_starting_balance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.get_starting_balance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the starting balance for the current account, given the list of transactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">First transaction amount if the account has transactions, otherwise 0.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.7)">decimal.Decimal</a></td>
 </tr>
 </tbody>
 </table>
@@ -382,30 +321,6 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if account is marked hidden, otherwise False.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="account.Account.minimum_balance_past_date">
-<code class="descname">minimum_balance_past_date</code><span class="sig-paren">(</span><em>transactions: gnewcash.transaction.TransactionManager</em>, <em>start_date: datetime.datetime</em><span class="sig-paren">)</span> &#x2192; Tuple[Optional[decimal.Decimal], Optional[datetime.datetime]]<a class="reference internal" href="_modules/account.html#Account.minimum_balance_past_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.Account.minimum_balance_past_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the minimum balance for the account after a certain date, given the list of transactions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="transaction.html#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
-<li><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tuple containing the minimum balance (element 0) and the date it’s at that balance (element 1)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</td>
 </tr>
 </tbody>
 </table>
@@ -463,7 +378,7 @@
 
 <dl class="class">
 <dt id="account.AccountType">
-<em class="property">class </em><code class="descclassname">account.</code><code class="descname">AccountType</code><a class="reference internal" href="_modules/account.html#AccountType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.AccountType" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">account.</code><code class="descname">AccountType</code><a class="reference internal" href="_modules/gnewcash/enums.html#AccountType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#account.AccountType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enumeration class to indicate the types of accounts available in GnuCash.</p>
 </dd></dl>
 
