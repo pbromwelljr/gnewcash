@@ -7,7 +7,7 @@ Module containing classes that read, manipulate, and write accounts.
 """
 import abc
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal, ROUND_UP
 from xml.etree import ElementTree
 from collections import namedtuple
@@ -24,7 +24,7 @@ LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'int
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])
 
 
-class Account(GuidObject, SlottableObject):
+class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
     """Represents an account in GnuCash."""
 
     def __init__(self) -> None:

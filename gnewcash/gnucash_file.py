@@ -22,7 +22,7 @@ from gnewcash.commodity import Commodity
 from gnewcash.file_formats import DBAction, FileFormat, GnuCashSQLiteObject, GnuCashXMLObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction
+from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split
 
 
 class GnuCashFile:
@@ -98,7 +98,7 @@ class GnuCashFile:
 
     @classmethod
     def read_file(cls, source_file: str, sort_transactions: bool = True,
-                  transaction_class: Type = None) -> 'GnuCashFile':
+                  transaction_class: Type = None, file_format=None) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -148,7 +148,8 @@ class GnuCashFile:
 
         return built_file
 
-    def build_file(self, target_file: str, prettify_xml: bool = False, use_gzip: bool = False, file_format=None) -> None:
+    def build_file(self, target_file: str, prettify_xml: bool = False, use_gzip: bool = False,
+                   file_format=None) -> None:
         """
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk.
 
@@ -162,31 +163,31 @@ class GnuCashFile:
         namespace_info: Dict[str, str] = self.namespace_data
 
         if file_format in [None, FileFormat.XML, FileFormat.GZIP_XML]:
-			root_node: ElementTree.Element = ElementTree.Element(
-	            'gnc-v2', {'xmlns:' + identifier: value for identifier, value in namespace_info.items()}
-	        )
-	        book_count_node: ElementTree.Element = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
-	        book_count_node.text = str(len(self.books))
-	        root_node.append(book_count_node)
+            root_node: ElementTree.Element = ElementTree.Element(
+                'gnc-v2', {'xmlns:' + identifier: value for identifier, value in namespace_info.items()}
+            )
+            book_count_node: ElementTree.Element = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
+            book_count_node.text = str(len(self.books))
+            root_node.append(book_count_node)
 
-		    for book in self.books:
-		        root_node.append(book.as_xml)
+            for book in self.books:
+                root_node.append(book.as_xml)
 
-		    file_contents: bytes = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
+            file_contents: bytes = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
 
-		    # Making our resulting XML pretty
-		    if prettify_xml:
-		        file_contents = minidom.parseString(file_contents).toprettyxml(encoding='utf-8')
+            # Making our resulting XML pretty
+            if prettify_xml:
+                file_contents = minidom.parseString(file_contents).toprettyxml(encoding='utf-8')
 
-		    if use_gzip or file_format == FileFormat.GZIP_XML:
+            if use_gzip or file_format == FileFormat.GZIP_XML:
                 if use_gzip:
                     warnings.warn('The "use_gzip" parameter is deprecated. '
                                   'Use file_format=FileFormat.GZIP_XML for gzipped XML files.')
-		        with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
-		            gzip_file.write(file_contents)
-		    else:
-		        with open(target_file, 'wb') as target_file_handle:
-		            target_file_handle.write(file_contents)
+                with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
+                    gzip_file.write(file_contents)
+            else:
+                with open(target_file, 'wb') as target_file_handle:
+                    target_file_handle.write(file_contents)
         elif file_format == FileFormat.SQLITE:
             create_schema = not os.path.exists(target_file)
             sqlite_handle = sqlite3.connect(target_file)
