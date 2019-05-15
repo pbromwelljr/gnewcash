@@ -154,13 +154,15 @@
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 
+<span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="k">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
+<span class="kn">from</span> <span class="nn">gnewcash.enums</span> <span class="k">import</span> <span class="n">AccountType</span>
 <span class="kn">from</span> <span class="nn">gnewcash.file_formats</span> <span class="k">import</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
@@ -170,30 +172,32 @@
 <div class="viewcode-block" id="Transaction"><a class="viewcode-back" href="../transaction.html#transaction.Transaction">[docs]</a><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a transaction in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">currency</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Split</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current transaction as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current transaction as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">transaction_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:transaction&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="n">transaction_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:transaction&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">currency</span><span class="p">:</span>
@@ -202,10 +206,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span>
             <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:num&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span>
 
-        <span class="n">date_posted_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:date-posted&#39;</span><span class="p">)</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">date_posted_node</span><span class="p">,</span> <span class="s1">&#39;ts:date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">safe_iso_date_formatting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">)</span>
-        <span class="n">date_entered_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:date-entered&#39;</span><span class="p">)</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">date_entered_node</span><span class="p">,</span> <span class="s1">&#39;ts:date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">safe_iso_date_formatting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span>
+            <span class="n">date_posted_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:date-posted&#39;</span><span class="p">)</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">date_posted_node</span><span class="p">,</span> <span class="s1">&#39;ts:date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">safe_iso_date_formatting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span><span class="p">:</span>
+            <span class="n">date_entered_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:date-entered&#39;</span><span class="p">)</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">date_entered_node</span><span class="p">,</span> <span class="s1">&#39;ts:date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">safe_iso_date_formatting</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="s1">&#39;trn:description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
@@ -221,7 +227,8 @@
         <span class="k">return</span> <span class="n">transaction_node</span>
 
 <div class="viewcode-block" id="Transaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                 <span class="n">account_objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Account</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Transaction&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a Transaction object from the GnuCash XML.</span>
 
@@ -234,42 +241,66 @@
 <span class="sd">        :return: Transaction object from XML</span>
 <span class="sd">        :rtype: Transaction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">transaction</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">date_entered</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-entered&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">date_posted</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-posted&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">safe_iso_date_parsing</span><span class="p">(</span><span class="n">date_entered</span><span class="p">)</span>
-        <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">safe_iso_date_parsing</span><span class="p">(</span><span class="n">date_posted</span><span class="p">)</span>
-        <span class="n">transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">transaction</span><span class="p">:</span> <span class="s1">&#39;Transaction&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">guid_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">guid_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">guid_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">guid_node</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">date_entered_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-entered&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">date_entered_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">date_entered_ts_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_entered_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">date_entered_ts_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">date_entered_ts_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="n">transaction</span><span class="o">.</span><span class="n">date_entered</span> <span class="o">=</span> <span class="n">safe_iso_date_parsing</span><span class="p">(</span><span class="n">date_entered_ts_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">date_posted_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:date-posted&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">date_posted_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">date_posted_ts_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_posted_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ts:date&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">date_posted_ts_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">date_posted_ts_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">=</span> <span class="n">safe_iso_date_parsing</span><span class="p">(</span><span class="n">date_posted_ts_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
-        <span class="n">memo</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:num&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">description_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">description_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">description_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">transaction</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description_node</span><span class="o">.</span><span class="n">text</span>
+
+        <span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:num&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">memo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">transaction</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="n">memo</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">currency_node</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:currency&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">currency_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">transaction</span><span class="o">.</span><span class="n">currency</span> <span class="o">=</span> <span class="n">Commodity</span><span class="p">(</span><span class="n">currency_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
-                                             <span class="n">currency_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:space&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">currency_id_node</span> <span class="o">=</span> <span class="n">currency_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="n">currency_space_node</span> <span class="o">=</span> <span class="n">currency_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:space&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">currency_id_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">currency_space_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+                    <span class="ow">and</span> <span class="n">currency_id_node</span><span class="o">.</span><span class="n">text</span> <span class="ow">and</span> <span class="n">currency_space_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="n">transaction</span><span class="o">.</span><span class="n">currency</span> <span class="o">=</span> <span class="n">Commodity</span><span class="p">(</span><span class="n">currency_id_node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                                                 <span class="n">currency_space_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
-        <span class="n">slots</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slots</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
                 <span class="n">transaction</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
 
-        <span class="n">splits</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:splits&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">splits</span><span class="p">):</span>
-            <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Split</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">))</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaction_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;trn:splits&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">splits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">splits</span><span class="p">):</span>
+                <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Split</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">transaction</span></div>
 
-    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Transaction&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Transaction</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if all splits in the transaction are cleared.</span>
 
@@ -278,13 +309,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="k">if</span> <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="Transaction.mark_transaction_cleared"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.mark_transaction_cleared">[docs]</a>    <span class="k">def</span> <span class="nf">mark_transaction_cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transaction.mark_transaction_cleared"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.mark_transaction_cleared">[docs]</a>    <span class="k">def</span> <span class="nf">mark_transaction_cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Marks all splits in the transaction as cleared (reconciled_state = &#39;c&#39;).&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
             <span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Notes on the transaction.</span>
 
@@ -294,11 +325,11 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">)</span>
 
     <span class="nd">@notes</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        GUID of the transaction that reverses this transaction.</span>
 
@@ -308,11 +339,11 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;reversed-by&#39;</span><span class="p">)</span>
 
     <span class="nd">@reversed_by</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reversed_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;reversed-by&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Void status.</span>
 
@@ -322,11 +353,11 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;trans-read-only&#39;</span><span class="p">)</span>
 
     <span class="nd">@voided</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">voided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;trans-read-only&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Time that the transaction was voided.</span>
 
@@ -336,11 +367,11 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;void-time&#39;</span><span class="p">)</span>
 
     <span class="nd">@void_time</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">void_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;void-time&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reason that the transaction was voided.</span>
 
@@ -350,11 +381,11 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;void-reason&#39;</span><span class="p">)</span>
 
     <span class="nd">@void_reason</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">void_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;void-reason&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        URI associated with the transaction.</span>
 
@@ -364,7 +395,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;assoc_uri&#39;</span><span class="p">)</span>
 
     <span class="nd">@associated_uri</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">associated_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Transaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;assoc_uri&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Transaction.from_sqlite"><a class="viewcode-back" href="../transaction.html#transaction.Transaction.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
@@ -407,30 +438,30 @@
 <div class="viewcode-block" id="Split"><a class="viewcode-back" href="../transaction.html#transaction.Split">[docs]</a><span class="k">class</span> <span class="nc">Split</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a split in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">reconciled_state</span><span class="o">=</span><span class="s1">&#39;n&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span> <span class="n">amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">reconciled_state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Split</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">=</span> <span class="n">reconciled_state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">account</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quantity_denominator</span> <span class="o">=</span> <span class="s1">&#39;100&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">reconciled_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]</span> <span class="o">=</span> <span class="n">amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="n">account</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantity_denominator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;100&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current split as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current split as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">split_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;trn:split&#39;</span><span class="p">)</span>
+        <span class="n">split_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;trn:split&#39;</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span>
@@ -439,14 +470,17 @@
             <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:action&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span>
 
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconciled_state</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/100&#39;</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:quantity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-            <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity_denominator</span><span class="p">])</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/100&#39;</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:quantity&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity_denominator</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">:</span>
+            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">split_node</span><span class="p">,</span> <span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span>
         <span class="k">return</span> <span class="n">split_node</span>
 
 <div class="viewcode-block" id="Split.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.Split.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">split_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">split_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                 <span class="n">account_objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Account</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Split&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an Split object from the GnuCash XML.</span>
 
@@ -459,27 +493,38 @@
 <span class="sd">        :return: Split object from XML</span>
 <span class="sd">        :rtype: Split</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">account</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">account_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:account&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">account_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">account_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid or missing split:account node&#39;</span><span class="p">)</span>
+        <span class="n">account</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="n">value</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">value</span><span class="p">[:</span><span class="n">value</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)])</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">value_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:value&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">value_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid or missing split:value node&#39;</span><span class="p">)</span>
+        <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">value_node</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">value_str</span><span class="p">[:</span><span class="n">value_str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)])</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 
+        <span class="n">reconciled_state_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reconciled_state_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">reconciled_state_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid or missing split:reconciled-state node&#39;</span><span class="p">)</span>
         <span class="n">new_split</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">account</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">value</span><span class="p">,</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:reconciled-state&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-        <span class="n">new_split</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                        <span class="n">value</span><span class="p">,</span> <span class="n">reconciled_state_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">guid_node</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">guid_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">guid_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+            <span class="n">new_split</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">guid_node</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="n">split_memo</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:memo&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">split_memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:memo&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">split_memo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_split</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="n">split_memo</span><span class="o">.</span><span class="n">text</span>
 
-        <span class="n">split_action</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:action&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">split_action</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:action&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">split_action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_split</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">split_action</span><span class="o">.</span><span class="n">text</span>
 
         <span class="n">quantity_node</span> <span class="o">=</span> <span class="n">split_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split:quantity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">quantity_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">quantity</span> <span class="o">=</span> <span class="n">quantity_node</span><span class="o">.</span><span class="n">text</span>
-            <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">quantity</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">quantity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">quantity</span><span class="p">:</span>
                 <span class="n">new_split</span><span class="o">.</span><span class="n">quantity_denominator</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">new_split</span></div>
@@ -527,20 +572,24 @@
 <div class="viewcode-block" id="TransactionManager"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager">[docs]</a><span class="k">class</span> <span class="nc">TransactionManager</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class used to add/remove transactions, maintaining a chronological order based on transaction posted date.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="TransactionManager.add"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.add"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a transaction to the transaction manager.</span>
 
 <span class="sd">        :param new_transaction: Transaction to add</span>
 <span class="sd">        :type new_transaction: Transaction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">new_transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_transaction</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span><span class="p">:</span>
             <span class="c1"># Inserting transactions in order</span>
             <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span>
+                    <span class="k">continue</span>
                 <span class="k">if</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&gt;</span> <span class="n">new_transaction</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">)</span>
                     <span class="k">break</span>
@@ -548,11 +597,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">new_transaction</span><span class="p">)</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_transaction</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_transaction</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_transaction</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TransactionManager.delete"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.delete"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Removes a transaction from the transaction manager.</span>
 
@@ -565,7 +612,7 @@
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
                 <span class="k">break</span></div>
 
-<div class="viewcode-block" id="TransactionManager.get_transactions"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_transactions">[docs]</a>    <span class="k">def</span> <span class="nf">get_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.get_transactions"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_transactions">[docs]</a>    <span class="k">def</span> <span class="nf">get_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generator function that gets transactions based on a from account and/or to account for the transaction.</span>
 
@@ -578,18 +625,26 @@
             <span class="k">if</span> <span class="n">account</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">account</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">)):</span>
                 <span class="k">yield</span> <span class="n">transaction</span></div>
 
-<div class="viewcode-block" id="TransactionManager.get_account_starting_balance"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_account_starting_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.get_account_starting_balance"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_account_starting_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves the starting balance for the provided account given the list of transactions in the manager.</span>
+<span class="sd">        Retrieves the starting balance for the current account, given the list of transactions.</span>
 
-<span class="sd">        :param account: Account to get the starting balance for</span>
-<span class="sd">        :type account: Account</span>
-<span class="sd">        :return: Account starting balance</span>
+<span class="sd">        :param transactions: List of transactions or TransactionManager</span>
+<span class="sd">        :type transactions: list[Transaction] or TransactionManager</span>
+<span class="sd">        :return: First transaction amount if the account has transactions, otherwise 0.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">get_starting_balance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">(</span><span class="n">account</span><span class="p">)))</span></div>
+        <span class="n">account_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span>
+                                                   <span class="k">if</span> <span class="n">account</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y</span><span class="o">.</span><span class="n">account</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">splits</span>
+                                                                  <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">amount</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">account_transactions</span><span class="p">:</span>
+            <span class="n">first_transaction</span><span class="p">:</span> <span class="n">Transaction</span> <span class="o">=</span> <span class="n">account_transactions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">amount</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
+                                 <span class="n">first_transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span><span class="o">.</span><span class="n">amount</span> <span class="ow">or</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">amount</span></div>
 
-<div class="viewcode-block" id="TransactionManager.get_account_ending_balance"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_account_ending_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_ending_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.get_account_ending_balance"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_account_ending_balance">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_ending_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the ending balance for the provided account given the list of transactions in the manager.</span>
 
@@ -598,81 +653,117 @@
 <span class="sd">        :return: Account starting balance</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">get_ending_balance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_transactions</span><span class="p">(</span><span class="n">account</span><span class="p">)))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balance_at_date</span><span class="p">(</span><span class="n">account</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TransactionManager.minimum_balance_past_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.minimum_balance_past_date">[docs]</a>    <span class="k">def</span> <span class="nf">minimum_balance_past_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.minimum_balance_past_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.minimum_balance_past_date">[docs]</a>    <span class="k">def</span> <span class="nf">minimum_balance_past_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span>
+                                  <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves the minimum balance past a certain date for the given account.</span>
+<span class="sd">        Gets the minimum balance for the account after a certain date, given the list of transactions.</span>
 
-<span class="sd">        :param account: Account to get the minimum balance for</span>
-<span class="sd">        :type account: Account</span>
-<span class="sd">        :param date: datetime object representing the date you want to find the minimum balance for.</span>
-<span class="sd">        :type date: datetime.datetime</span>
+<span class="sd">        :param transactions: List of transactions or TransactionManager</span>
+<span class="sd">        :type transactions: list[Transaction] or TransactionManager</span>
+<span class="sd">        :param start_date: datetime object representing the date you want to find the minimum balance for.</span>
+<span class="sd">        :type start_date: datetime.datetime</span>
 <span class="sd">        :return: Tuple containing the minimum balance (element 0) and the date it&#39;s at that balance (element 1)</span>
 <span class="sd">        :rtype: tuple</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">minimum_balance_past_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span></div>
+        <span class="n">minimum_balance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">minimum_balance_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">iterator_date</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">date</span>
+        <span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">date_posted</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="n">iterator_date</span> <span class="o">&lt;</span> <span class="n">end_date</span><span class="p">:</span>
+            <span class="n">iterator_date</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">current_balance</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balance_at_date</span><span class="p">(</span><span class="n">account</span><span class="p">,</span> <span class="n">iterator_date</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">minimum_balance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current_balance</span> <span class="o">&lt;</span> <span class="n">minimum_balance</span><span class="p">:</span>
+                <span class="n">minimum_balance</span><span class="p">,</span> <span class="n">minimum_balance_date</span> <span class="o">=</span> <span class="n">current_balance</span><span class="p">,</span> <span class="n">iterator_date</span>
+        <span class="k">if</span> <span class="n">minimum_balance_date</span> <span class="ow">and</span> <span class="n">minimum_balance_date</span> <span class="o">&gt;</span> <span class="n">end_date</span><span class="p">:</span>
+            <span class="n">minimum_balance_date</span> <span class="o">=</span> <span class="n">end_date</span>
+        <span class="k">return</span> <span class="n">minimum_balance</span><span class="p">,</span> <span class="n">minimum_balance_date</span></div>
 
-<div class="viewcode-block" id="TransactionManager.get_balance_at_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_balance_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<div class="viewcode-block" id="TransactionManager.get_balance_at_date"><a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.get_balance_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves the account balance for the specified account at a certain date.</span>
+<span class="sd">        Retrieves the account balance for the current account at a certain date, given the list of transactions.</span>
 
 <span class="sd">        If the provided date is None, it will retrieve the ending balance.</span>
 
-<span class="sd">        :param account: List of transactions or TransactionManager</span>
-<span class="sd">        :type account: Account</span>
+<span class="sd">        :param transactions: List of transactions or TransactionManager</span>
+<span class="sd">        :type transactions: list[Transaction] or TransactionManager</span>
 <span class="sd">        :param date: Last date to consider when determining the account balance.</span>
 <span class="sd">        :type date: datetime.datetime</span>
 <span class="sd">        :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</span>
-<span class="sd">        :rtype: decimal.Decimal or int</span>
+<span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">account</span><span class="o">.</span><span class="n">get_balance_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span></div>
+        <span class="n">balance</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">applicable_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
+            <span class="n">transaction_accounts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">transaction_accounts</span> <span class="ow">and</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                    <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">:</span>
+                <span class="n">applicable_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">transaction_accounts</span><span class="p">:</span>
+                <span class="n">applicable_transactions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">applicable_transactions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">):</span>
+                <span class="n">applicable_split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+                <span class="n">amount</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">applicable_split</span><span class="o">.</span><span class="n">amount</span> <span class="ow">or</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span><span class="p">:</span>
+                    <span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span>
+        <span class="k">return</span> <span class="n">balance</span></div>
 
     <span class="c1"># Making TransactionManager iterable</span>
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transaction</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IndexError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">for</span> <span class="n">my_transaction</span><span class="p">,</span> <span class="n">other_transaction</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">my_transaction</span> <span class="o">!=</span> <span class="n">other_transaction</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]:</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span></div>
 
 
 <div class="viewcode-block" id="ScheduledTransaction"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction">[docs]</a><span class="k">class</span> <span class="nc">ScheduledTransaction</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class that represents a scheduled transaction in Gnucash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ScheduledTransaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">auto_create</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">auto_create_notify</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">advance_create_days</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">advance_remind_days</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">instance_count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_date</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">template_account</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_create</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_create_notify</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advance_create_days</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advance_remind_days</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the current scheduled transaction as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current scheduled transaction as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">xml_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:schedxaction&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
+        <span class="n">xml_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:schedxaction&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
             <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml_node</span><span class="p">,</span> <span class="s1">&#39;sx:id&#39;</span><span class="p">,</span> <span class="n">attrib</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
@@ -711,7 +802,8 @@
         <span class="k">return</span> <span class="n">xml_node</span>
 
 <div class="viewcode-block" id="ScheduledTransaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_obj</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">template_account_root</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_obj</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                 <span class="n">template_account_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScheduledTransaction&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a ScheduledTransaction object from the GnuCash XML.</span>
 
@@ -724,8 +816,10 @@
 <span class="sd">        :return: ScheduledTransaction object from XML</span>
 <span class="sd">        :rtype: ScheduledTransaction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="n">new_obj</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">new_obj</span><span class="p">:</span> <span class="s1">&#39;ScheduledTransaction&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">sx_transaction_guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sx_transaction_guid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sx_transaction_guid</span><span class="p">:</span>
+            <span class="n">new_obj</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">sx_transaction_guid</span>
         <span class="n">new_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="n">new_obj</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_boolean</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:enabled&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="n">new_obj</span><span class="o">.</span><span class="n">auto_create</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_boolean</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:autoCreate&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
@@ -737,11 +831,11 @@
         <span class="n">new_obj</span><span class="o">.</span><span class="n">last_date</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_date</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:last&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="n">new_obj</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_date</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">,</span> <span class="s1">&#39;sx:end&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
 
-        <span class="n">template_account_node</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sx:templ-acct&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">template_account_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">template_account_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sx:templ-acct&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">template_account_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">template_account_node</span><span class="o">.</span><span class="n">text</span> <span class="ow">and</span> <span class="n">template_account_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_obj</span><span class="o">.</span><span class="n">template_account</span> <span class="o">=</span> <span class="n">template_account_root</span><span class="o">.</span><span class="n">get_subaccount_by_id</span><span class="p">(</span><span class="n">template_account_node</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
-        <span class="n">schedule_node</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sx:schedule&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">schedule_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sx:schedule&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">schedule_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">recurrence_node</span> <span class="o">=</span> <span class="n">schedule_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gnc:recurrence&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">recurrence_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -756,7 +850,8 @@
         <span class="k">return</span> <span class="n">new_obj</span></div>
 
 <div class="viewcode-block" id="ScheduledTransaction.read_xml_child_text"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_text">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_xml_child_text</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_text</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                            <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the text from a specific child XML element.</span>
 
@@ -769,13 +864,14 @@
 <span class="sd">        :return: Child node&#39;s text</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_node</span> <span class="o">=</span> <span class="n">xml_object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">target_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">xml_object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">target_node</span><span class="o">.</span><span class="n">text</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ScheduledTransaction.read_xml_child_boolean"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_boolean">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_xml_child_boolean</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_boolean</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                               <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the text from a specific child XML element and returns a Boolean if the text is &quot;Y&quot; or &quot;y&quot;.</span>
 
@@ -788,7 +884,7 @@
 <span class="sd">        :return: True if child node&#39;s text is &quot;Y&quot; or &quot;Y&quot;, otherwise False.</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">node_text</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">node_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node_text</span> <span class="ow">and</span> <span class="n">node_text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">node_text</span><span class="p">:</span>
@@ -796,7 +892,8 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ScheduledTransaction.read_xml_child_int"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_int">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_xml_child_int</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_int</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the text from a specific child XML element and returns its text as an integer value.</span>
 
@@ -809,13 +906,14 @@
 <span class="sd">        :return: Child&#39;s text as an integer value</span>
 <span class="sd">        :rtype: int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">node_text</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">node_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">read_xml_child_text</span><span class="p">(</span><span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node_text</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_text</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="ScheduledTransaction.read_xml_child_date"><a class="viewcode-back" href="../transaction.html#transaction.ScheduledTransaction.read_xml_child_date">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_xml_child_date</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_xml_child_date</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">xml_object</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">tag_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                            <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the text from a specific child XML element and returns its inner gdate text as a datetime.</span>
 
@@ -828,11 +926,11 @@
 <span class="sd">        :return: Child&#39;s gdate&#39;s text as datetime</span>
 <span class="sd">        :rtype: datetime.datetime</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">target_node</span> <span class="o">=</span> <span class="n">xml_object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">target_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">xml_object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">date_node</span> <span class="o">=</span> <span class="n">target_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gdate&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+        <span class="n">date_node</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;gdate&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">date_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
@@ -892,14 +990,15 @@
 <div class="viewcode-block" id="SimpleTransaction"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction">[docs]</a><span class="k">class</span> <span class="nc">SimpleTransaction</span><span class="p">(</span><span class="n">Transaction</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class used to simplify creating and manipulating Transactions that only have 2 splits.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Split</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">]</span>
 
 <div class="viewcode-block" id="SimpleTransaction.from_xml"><a class="viewcode-back" href="../transaction.html#transaction.SimpleTransaction.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transaction_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                 <span class="n">account_objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Account</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;SimpleTransaction&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a SimpleTransaction object from the GnuCash XML.</span>
 
@@ -912,8 +1011,10 @@
 <span class="sd">        :return: Transaction object from XML</span>
 <span class="sd">        :rtype: Transaction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># pylint: disable=E1101</span>
-        <span class="n">new_object</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">)</span>
+        <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SimpleTransaction</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">transaction_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">,</span> <span class="n">account_objects</span><span class="p">)</span>
+        <span class="n">new_object</span><span class="p">:</span> <span class="s1">&#39;SimpleTransaction&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">new_object</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
         <span class="c1"># Remove the two splits created by the SimpleTransaction constructor</span>
         <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                                         <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
@@ -922,7 +1023,7 @@
                  <span class="s1">&#39;Using the from_account, to_account, and amount SimpleTransaction fields will result in undesirable &#39;</span> <span class="o">+</span>
                  <span class="s1">&#39;behavior.&#39;</span><span class="p">)</span>
 
-        <span class="n">from_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+        <span class="n">from_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">from_split</span><span class="p">:</span>
             <span class="n">new_object</span><span class="o">.</span><span class="n">from_split</span> <span class="o">=</span> <span class="n">from_split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
@@ -932,7 +1033,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="o">.</span><span class="n">from_split</span><span class="p">)</span>
 
-        <span class="n">to_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
+        <span class="n">to_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">to_split</span><span class="p">:</span>
             <span class="n">new_object</span><span class="o">.</span><span class="n">to_split</span> <span class="o">=</span> <span class="n">to_split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">new_object</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
@@ -945,7 +1046,7 @@
         <span class="k">return</span> <span class="n">new_object</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">from_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_account</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Account which the transaction transfers funds from.</span>
 
@@ -955,11 +1056,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="o">.</span><span class="n">account</span>
 
     <span class="nd">@from_account</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">from_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;Account&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Account which the transaction transfers funds to.</span>
 
@@ -969,11 +1070,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">account</span>
 
     <span class="nd">@to_account</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Account</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">account</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">amount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dollar amount for funds transferred.</span>
 
@@ -983,7 +1084,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">amount</span>
 
     <span class="nd">@amount</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">value</span></div>
 </pre></div>

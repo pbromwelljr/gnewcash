@@ -166,19 +166,21 @@
 <span id="commodity"></span><h1>Commodity<a class="headerlink" href="#module-commodity" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="commodity.Commodity">
-<em class="property">class </em><code class="descclassname">commodity.</code><code class="descname">Commodity</code><span class="sig-paren">(</span><em>commodity_id</em>, <em>space</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">commodity.</code><code class="descname">Commodity</code><span class="sig-paren">(</span><em>commodity_id: str</em>, <em>space: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a Commodity in GnuCash.</p>
 <dl class="method">
 <dt id="commodity.Commodity.as_short_xml">
-<code class="descname">as_short_xml</code><span class="sig-paren">(</span><em>node_tag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity.as_short_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity.as_short_xml" title="Permalink to this definition">¶</a></dt>
+<code class="descname">as_short_xml</code><span class="sig-paren">(</span><em>node_tag: str</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/commodity.html#Commodity.as_short_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity.as_short_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the current commodity as GnuCash-compatible XML (short version used for accounts).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current commodity as short XML</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – XML element tag name for the commodity</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Current commodity as short XML</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
 </tr>
 </tbody>
 </table>
@@ -226,7 +228,7 @@
 
 <dl class="classmethod">
 <dt id="commodity.Commodity.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>commodity_node</em>, <em>namespaces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/commodity.html#Commodity.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity.from_xml" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>commodity_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; commodity.Commodity<a class="reference internal" href="_modules/commodity.html#Commodity.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#commodity.Commodity.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Commodity object from the GnuCash XML.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
