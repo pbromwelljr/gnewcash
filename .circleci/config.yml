@@ -31,4 +31,4 @@ jobs:
           command: |
             poetry build
             poetry config repositories.testpypi https://test.pypi.org/legacy/dist/*
-            poetry publish --repository testpypi
+            poetry publish --repository testpypi --username $PYPI_USERNAME --password $PYPI_PASSWORD
