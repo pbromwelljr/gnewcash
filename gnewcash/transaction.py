@@ -284,7 +284,7 @@ class Split(GuidObject):
             ElementTree.SubElement(split_node, 'split:action').text = self.action
 
         ElementTree.SubElement(split_node, 'split:reconciled-state').text = self.reconciled_state
-        if self.amount:
+        if self.amount is not None:
             ElementTree.SubElement(split_node, 'split:value').text = str(int(self.amount * 100)) + '/100'
             ElementTree.SubElement(split_node, 'split:quantity').text = '/'.join([
                 str(int(self.amount * 100)), self.quantity_denominator])
@@ -477,7 +477,7 @@ class TransactionManager:
             if date is not None and account in transaction_accounts and transaction.date_posted is not None and \
                     transaction.date_posted <= date:
                 applicable_transactions.append(transaction)
-            elif date is None and self in transaction_accounts:
+            elif date is None and account in transaction_accounts:
                 applicable_transactions.append(transaction)
 
         for transaction in applicable_transactions:
