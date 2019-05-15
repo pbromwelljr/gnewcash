@@ -15,7 +15,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            poetry install --dev
+            poetry install
       - run:
           name: run code linters
           command: |
