@@ -462,6 +462,8 @@ GNewCash does support <a class="reference external" href="account.html#shortcut-
 <p>Interest accounts are <a class="reference external" href="account.html#special-accounts">special accounts</a> that actually aren’t used inside GnuCash.
 Trying to add one of the special accounts to a GnuCash file would result in an error.</p>
 <p>The purpose of an interest account is to calculate balances and payment schedules for loans that accumulate interest.</p>
+<p>There are two types of interest accounts: <a class="reference external" href="account.html#account.InterestAccount">InterestAccount</a> and <a class="reference external" href="account.html#account.InterestAccountWithSubaccounts">InterestAccountWithSubaccounts</a>.</p>
+<p>For most purposes you just need the InterestAccount class. For loans where your overall loan is comprised of several smaller loans, you’d use the InterestAccountWithSubaccounts.</p>
 <p>Here’s the general usage of an interest account:</p>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
@@ -506,12 +508,8 @@ Trying to add one of the special accounts to a GnuCash file would result in an e
 <ul>
 <li><dl class="first docutils">
 <dt><code class="code docutils literal notranslate"><span class="pre">additional_payments</span></code></dt>
-<dd><p class="first">List of dictionaries containing the following key-value pairs:</p>
-<p>Note: Additional payments are assumed to have no interest collected on them.</p>
-<ul class="last simple">
-<li><code class="code docutils literal notranslate"><span class="pre">amount</span></code>: Dollar amount for the additional payment (Decimal)</li>
-<li><code class="code docutils literal notranslate"><span class="pre">payment_date</span></code>: Date of the additional payment (datetime)</li>
-</ul>
+<dd><p class="first">List of <a class="reference external" href="account.html">LoanExtraPayment</a> objects.</p>
+<p class="last">Note: Additional payments are assumed to have no interest collected on them.</p>
 </dd>
 </dl>
 </li>
@@ -523,17 +521,7 @@ Trying to add one of the special accounts to a GnuCash file would result in an e
 </li>
 <li><dl class="first docutils">
 <dt><code class="code docutils literal notranslate"><span class="pre">interest_start_date</span></code></dt>
-<dd><p class="first last"><code class="code docutils literal notranslate"><span class="pre">datetime</span></code> object that designates when interest starts incurring on the loan.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="code docutils literal notranslate"><span class="pre">subaccounts</span></code></dt>
-<dd><p class="first last">List of InterestAccount objects that make up the parent interest account.
-This is helpful for things like school loans where your overall loan is comprised of multiple small loans.
-When setting up subaccounts, pass <code class="code docutils literal notranslate"><span class="pre">None</span></code> for <code class="code docutils literal notranslate"><span class="pre">starting_balance</span></code>, <code class="code docutils literal notranslate"><span class="pre">starting_date</span></code>,
-<code class="code docutils literal notranslate"><span class="pre">interest_percentage</span></code>, and <code class="code docutils literal notranslate"><span class="pre">payment_amount</span></code> in the parent InterestAccount. When accessing those fields,
-they will be derived from their child accounts’ information.</p>
+<dd><p class="first last"><code class="code docutils literal notranslate"><span class="pre">datetime</span></code> object that designates when interest starts incurring on the loan. (InterestAccount only)</p>
 </dd>
 </dl>
 </li>
