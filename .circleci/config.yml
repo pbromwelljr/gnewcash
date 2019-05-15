@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - develop
+    docker:
+      - image: python:3
+    steps:
+      - checkout
+      - run:
+          name: install poetry
+          command: |
+            pip install poetry
+      - run:
+          name: install dependencies
+          command: |
+            poetry install
+      - run:
+          name: run code linters
+          command: |
+            poetry run flake8 gnewcash
+            poetry run pylint gnewcash
+            poetry run mypy gnewcash
+      - run:
+          name: run unit tests
+          command: |
+            poetry run coverage run -m unittest discover
+      - run:
+          name: upload to test PyPI
+          command: |
+            poetry build
+            poetry config repositories.testpypi https://test.pypi.org/legacy/
+            poetry publish --repository testpypi --username $PYPI_USERNAME --password $PYPI_PASSWORD

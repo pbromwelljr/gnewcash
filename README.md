@@ -1,5 +1,9 @@
 # gnewcash
 
+CircleCI:
+
+[![CircleCI](https://circleci.com/gh/pbromwelljr/gnewcash.svg?style=svg)](https://circleci.com/gh/pbromwelljr/gnucash)
+
 A Python library for reading, manipulating, and writing to GnuCash files.
 
 This project was made to create and interact with GNewCash documents in an easy way. It handles reading from and
