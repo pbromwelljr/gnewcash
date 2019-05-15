@@ -5,7 +5,7 @@ jobs:
       only:
         - develop
     docker:
-      - python:3
+      - image: python:3
     steps:
       - checkout
       - run:
