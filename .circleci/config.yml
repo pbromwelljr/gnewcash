@@ -9,6 +9,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: version injection
+          command: |
+            export GNEWCASH_BETA_VERSION="b${CIRCLE_BUILD_NUM}"
+            sed -i "s/%%GNEWCASH_BETA_VERSION%/$GNEWCASH_BETA_VERSION/g" pyproject.toml
+      - run:
           name: install poetry
           command: |
             pip install poetry
