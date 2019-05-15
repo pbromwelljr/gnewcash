@@ -19,12 +19,10 @@ jobs:
       - run:
           name: run code linters
           command: |
-            poetry shell
-            flake8 gnewcash
-            pylint gnewcash
-            mypy gnewcash
+            poetry run flake8 gnewcash
+            poetry run pylint gnewcash
+            poetry run mypy gnewcash
       - run:
           name: run unit tests
           command: |
-            poetry shell
-            coverage run -m unittest discover
+            poetry run coverage run -m unittest discover
