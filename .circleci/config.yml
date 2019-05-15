@@ -26,3 +26,9 @@ jobs:
           name: run unit tests
           command: |
             poetry run coverage run -m unittest discover
+      - run:
+          name: upload to test PyPI
+          command: |
+            poetry build
+            poetry config repositories.testpypi https://test.pypi.org/legacy/dist/*
+            poetry publish --repository testpypi
