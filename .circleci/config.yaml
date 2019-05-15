@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - develop
+    docker:
+      - python:3
+    steps:
+      - checkout
+      - run:
+        name: install poetry
+        command: |
+          pip install poetry
+      - run:
+        name: install dependencies
+        command: |
+          poetry install --dev
+      - run:
+        name: run code linters
+        command: |
+          poetry shell
+          flake8 gnewcash
+          pylint gnewcash
+          mypy gnewcash
+      - run:
+        name: run unit tests
+        command: |
+          poetry shell
+          coverage run -m unittest discover
