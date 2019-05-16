@@ -12,7 +12,7 @@ import gzip
 import os.path
 from logging import getLogger
 import sqlite3
-from typing import Dict, Optional, List, Type, Any
+from typing import Dict, Optional, List, Tuple, Type, Any
 import warnings
 from xml.etree import ElementTree
 from xml.dom import minidom
@@ -658,6 +658,7 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
 
             recurrence_data, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
                                                          (new_budget.guid,))
+            # TODO: Store recurrence ID
             new_budget.recurrence_multiplier = recurrence_data['recurrence_mult']
             new_budget.recurrence_period_type = recurrence_data['recurrence_period_type']
             new_budget.recurrence_start = datetime.strptime(recurrence_data['recurrence_period_start'],
@@ -669,7 +670,32 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
         return new_budgets
 
     def to_sqlite(self, sqlite_cursor: sqlite3.Cursor) -> None:
-        raise NotImplementedError
+        db_action: DBAction = self.get_db_action(sqlite_cursor, 'budgets', 'guid', self.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+INSERT INTO budgets(guid, name, description, num_periods)
+VALUES (?, ?, ?, ?)'''.strip()
+            sql_args = (self.guid, self.name, self.description, self.period_count)
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+UPDATE budgets
+SET name = ?,
+    description = ?,
+    num_periods = ?
+WHERE guid = ?'''.strip()
+            sql_args = (self.name, self.description, self.period_count, self.guid)
+            sqlite_cursor.execute(sql, sql_args)
+
+        # TODO: Upsert recurrences        
+        # db_action = self.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', self.guid)
+        # if db_action == DBAction.INSERT:
+
+        # elif db_action == DBAction.UPDATE:
+
+        # TODO: slots
 
 
 GnuCashSQLiteObject.register(Budget)

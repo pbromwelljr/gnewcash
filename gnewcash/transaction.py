@@ -15,7 +15,7 @@ from sqlite3 import Cursor
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
-from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction, GnuCashXMLObject, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
@@ -282,7 +282,31 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
         return new_transactions
 
     def to_sqlite(self, sqlite_cursor: Cursor) -> None:
-        raise NotImplementedError
+        db_action: DBAction = self.get_db_action(sqlite_cursor, 'transactions', 'guid', self.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+INSERT INTO transactions(guid, currency_guid, num, post_date, enter_date, description)
+VALUES (?, ?, ?, ?, ?, ?)'''.strip()
+            sql_args = (self.guid, self.currency.guid, self.memo, self.date_posted, self.date_entered, 
+                        self.description)
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+UPDATE transactions
+SET currency_guid = ?,
+    num = ?,
+    post_date = ?,
+    enter_date = ?,
+    description = ?
+WHERE guid = ?'''.strip()
+            sql_args = (self.currency.guid if self.currency else None, self.memo, self.date_posted, self.date_entered,
+                        self.description, self.guid)
+            sqlite_cursor.execute(sql, sql_args)
+        
+        # TODO: slots
+        # TODO: splits
 
 
 GnuCashSQLiteObject.register(Transaction)
@@ -416,8 +440,47 @@ class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
             new_splits.append(new_split)
         return new_splits
 
-    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
-        raise NotImplementedError
+    def to_sqlite(self, sqlite_cursor: Cursor, transaction_guid: str) -> None:
+        db_action: DBAction = self.get_db_action(sqlite_cursor, 'splits', 'guid', self.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num, value_denom,
+                   quantity_num, quantity_denom, lot_guid)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
+            sql_args = (self.guid, transaction_guid, self.account.guid, self.reconciled_state,
+                        None,  # TODO: reconcile_date
+                        None,  # TODO: value_num
+                        None,  # TODO: value_denom
+                        None,  # TODO: quantity_num
+                        self.quantity_denominator,
+                        None)  # TODO: lot_guid
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+UPDATE splits
+SET tx_guid = ?,
+    account_guid = ?,
+    memo = ?,
+    action = ?,
+    reconcile_state = ?,
+    reconcile_date = ?,
+    value_num = ?,
+    value_denom = ?,
+    quantity_num ?,
+    quantity_denom = ?,
+    lot_guid = ?
+WHERE guid = ?'''.strip()
+        sql_args = (transaction_guid, self.account.guid if self.account else None, self.reconciled_state,
+                    None,  # TODO: reconcile_date
+                    None,  # TODO: value_num
+                    None,  # TODO: value_denom
+                    None,  # TODO: quantity_num
+                    self.quantity_denominator,
+                    None,  # TODO: lot_guid
+                    self.guid)
+        sqlite_cursor.execute(sql, sql_args)
 
 
 GnuCashSQLiteObject.register(Split)

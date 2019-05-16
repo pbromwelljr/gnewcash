@@ -352,11 +352,11 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sqlite_handle.execute(sql, sql_args)
         elif db_action == DBAction.UPDATE:
             sql = '''
-UPDATE accounts 
-SET name = ?, 
-    account_type = ?, 
-    commodity_guid = ?, 
-    commodity_scu = ?, 
+UPDATE accounts
+SET name = ?,
+    account_type = ?,
+    commodity_guid = ?,
+    commodity_scu = ?,
     non_std_scu = ?,
     parent_guid = ?,
     code = ?,
@@ -365,11 +365,14 @@ SET name = ?,
     placeholder = ?
 WHERE guid  = ?
 '''.strip()
-        sql_args = (self.name, self.type, self.commodity.guid if self.commodity else None, self.commodity_scu,
-                    None,  # TODO: non_std_scu
-                    self.parent.guid if self.parent else None, self.code, self.description, self.hidden,
-                    self.placeholder, self.guid)
-        sqlite_handle.execute(sql, sql_args)
+            sql_args = (self.name, self.type, self.commodity.guid if self.commodity else None, self.commodity_scu,
+                        None,  # TODO: non_std_scu
+                        self.parent.guid if self.parent else None, self.code, self.description, self.hidden,
+                        self.placeholder, self.guid)
+            sqlite_handle.execute(sql, sql_args)
+
+        # TODO: slots
+        # TODO: subaccounts
 
     def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
         """
