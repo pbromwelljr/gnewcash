@@ -1,6 +1,3 @@
-account:
- - Account.to_sqlite
-
 gnucash_file:
  - Book.to_sqlite
  - Budget.to_sqlite
@@ -12,4 +9,3 @@ transaction:
  - Transaction.to_sqlite
  - Split.to_sqlite
  - ScheduledTransaction.to_sqlite
- 

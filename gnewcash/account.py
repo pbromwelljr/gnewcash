@@ -16,7 +16,7 @@ from sqlite3 import Cursor
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
-from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction, GnuCashXMLObject, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 
@@ -336,7 +336,40 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
         return new_account
 
     def to_sqlite(self, sqlite_handle: Cursor) -> None:
-        raise NotImplementedError
+        db_action: DBAction = self.get_db_action(sqlite_handle, 'accounts', 'guid', self.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+INSERT INTO accounts(guid, name, account_type, commodity_guid, commodity_scu, non_std_scu,
+parent_guid, code, description, hidden, placeholder)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
+            sql_args = (self.guid, self.name, self.type, self.commodity.guid if self.commodity else None,
+                        self.commodity_scu,
+                        None,  # TODO: non_std_scu
+                        self.parent.guid if self.parent else None, self.code, self.description, self.hidden,
+                        self.placeholder)
+            sqlite_handle.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+UPDATE accounts 
+SET name = ?, 
+    account_type = ?, 
+    commodity_guid = ?, 
+    commodity_scu = ?, 
+    non_std_scu = ?,
+    parent_guid = ?,
+    code = ?,
+    description = ?,
+    hidden = ?,
+    placeholder = ?
+WHERE guid  = ?
+'''.strip()
+        sql_args = (self.name, self.type, self.commodity.guid if self.commodity else None, self.commodity_scu,
+                    None,  # TODO: non_std_scu
+                    self.parent.guid if self.parent else None, self.code, self.description, self.hidden,
+                    self.placeholder, self.guid)
+        sqlite_handle.execute(sql, sql_args)
 
     def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
         """
