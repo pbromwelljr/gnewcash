@@ -703,6 +703,8 @@ class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
         return new_obj
 
+    # TODO: Move these read functions to GnuCashXMLObject and refactor
+
     @classmethod
     def read_xml_child_text(cls, xml_object: ElementTree.Element, tag_name: str,
                             namespaces: Dict[str, str]) -> Optional[str]:
