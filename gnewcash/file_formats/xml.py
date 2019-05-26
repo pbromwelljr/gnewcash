@@ -11,6 +11,7 @@ import pathlib
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
+from xml.dom import minidom
 from xml.etree import ElementTree
 
 from gnewcash.account import Account
@@ -88,12 +89,8 @@ class XMLFileFormat(BaseFileFormat):
 
         :param book_node: XML node for the book
         :type book_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
-        :param transaction_class: Class to use when initializing transactions
-        :type transaction_class: type
         :return: Book object from XML
         :rtype: Book
         """
@@ -168,8 +165,6 @@ class XMLFileFormat(BaseFileFormat):
 
          :param slot_node: XML node for the slot
          :type slot_node: ElementTree.Element
-         :param namespaces: XML namespaces for GnuCash elements
-         :type namespaces: dict[str, str]
          :return: Slot object from XML
          :rtype: Slot
          """
@@ -256,8 +251,6 @@ class XMLFileFormat(BaseFileFormat):
 
         :param account_node: XML node for the account
         :type account_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
         :param account_objects: Account objects already created from XML (used for assigning parent account)
         :type account_objects: list[Account]
         :return: Account object from XML
@@ -312,8 +305,6 @@ class XMLFileFormat(BaseFileFormat):
 
         :param transaction_node: XML node for the transaction
         :type transaction_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
         :param account_objects: Account objects already created from XML (used for assigning accounts)
         :type account_objects: list[Account]
         :return: Transaction object from XML
@@ -370,8 +361,6 @@ class XMLFileFormat(BaseFileFormat):
 
         :param split_node: XML node for the split
         :type split_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
         :param account_objects: Account objects already created from XML (used for assigning parent account)
         :type account_objects: list[Account]
         :return: Split object from XML
@@ -422,8 +411,6 @@ class XMLFileFormat(BaseFileFormat):
 
         :param xml_obj: XML node for the scheduled transaction
         :type xml_obj: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
         :param template_account_root: Root template account
         :type template_account_root: Account
         :return: ScheduledTransaction object from XML
@@ -469,8 +456,6 @@ class XMLFileFormat(BaseFileFormat):
 
         :param budget_node: XML node for the budget
         :type budget_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
         :return: Budget object from XML
         :rtype: Budget
         """
@@ -605,8 +590,94 @@ class XMLFileFormat(BaseFileFormat):
         return datetime.strptime(date_node.text, '%Y-%m-%d') if date_node.text else None
 
     @classmethod
-    def dump(cls, *args: Any, **kwargs: Any) -> None:
-        pass
+    def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', prettify_xml: bool = False,
+             **kwargs: Any) -> None:
+        root_node: ElementTree.Element = ElementTree.Element(
+            'gnc-v2', {'xmlns:' + identifier: value for identifier, value in cls.XML_NAMESPACES.items()}
+        )
+        book_count_node: ElementTree.Element = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
+        book_count_node.text = str(len(gnucash_file.books))
+        root_node.append(book_count_node)
+
+        for book in gnucash_file.books:
+            root_node.append(cls.cast_book_as_xml(book))
+
+        file_contents: bytes = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
+
+        # Making our resulting XML pretty
+        if prettify_xml:
+            file_contents = minidom.parseString(file_contents).toprettyxml(encoding='utf-8')
+
+        cls.write_file_contents(target_file, file_contents)
+
+    @classmethod
+    def cast_book_as_xml(cls, book: Book) -> ElementTree.Element:
+        """
+        Returns the current book as GnuCash-compatible XML.
+
+        :return: ElementTree.Element object
+        :rtype: xml.etree.ElementTree.Element
+        """
+        book_node: ElementTree.Element = ElementTree.Element('gnc:book', {'version': '2.0.0'})
+        book_id_node = ElementTree.SubElement(book_node, 'book:id', {'type': 'guid'})
+        book_id_node.text = book.guid
+
+        accounts_xml: Optional[List[ElementTree.Element]] = None
+        if book.root_account:
+            accounts_xml = book.root_account.as_xml
+
+        if book.slots:
+            slot_node = ElementTree.SubElement(book_node, 'book:slots')
+            for slot in book.slots:
+                slot_node.append(slot.as_xml)
+
+        commodity_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'commodity'})
+        commodity_count_node.text = str(len(list(filter(lambda x: x.commodity_id != 'template', book.commodities))))
+
+        account_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'account'})
+        account_count_node.text = str(len(accounts_xml) if accounts_xml else 0)
+
+        transaction_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'transaction'})
+        transaction_count_node.text = str(len(book.transactions))
+
+        if book.scheduled_transactions:
+            scheduled_transaction_node = ElementTree.SubElement(book_node, 'gnc:count-data',
+                                                                {'cd:type': 'schedxaction'})
+            scheduled_transaction_node.text = str(len(book.scheduled_transactions))
+
+        if book.budgets:
+            budget_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'budget'})
+            budget_node.text = str(len(book.budgets))
+
+        for commodity in book.commodities:
+            book_node.append(commodity.as_xml)
+
+        if accounts_xml:
+            for account in accounts_xml:
+                book_node.append(account)
+
+        for transaction in book.transactions:
+            book_node.append(transaction.as_xml)
+
+        if book.template_root_account and book.template_transactions:
+            template_transactions_node = ElementTree.SubElement(book_node, 'gnc:template-transactions')
+            for account in book.template_root_account.as_xml:
+                template_transactions_node.append(account)
+            for transaction in book.template_transactions:
+                template_transactions_node.append(transaction.as_xml)
+
+        for scheduled_transaction in book.scheduled_transactions:
+            book_node.append(scheduled_transaction.as_xml)
+
+        for budget in book.budgets:
+            book_node.append(budget.as_xml)
+
+        return book_node
+
+    @classmethod
+    def write_file_contents(cls, target_file: str, file_contents: bytes) -> None:
+        with open(target_file, 'wb') as target_file_handle:
+            target_file_handle.write(file_contents)
 
 
 class GZipXMLFileFormat(XMLFileFormat):
@@ -616,3 +687,8 @@ class GZipXMLFileFormat(XMLFileFormat):
         with gzip.open(source_path, 'rb') as gzipped_file:
             contents = gzipped_file.read().decode('utf-8')
         return ElementTree.fromstring(contents)
+
+    @classmethod
+    def write_file_contents(cls, target_file: str, file_contents: bytes) -> None:
+        with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
+            gzip_file.write(file_contents)
