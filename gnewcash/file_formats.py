@@ -34,19 +34,6 @@ class DBAction(enum.Enum):
 class GnuCashXMLObject(abc.ABC):
     """Abstract base classes for objects that can read from and write to XML."""
 
-    @classmethod
-    @abc.abstractmethod
-    def from_xml(cls, node: ElementTree.Element, namespaces: Dict[str, str], *args: Any, **kwargs: Any) -> Any:
-        """
-        Abstract method for creating an object from an XML node.
-
-        :param node: XML node from ElementTree.
-        :type node: ElementTree.Element
-        :param namespaces: GnuCash XML namespaces needed to find elements.
-        :type namespaces: dict[str, str]
-        """
-        raise NotImplementedError
-
     @property
     @abc.abstractmethod
     def as_xml(self) -> ElementTree.Element:

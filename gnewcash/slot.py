@@ -61,51 +61,6 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
         return slot_node
 
     @classmethod
-    def from_xml(cls, slot_node: ElementTree.Element, namespaces: Dict[str, str]) -> 'Slot':
-        """
-        Creates a Slot object from the GnuCash XML.
-
-        :param slot_node: XML node for the slot
-        :type slot_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
-        :return: Slot object from XML
-        :rtype: Slot
-        """
-        key_node: Optional[ElementTree.Element] = slot_node.find('slot:key', namespaces)
-        if key_node is None or not key_node.text:
-            raise ValueError('slot:key missing or empty in slot node')
-        key: str = key_node.text
-        value_node: Optional[ElementTree.Element] = slot_node.find('slot:value', namespaces)
-        if value_node is None:
-            raise ValueError('slot:value missing in slot node')
-        slot_type = value_node.attrib['type']
-        value: Any = None
-        if slot_type == 'gdate':
-            value_gdate_node: Optional[ElementTree.Element] = value_node.find('gdate')
-            if value_gdate_node is None:
-                raise ValueError('slot type is gdate but missing gdate node')
-            if not value_gdate_node.text:
-                raise ValueError('slot type is gdate but gdate node is empty')
-            value = datetime.strptime(value_gdate_node.text, '%Y-%m-%d')
-        elif slot_type in ['string', 'guid', 'numeric']:
-            value = value_node.text
-        elif slot_type == 'integer' and value_node.text:
-            value = int(value_node.text)
-        elif slot_type == 'double' and value_node.text:
-            value = Decimal(value_node.text)
-        else:
-            child_tags: List[str] = list(set(map(lambda x: x.tag, value_node)))
-            if len(child_tags) == 1 and child_tags[0] == 'slot':
-                value = [Slot.from_xml(x, namespaces) for x in value_node]
-            elif slot_type == 'frame':
-                value = None   # Empty frame element, just leave it
-            else:
-                raise NotImplementedError('Slot type {} is not implemented.'.format(slot_type))
-
-        return cls(key, value, slot_type)
-
-    @classmethod
     def from_sqlite(cls, sqlite_cursor: Cursor, object_id: str) -> List['Slot']:
         """
         Creates Slot objects from the GnuCash SQLite database.

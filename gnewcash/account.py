@@ -98,62 +98,6 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
 
         return node_and_children
 
-    @classmethod
-    def from_xml(cls, account_node: ElementTree.Element, namespaces: Dict[str, str],
-                 account_objects: List['Account']) -> 'Account':
-        """
-        Creates an Account object from the GnuCash XML.
-
-        :param account_node: XML node for the account
-        :type account_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
-        :param account_objects: Account objects already created from XML (used for assigning parent account)
-        :type account_objects: list[Account]
-        :return: Account object from XML
-        :rtype: Account
-        """
-        account_object: 'Account' = cls()
-        account_guid_node = account_node.find('act:id', namespaces)
-        if account_guid_node is None or not account_guid_node.text:
-            raise ValueError('Account guid node is missing or empty')
-        account_object.guid = account_guid_node.text
-        account_name_node = account_node.find('act:name', namespaces)
-        if account_name_node is not None and account_name_node.text:
-            account_object.name = account_name_node.text
-        account_type_node = account_node.find('act:type', namespaces)
-        if account_type_node is not None and account_type_node.text:
-            account_object.type = account_type_node.text
-
-        commodity: Optional[ElementTree.Element] = account_node.find('act:commodity', namespaces)
-        if commodity is not None and commodity.find('cmdty:id', namespaces) is not None:
-            account_object.commodity = Commodity.from_xml(commodity, namespaces)
-        else:
-            account_object.commodity = None
-
-        commodity_scu: Optional[ElementTree.Element] = account_node.find('act:commodity-scu', namespaces)
-        if commodity_scu is not None:
-            account_object.commodity_scu = commodity_scu.text
-
-        slots: Optional[ElementTree.Element] = account_node.find('act:slots', namespaces)
-        if slots is not None:
-            for slot in slots.findall('slot', namespaces):
-                account_object.slots.append(Slot.from_xml(slot, namespaces))
-
-        code: Optional[ElementTree.Element] = account_node.find('act:code', namespaces)
-        if code is not None:
-            account_object.code = code.text
-
-        description: Optional[ElementTree.Element] = account_node.find('act:description', namespaces)
-        if description is not None:
-            account_object.description = description.text
-
-        parent: Optional[ElementTree.Element] = account_node.find('act:parent', namespaces)
-        if parent is not None:
-            account_object.parent = [x for x in account_objects if x.guid == parent.text][0]
-
-        return account_object
-
     def as_dict(self, account_hierarchy: Dict[str, 'Account'] = None, path_to_self: str = '/') -> Dict[str, 'Account']:
         """
         Retrieves the current account hierarchy as a dictionary.

@@ -54,51 +54,6 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
         return commodity_node
 
-    @classmethod
-    def from_xml(cls, commodity_node: ElementTree.Element, namespaces: Dict[str, str]) -> 'Commodity':
-        """
-        Creates a Commodity object from the GnuCash XML.
-
-        :param commodity_node: XML node for the commodity
-        :type commodity_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
-        :return: Commodity object from XML
-        :rtype: Commodity
-        """
-        commodity_id_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:id', namespaces)
-        if commodity_id_node is None or not commodity_id_node.text:
-            raise ValueError('Commodity node is missing id')
-        commodity_id: str = commodity_id_node.text
-        commodity_space_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:space', namespaces)
-        if commodity_space_node is None or not commodity_space_node.text:
-            raise ValueError('Commodity node is missing space')
-        space: str = commodity_space_node.text
-        new_commodity: 'Commodity' = cls(commodity_id, space)
-        if commodity_node.find('cmdty:get_quotes', namespaces) is not None:
-            new_commodity.get_quotes = True
-
-        quote_source_node = commodity_node.find('cmdty:quote_source', namespaces)
-        if quote_source_node is not None:
-            new_commodity.quote_source = quote_source_node.text
-
-        if commodity_node.find('quote_tz', namespaces) is not None:
-            new_commodity.quote_tz = True
-
-        name_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:name', namespaces)
-        if name_node is not None:
-            new_commodity.name = name_node.text
-
-        xcode_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:xcode', namespaces)
-        if xcode_node is not None:
-            new_commodity.xcode = xcode_node.text
-
-        fraction_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:fraction', namespaces)
-        if fraction_node is not None:
-            new_commodity.fraction = fraction_node.text
-
-        return new_commodity
-
     def as_short_xml(self, node_tag: str) -> ElementTree.Element:
         """
         Returns the current commodity as GnuCash-compatible XML (short version used for accounts).
