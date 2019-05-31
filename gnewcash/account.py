@@ -196,43 +196,6 @@ class Account(GuidObject, SlottableObject, GnuCashSQLiteObject):
     def placeholder(self, value: bool) -> None:
         super(Account, self).set_slot_value_bool('placeholder', value, 'string')
 
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: Cursor, account_id: str) -> 'Account':
-        """
-        Creates an Account object from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the GnuCash SQLite database.
-        :type sqlite_cursor: sqlite3.Cursor
-        :param account_id: ID of the account to load from the SQLite database
-        :type account_id: str
-        :return: Account object from SQLite
-        :rtype: Account
-        """
-        account_data_items = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
-        if not account_data_items:
-            raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))
-        account_data, = account_data_items
-        new_account = cls()
-        new_account.guid = account_data['guid']
-        new_account.name = account_data['name']
-        new_account.type = account_data['account_type']
-        new_account.code = account_data['code']
-        new_account.description = account_data['description']
-        if account_data['hidden'] is not None and account_data['hidden'] == 1:
-            new_account.hidden = True
-        if account_data['placeholder'] is not None and account_data['placeholder'] == 1:
-            new_account.placeholder = True
-        new_account.slots = Slot.from_sqlite(sqlite_cursor, account_data['guid'])
-
-        new_account.commodity = Commodity.from_sqlite(sqlite_cursor, commodity_guid=account_data['commodity_guid'])
-        new_account.commodity_scu = account_data['commodity_scu']
-        # TODO: non_std_scu
-
-        for subaccount in cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'parent_guid = ?', (account_id,)):
-            new_account.children.append(cls.from_sqlite(sqlite_cursor, subaccount['guid']))
-
-        return new_account
-
     def to_sqlite(self, sqlite_handle: Cursor) -> None:
         db_action: DBAction = self.get_db_action(sqlite_handle, 'accounts', 'guid', self.guid)
         sql: str = ''

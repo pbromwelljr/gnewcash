@@ -5,59 +5,16 @@ Module containing classes that read, manipulate, and write slots.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from datetime import datetime
 from sqlite3 import Cursor
 from typing import Any, List, Union
 
-from gnewcash.file_formats import GnuCashSQLiteObject
 
-
-class Slot(GnuCashSQLiteObject):
+class Slot:
     """Represents a slot in GnuCash."""
-
-    sqlite_slot_type_mapping = {
-        1: 'integer',
-        2: 'double',
-        3: 'numeric',
-        4: 'string',
-        5: 'guid',
-        9: 'guid',
-        10: 'gdate'
-    }
-
     def __init__(self, key: str, value: Any, slot_type: str) -> None:
         self.key: str = key
         self.value: Any = value
         self.type: str = slot_type
-
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: Cursor, object_id: str) -> List['Slot']:
-        """
-        Creates Slot objects from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the SQLite database
-        :type sqlite_cursor: sqlite3.Cursor
-        :param object_id: ID of the object that the slot belongs to
-        :type object_id: str
-        :return: Slot objects from SQLite
-        :rtype: list[Slot]
-        """
-        slot_info = cls.get_sqlite_table_data(sqlite_cursor, 'slots', 'obj_guid = ?', (object_id,))
-        new_slots = []
-        for slot in slot_info:
-            slot_type = cls.sqlite_slot_type_mapping[slot['slot_type']]
-            slot_name = slot['name']
-            if slot_type == 'guid':
-                slot_value = slot['guid_val']
-            elif slot_type == 'string':
-                slot_value = slot['string_val']
-            elif slot_type == 'gdate':
-                slot_value = datetime.strptime(slot['gdate_val'], '%Y%m%d')
-            else:
-                raise NotImplementedError('Slot type {} is not implemented.'.format(slot['slot_type']))
-            new_slot = cls(slot_name, slot_value, slot_type)
-            new_slots.append(new_slot)
-        return new_slots
 
     def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         # slot_action = self.get_db_action(sqlite_cursor, 'slots', )

@@ -11,11 +11,11 @@ from decimal import Decimal
 import os.path
 from logging import getLogger
 import sqlite3
-from typing import Optional, List, Tuple, Type, Any, TYPE_CHECKING
+from typing import Optional, List, Tuple, Type, Any
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
-from gnewcash.file_formats import DBAction, FileFormat, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split
@@ -39,26 +39,6 @@ class GnuCashFile:
 
     def __repr__(self) -> str:
         return str(self)
-
-    @classmethod
-    def detect_file_format(cls, source_file: str) -> FileFormat:
-        """
-        Detects the file format of the provided source file.
-
-        :param source_file: File to detect the format of.
-        :type source_file: str
-        :return: Format of the file, or raises RuntimeError if unable to detect
-        :rtype: FileFormat
-        """
-        with open(source_file, 'rb') as source_file_handle:
-            first_bytes = source_file_handle.read(10)
-            if first_bytes.startswith(b'<?xml'):  # pylint: disable=R1705
-                return FileFormat.XML
-            elif first_bytes.startswith(b'\x1f\x8b'):
-                return FileFormat.GZIP_XML
-            elif first_bytes.startswith(b'SQLite'):
-                return FileFormat.SQLITE
-            raise RuntimeError('Could not detect file format of {}'.format(source_file))
 
     @classmethod
     def read_file(cls, source_file: str, file_format: Any, sort_transactions: bool = True,
@@ -121,22 +101,8 @@ class GnuCashFile:
         #
         #     raise NotImplementedError('SQLite support not implemented')
 
-    @classmethod
-    def create_sqlite_schema(cls, sqlite_cursor: sqlite3.Cursor) -> None:
-        """
-        Creates the SQLite schema using the provided SQLite cursor.
 
-        :param sqlite_cursor: Open cursor to a SQLite database.
-        :type sqlite_cursor: sqlite3.Cursor
-        """
-        # Note: To update the GnuCash schema, connect to an existing GnuCash SQLite file and run ".schema".
-        # Make sure to remove sqlite_sequence from the schema statements
-        with open(os.path.join(os.path.dirname(__file__), 'sqlite_schema.sql')) as schema_file:
-            for line in schema_file.readlines():
-                sqlite_cursor.execute(line)
-
-
-class Book(GuidObject, SlottableObject, GnuCashSQLiteObject):
+class Book(GuidObject, SlottableObject):
     """Represents a Book in GnuCash."""
 
     def __init__(self, root_account: Optional[Account] = None, transactions: Optional[TransactionManager] = None,
@@ -204,61 +170,6 @@ class Book(GuidObject, SlottableObject, GnuCashSQLiteObject):
     def __repr__(self) -> str:
         return str(self)
 
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: sqlite3.Cursor, sort_transactions: bool = True,
-                    transaction_class: Optional[Type] = None) -> List['Book']:
-        """
-        Creates Book objects from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the SQLite database
-        :type sqlite_cursor: sqlite3.Cursor
-        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from SQLite
-        :type sort_transactions: bool
-        :param transaction_class: Class to use when initializing transactions
-        :type transaction_class: type
-        :return: Book objects from SQLite
-        :rtype: list[Book]
-        """
-        if transaction_class is None:
-            transaction_class = Transaction
-
-        new_books = []
-        books = cls.get_sqlite_table_data(sqlite_cursor, 'books')
-        for book in books:
-            new_book = cls()
-            new_book.guid = book['guid']
-            new_book.root_account = Account.from_sqlite(sqlite_cursor, book['root_account_guid'])
-            new_book.template_root_account = Account.from_sqlite(sqlite_cursor, book['root_template_guid'])
-
-            new_book.slots = Slot.from_sqlite(sqlite_cursor, book['guid'])
-
-            new_book.commodities = Commodity.from_sqlite(sqlite_cursor)
-
-            transaction_manager = TransactionManager()
-            transaction_manager.disable_sort = not sort_transactions
-            template_transactions = []
-            template_account_guids = new_book.template_root_account.get_account_guids()
-
-            for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account,
-                                                             new_book.template_root_account):
-                transaction_account_guids = [x.account.guid for x in transaction.splits]
-                if any(map(lambda x, tag=template_account_guids: x in tag, transaction_account_guids)):
-                    template_transactions.append(transaction)
-                else:
-                    transaction_manager.add(transaction)
-
-            new_book.transactions = transaction_manager
-            new_book.template_transactions = template_transactions
-
-            for scheduled_transaction in ScheduledTransaction.from_sqlite(sqlite_cursor,
-                                                                          new_book.template_root_account):
-                new_book.scheduled_transactions.append(scheduled_transaction)
-
-            new_book.budgets = Budget.from_sqlite(sqlite_cursor)
-
-            new_books.append(new_book)
-        return new_books
-
     def to_sqlite(self, sqlite_handle: sqlite3.Cursor) -> None:
         book_db_action = self.get_db_action(sqlite_handle, 'books', 'guid', self.guid)
         if book_db_action == DBAction.INSERT:
@@ -305,10 +216,7 @@ class Book(GuidObject, SlottableObject, GnuCashSQLiteObject):
         raise NotImplementedError
 
 
-GnuCashSQLiteObject.register(Book)
-
-
-class Budget(GuidObject, SlottableObject, GnuCashSQLiteObject):
+class Budget(GuidObject, SlottableObject):
     """Class object representing a Budget in GnuCash."""
 
     def __init__(self) -> None:
@@ -379,6 +287,3 @@ WHERE guid = ?'''.strip()
         # elif db_action == DBAction.UPDATE:
 
         # TODO: slots
-
-
-GnuCashSQLiteObject.register(Budget)

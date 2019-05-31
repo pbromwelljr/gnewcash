@@ -10,10 +10,10 @@ from sqlite3 import Cursor
 from typing import Optional, Union, List
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction
 
 
-class Commodity(GuidObject, GnuCashSQLiteObject):
+class Commodity(GuidObject):
     """Represents a Commodity in GnuCash."""
 
     def __init__(self, commodity_id: str, space: str) -> None:
@@ -26,42 +26,6 @@ class Commodity(GuidObject, GnuCashSQLiteObject):
         self.name: Optional[str] = None
         self.xcode: Optional[str] = None
         self.fraction: Optional[str] = None
-
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: Cursor, commodity_guid: str = None) -> Union['Commodity', List['Commodity']]:
-        """
-        Creates a Commodity object from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the SQLite database
-        :type sqlite_cursor: sqlite3.Cursor
-        :param commodity_guid: Commodity to pull from the database. None pulls all commodities.
-        :type commodity_guid: str
-        :return: Commodity object(s) from SQLite
-        :rtype: Commodity or list[Commodity]
-        """
-        if commodity_guid is None:
-            commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities')
-        else:
-            commodity_data = cls.get_sqlite_table_data(sqlite_cursor, 'commodities', 'guid = ?', (commodity_guid,))
-
-        new_commodities = []
-        for commodity in commodity_data:
-            commodity_id = commodity['mnemonic']
-            space = commodity['namespace']
-
-            new_commodity = cls(commodity_id, space)
-            new_commodity.guid = commodity['guid']
-            new_commodity.get_quotes = commodity['quote_flag'] == 1
-            new_commodity.quote_source = commodity['quote_source']
-            new_commodity.quote_tz = commodity['quote_tz']
-            new_commodity.name = commodity['fullname']
-            new_commodity.xcode = commodity['cusip']
-            new_commodity.fraction = commodity['fraction']
-            new_commodities.append(new_commodity)
-
-        if commodity_guid is None:
-            return new_commodities
-        return new_commodities[0]
 
     def to_sqlite(self, sqlite_cursor):
         db_action = self.get_db_action(sqlite_cursor, 'commodities', 'guid', self.guid)
