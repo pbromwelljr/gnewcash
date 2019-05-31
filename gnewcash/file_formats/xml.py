@@ -693,11 +693,11 @@ class GnuCashXMLWriter(BaseFileWriter):
         ElementTree.SubElement(account_node, 'act:id', {'type': 'guid'}).text = account.guid
         ElementTree.SubElement(account_node, 'act:type').text = account.type
         if account.commodity:
-            account_node.append(account.commodity.as_short_xml('act:commodity'))
+            account_node.append(cls.cast_commodity_as_short_xml(account.commodity, 'act:commodity'))
         else:
             parent_commodity: Optional[Commodity] = account.get_parent_commodity()
             if parent_commodity:
-                account_node.append(parent_commodity.as_short_xml('act:commodity'))
+                account_node.append(cls.cast_commodity_as_short_xml(parent_commodity, 'act:commodity'))
 
         if account.commodity_scu:
             ElementTree.SubElement(account_node, 'act:commodity-scu').text = str(account.commodity_scu)
@@ -778,6 +778,21 @@ class GnuCashXMLWriter(BaseFileWriter):
         return commodity_node
 
     @classmethod
+    def cast_commodity_as_short_xml(cls, commodity: Commodity, node_tag: str) -> ElementTree.Element:
+        """
+        Returns the current commodity as GnuCash-compatible XML (short version used for accounts).
+
+        :param node_tag: XML element tag name for the commodity
+        :type node_tag: str
+        :return: Current commodity as short XML
+        :rtype: xml.etree.ElementTree.Element
+        """
+        commodity_node: ElementTree.Element = ElementTree.Element(node_tag)
+        ElementTree.SubElement(commodity_node, 'cmdty:space').text = commodity.space
+        ElementTree.SubElement(commodity_node, 'cmdty:id').text = commodity.commodity_id
+        return commodity_node
+
+    @classmethod
     def cast_transaction_as_xml(cls, transaction: Transaction) -> ElementTree.Element:
         """
         Returns the current transaction as GnuCash-compatible XML.
@@ -789,7 +804,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         ElementTree.SubElement(transaction_node, 'trn:id', {'type': 'guid'}).text = transaction.guid
 
         if transaction.currency:
-            transaction_node.append(transaction.currency.as_short_xml('trn:currency'))
+            transaction_node.append(cls.cast_commodity_as_short_xml(transaction.currency, 'trn:currency'))
 
         if transaction.memo:
             ElementTree.SubElement(transaction_node, 'trn:num').text = transaction.memo

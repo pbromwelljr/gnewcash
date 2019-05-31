@@ -9,8 +9,6 @@ from sqlite3 import Cursor
 
 from typing import Optional, Union, List
 
-from xml.etree import ElementTree
-
 from gnewcash.guid_object import GuidObject
 from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
 
@@ -28,20 +26,6 @@ class Commodity(GuidObject, GnuCashSQLiteObject):
         self.name: Optional[str] = None
         self.xcode: Optional[str] = None
         self.fraction: Optional[str] = None
-
-    def as_short_xml(self, node_tag: str) -> ElementTree.Element:
-        """
-        Returns the current commodity as GnuCash-compatible XML (short version used for accounts).
-
-        :param node_tag: XML element tag name for the commodity
-        :type node_tag: str
-        :return: Current commodity as short XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        commodity_node: ElementTree.Element = ElementTree.Element(node_tag)
-        ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
-        ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.commodity_id
-        return commodity_node
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor: Cursor, commodity_guid: str = None) -> Union['Commodity', List['Commodity']]:
