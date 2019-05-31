@@ -9,14 +9,13 @@ import abc
 import re
 from datetime import datetime
 from decimal import Decimal, ROUND_UP
-from xml.etree import ElementTree
 from collections import namedtuple
 from typing import List, Tuple, Dict, Optional, Union, Pattern
 from sqlite3 import Cursor
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
-from gnewcash.file_formats import DBAction, GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 
@@ -25,7 +24,7 @@ LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'int
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])
 
 
-class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class Account(GuidObject, SlottableObject, GnuCashSQLiteObject):
     """Represents an account in GnuCash."""
 
     def __init__(self) -> None:
@@ -52,51 +51,6 @@ class Account(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject
 
     def __hash__(self) -> int:
         return hash(self.guid)
-
-    @property
-    def as_xml(self) -> List[ElementTree.Element]:
-        """
-        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.
-
-        :return: Current account and children as XML
-        :rtype: list[xml.etree.ElementTree.Element]
-        :raises: ValueError if no commodity found.
-        """
-        node_and_children: List = list()
-        account_node: ElementTree.Element = ElementTree.Element('gnc:account', {'version': '2.0.0'})
-        ElementTree.SubElement(account_node, 'act:name').text = self.name
-        ElementTree.SubElement(account_node, 'act:id', {'type': 'guid'}).text = self.guid
-        ElementTree.SubElement(account_node, 'act:type').text = self.type
-        if self.commodity:
-            account_node.append(self.commodity.as_short_xml('act:commodity'))
-        else:
-            parent_commodity: Optional[Commodity] = self.get_parent_commodity()
-            if parent_commodity:
-                account_node.append(parent_commodity.as_short_xml('act:commodity'))
-
-        if self.commodity_scu:
-            ElementTree.SubElement(account_node, 'act:commodity-scu').text = str(self.commodity_scu)
-
-        if self.code:
-            ElementTree.SubElement(account_node, 'act:code').text = str(self.code)
-
-        if self.description:
-            ElementTree.SubElement(account_node, 'act:description').text = str(self.description)
-
-        if self.slots:
-            slots_node = ElementTree.SubElement(account_node, 'act:slots')
-            for slot in self.slots:
-                slots_node.append(slot.as_xml)
-
-        if self.parent is not None:
-            ElementTree.SubElement(account_node, 'act:parent', {'type': 'guid'}).text = self.parent.guid
-        node_and_children.append(account_node)
-
-        if self.children:
-            for child in self.children:
-                node_and_children += child.as_xml
-
-        return node_and_children
 
     def as_dict(self, account_hierarchy: Dict[str, 'Account'] = None, path_to_self: str = '/') -> Dict[str, 'Account']:
         """

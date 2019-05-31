@@ -6,15 +6,13 @@ Module containing classes that read, manipulate, and write slots.
 .. moduleauthor: Paul Bromwell Jr.
 """
 from datetime import datetime
-from decimal import Decimal
 from sqlite3 import Cursor
-from typing import Any, Dict, Optional, List, Union
-from xml.etree import ElementTree
+from typing import Any, List, Union
 
-from gnewcash.file_formats import GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import GnuCashSQLiteObject
 
 
-class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
+class Slot(GnuCashSQLiteObject):
     """Represents a slot in GnuCash."""
 
     sqlite_slot_type_mapping = {
@@ -31,34 +29,6 @@ class Slot(GnuCashXMLObject, GnuCashSQLiteObject):
         self.key: str = key
         self.value: Any = value
         self.type: str = slot_type
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current slot as GnuCash-compatible XML.
-
-        :return: Current slot as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        slot_node: ElementTree.Element = ElementTree.Element('slot')
-        ElementTree.SubElement(slot_node, 'slot:key').text = self.key
-
-        slot_value_node = ElementTree.SubElement(slot_node, 'slot:value', {'type': self.type})
-        if self.type == 'gdate':
-            ElementTree.SubElement(slot_value_node, 'gdate').text = datetime.strftime(self.value, '%Y-%m-%d')
-        elif self.type in ['string', 'guid', 'numeric']:
-            slot_value_node.text = self.value
-        elif self.type in ['integer', 'double']:
-            slot_value_node.text = str(self.value)
-        elif isinstance(self.value, list) and self.value:
-            for sub_slot in self.value:
-                slot_value_node.append(sub_slot.as_xml)
-        elif self.type == 'frame':
-            pass  # Empty frame element, just leave it
-        else:
-            raise NotImplementedError('Slot type {} is not implemented.'.format(self.type))
-
-        return slot_node
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor: Cursor, object_id: str) -> List['Slot']:

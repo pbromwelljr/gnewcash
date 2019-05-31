@@ -7,18 +7,19 @@ Module containing classes that read, manipulate, and write commodities.
 """
 from sqlite3 import Cursor
 
-from typing import Optional, Dict, Union, List
+from typing import Optional, Union, List
 
 from xml.etree import ElementTree
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.file_formats import DBAction, GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
 
 
-class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class Commodity(GuidObject, GnuCashSQLiteObject):
     """Represents a Commodity in GnuCash."""
 
     def __init__(self, commodity_id: str, space: str) -> None:
+        super().__init__()
         self.commodity_id: str = commodity_id
         self.space: str = space
         self.get_quotes: bool = False
@@ -27,32 +28,6 @@ class Commodity(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         self.name: Optional[str] = None
         self.xcode: Optional[str] = None
         self.fraction: Optional[str] = None
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current commodity as GnuCash-compatible XML.
-
-        :return: Current commodity as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        commodity_node = ElementTree.Element('gnc:commodity', {'version': '2.0.0'})
-        ElementTree.SubElement(commodity_node, 'cmdty:space').text = self.space
-        ElementTree.SubElement(commodity_node, 'cmdty:id').text = self.commodity_id
-        if self.get_quotes:
-            ElementTree.SubElement(commodity_node, 'cmdty:get_quotes')
-        if self.quote_source:
-            ElementTree.SubElement(commodity_node, 'cmdty:quote_source').text = self.quote_source
-        if self.quote_tz:
-            ElementTree.SubElement(commodity_node, 'cmdty:quote_tz')
-        if self.name:
-            ElementTree.SubElement(commodity_node, 'cmdty:name').text = self.name
-        if self.xcode:
-            ElementTree.SubElement(commodity_node, 'cmdty:xcode').text = self.xcode
-        if self.fraction:
-            ElementTree.SubElement(commodity_node, 'cmdty:fraction').text = self.fraction
-
-        return commodity_node
 
     def as_short_xml(self, node_tag: str) -> ElementTree.Element:
         """

@@ -7,21 +7,18 @@ Module containing classes that read, manipulate, and write transactions.
 """
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Dict, Iterator, List, Optional, Tuple
-from xml.etree import ElementTree
-from warnings import warn
+from typing import Iterator, List, Optional, Tuple
 from sqlite3 import Cursor
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
-from gnewcash.file_formats import DBAction, GnuCashXMLObject, GnuCashSQLiteObject
+from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.utils import safe_iso_date_parsing, safe_iso_date_formatting
 
 
-class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class Transaction(GuidObject, SlottableObject, GnuCashSQLiteObject):
     """Represents a transaction in GnuCash."""
 
     def __init__(self) -> None:
@@ -40,43 +37,6 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
 
     def __repr__(self) -> str:
         return str(self)
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current transaction as GnuCash-compatible XML.
-
-        :return: Current transaction as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        transaction_node: ElementTree.Element = ElementTree.Element('gnc:transaction', {'version': '2.0.0'})
-        ElementTree.SubElement(transaction_node, 'trn:id', {'type': 'guid'}).text = self.guid
-
-        if self.currency:
-            transaction_node.append(self.currency.as_short_xml('trn:currency'))
-
-        if self.memo:
-            ElementTree.SubElement(transaction_node, 'trn:num').text = self.memo
-
-        if self.date_posted:
-            date_posted_node = ElementTree.SubElement(transaction_node, 'trn:date-posted')
-            ElementTree.SubElement(date_posted_node, 'ts:date').text = safe_iso_date_formatting(self.date_posted)
-        if self.date_entered:
-            date_entered_node = ElementTree.SubElement(transaction_node, 'trn:date-entered')
-            ElementTree.SubElement(date_entered_node, 'ts:date').text = safe_iso_date_formatting(self.date_entered)
-        ElementTree.SubElement(transaction_node, 'trn:description').text = self.description
-
-        if self.slots:
-            slots_node = ElementTree.SubElement(transaction_node, 'trn:slots')
-            for slot in self.slots:
-                slots_node.append(slot.as_xml)
-
-        if self.splits:
-            splits_node = ElementTree.SubElement(transaction_node, 'trn:splits')
-            for split in self.splits:
-                splits_node.append(split.as_xml)
-
-        return transaction_node
 
     def __lt__(self, other: 'Transaction') -> bool:
         if self.date_posted is not None and other.date_posted is not None:
@@ -230,7 +190,7 @@ class Transaction(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteOb
             sql = '''
 INSERT INTO transactions(guid, currency_guid, num, post_date, enter_date, description)
 VALUES (?, ?, ?, ?, ?, ?)'''.strip()
-            sql_args = (self.guid, self.currency.guid, self.memo, self.date_posted, self.date_entered, 
+            sql_args = (self.guid, self.currency.guid, self.memo, self.date_posted, self.date_entered,
                         self.description)
             sqlite_cursor.execute(sql, sql_args)
         elif db_action == DBAction.UPDATE:
@@ -245,7 +205,7 @@ WHERE guid = ?'''.strip()
             sql_args = (self.currency.guid if self.currency else None, self.memo, self.date_posted, self.date_entered,
                         self.description, self.guid)
             sqlite_cursor.execute(sql, sql_args)
-        
+
         # TODO: slots
         # TODO: splits
 
@@ -253,7 +213,7 @@ WHERE guid = ?'''.strip()
 GnuCashSQLiteObject.register(Transaction)
 
 
-class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class Split(GuidObject, GnuCashSQLiteObject):
     """Represents a split in GnuCash."""
 
     def __init__(self, account: Optional[Account], amount: Optional[Decimal], reconciled_state: str = 'n'):
@@ -270,31 +230,6 @@ class Split(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
 
     def __repr__(self) -> str:
         return str(self)
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current split as GnuCash-compatible XML.
-
-        :return: Current split as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        split_node: ElementTree.Element = ElementTree.Element('trn:split')
-        ElementTree.SubElement(split_node, 'split:id', {'type': 'guid'}).text = self.guid
-
-        if self.memo:
-            ElementTree.SubElement(split_node, 'split:memo').text = self.memo
-        if self.action:
-            ElementTree.SubElement(split_node, 'split:action').text = self.action
-
-        ElementTree.SubElement(split_node, 'split:reconciled-state').text = self.reconciled_state
-        if self.amount is not None:
-            ElementTree.SubElement(split_node, 'split:value').text = str(int(self.amount * 100)) + '/100'
-            ElementTree.SubElement(split_node, 'split:quantity').text = '/'.join([
-                str(int(self.amount * 100)), self.quantity_denominator])
-        if self.account:
-            ElementTree.SubElement(split_node, 'split:account', {'type': 'guid'}).text = self.account.guid
-        return split_node
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor: Cursor, transaction_guid: str, root_account: Account,
@@ -542,7 +477,7 @@ class TransactionManager:
         yield from self.transactions
 
 
-class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class ScheduledTransaction(GuidObject, GnuCashSQLiteObject):
     """Class that represents a scheduled transaction in Gnucash."""
 
     def __init__(self) -> None:
@@ -561,52 +496,6 @@ class ScheduledTransaction(GuidObject, GnuCashXMLObject, GnuCashSQLiteObject):
         self.recurrence_multiplier: Optional[int] = 0
         self.recurrence_period: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current scheduled transaction as GnuCash-compatible XML.
-
-        :return: Current scheduled transaction as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        xml_node: ElementTree.Element = ElementTree.Element('gnc:schedxaction', attrib={'version': '2.0.0'})
-        if self.guid:
-            ElementTree.SubElement(xml_node, 'sx:id', attrib={'type': 'guid'}).text = self.guid
-        if self.name:
-            ElementTree.SubElement(xml_node, 'sx:name').text = self.name
-        ElementTree.SubElement(xml_node, 'sx:enabled').text = 'y' if self.enabled else 'n'
-        ElementTree.SubElement(xml_node, 'sx:autoCreate').text = 'y' if self.auto_create else 'n'
-        ElementTree.SubElement(xml_node, 'sx:autoCreateNotify').text = 'y' if self.auto_create_notify else 'n'
-        if self.advance_create_days is not None:
-            ElementTree.SubElement(xml_node, 'sx:advanceCreateDays').text = str(self.advance_create_days)
-        if self.advance_remind_days is not None:
-            ElementTree.SubElement(xml_node, 'sx:advanceRemindDays').text = str(self.advance_remind_days)
-        if self.instance_count is not None:
-            ElementTree.SubElement(xml_node, 'sx:instanceCount').text = str(self.instance_count)
-        if self.start_date:
-            start_node = ElementTree.SubElement(xml_node, 'sx:start')
-            ElementTree.SubElement(start_node, 'gdate').text = self.start_date.strftime('%Y-%m-%d')
-        if self.last_date:
-            last_node = ElementTree.SubElement(xml_node, 'sx:last')
-            ElementTree.SubElement(last_node, 'gdate').text = self.last_date.strftime('%Y-%m-%d')
-        if self.end_date:
-            end_node = ElementTree.SubElement(xml_node, 'sx:end')
-            ElementTree.SubElement(end_node, 'gdate').text = self.end_date.strftime('%Y-%m-%d')
-        if self.template_account:
-            ElementTree.SubElement(xml_node, 'sx:templ-acct', attrib={'type': 'guid'}).text = self.template_account.guid
-        if self.recurrence_multiplier is not None or self.recurrence_period is not None \
-                or self.recurrence_start is not None:
-            schedule_node = ElementTree.SubElement(xml_node, 'sx:schedule')
-            recurrence_node = ElementTree.SubElement(schedule_node, 'gnc:recurrence', attrib={'version': '1.0.0'})
-            if self.recurrence_multiplier:
-                ElementTree.SubElement(recurrence_node, 'recurrence:mult').text = str(self.recurrence_multiplier)
-            if self.recurrence_period:
-                ElementTree.SubElement(recurrence_node, 'recurrence:period_type').text = self.recurrence_period
-            if self.recurrence_start:
-                start_node = ElementTree.SubElement(recurrence_node, 'recurrence:start')
-                ElementTree.SubElement(start_node, 'gdate').text = self.recurrence_start.strftime('%Y-%m-%d')
-        return xml_node
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor: Cursor, template_root_account: Account) -> List['ScheduledTransaction']:

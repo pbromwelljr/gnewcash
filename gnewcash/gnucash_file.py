@@ -8,18 +8,14 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
 
 from datetime import datetime
 from decimal import Decimal
-import gzip
 import os.path
 from logging import getLogger
 import sqlite3
-from typing import Dict, Optional, List, Tuple, Type, Any
-import warnings
-from xml.etree import ElementTree
-from xml.dom import minidom
+from typing import Optional, List, Tuple, Type, Any, TYPE_CHECKING
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
-from gnewcash.file_formats import DBAction, FileFormat, GnuCashSQLiteObject, GnuCashXMLObject
+from gnewcash.file_formats import DBAction, FileFormat, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split
@@ -27,38 +23,6 @@ from gnewcash.transaction import Transaction, TransactionManager, ScheduledTrans
 
 class GnuCashFile:
     """Class representing a GnuCash file on disk."""
-
-    namespace_data: Dict[str, str] = {
-        'gnc': 'http://www.gnucash.org/XML/gnc',
-        'act': 'http://www.gnucash.org/XML/act',
-        'book': 'http://www.gnucash.org/XML/book',
-        'cd': 'http://www.gnucash.org/XML/cd',
-        'cmdty': 'http://www.gnucash.org/XML/cmdty',
-        'price': 'http://www.gnucash.org/XML/price',
-        'slot': 'http://www.gnucash.org/XML/slot',
-        'split': 'http://www.gnucash.org/XML/split',
-        'sx': 'http://www.gnucash.org/XML/sx',
-        'trn': 'http://www.gnucash.org/XML/trn',
-        'ts': 'http://www.gnucash.org/XML/ts',
-        'fs': 'http://www.gnucash.org/XML/fs',
-        'bgt': 'http://www.gnucash.org/XML/bgt',
-        'recurrence': 'http://www.gnucash.org/XML/recurrence',
-        'lot': 'http://www.gnucash.org/XML/lot',
-        'addr': 'http://www.gnucash.org/XML/addr',
-        'owner': 'http://www.gnucash.org/XML/owner',
-        'billterm': 'http://www.gnucash.org/XML/billterm',
-        'bt-days': 'http://www.gnucash.org/XML/bt-days',
-        'bt-prox': 'http://www.gnucash.org/XML/bt-prox',
-        'cust': 'http://www.gnucash.org/XML/cust',
-        'employee': 'http://www.gnucash.org/XML/employee',
-        'entry': 'http://www.gnucash.org/XML/entry',
-        'invoice': 'http://www.gnucash.org/XML/invoice',
-        'job': 'http://www.gnucash.org/XML/job',
-        'order': 'http://www.gnucash.org/XML/order',
-        'taxtable': 'http://www.gnucash.org/XML/taxtable',
-        'tte': 'http://www.gnucash.org/XML/tte',
-        'vendor': 'http://www.gnucash.org/XML/vendor'
-    }
 
     def __init__(self, books: Optional[List['Book']] = None) -> None:
         if not books:
@@ -97,8 +61,8 @@ class GnuCashFile:
             raise RuntimeError('Could not detect file format of {}'.format(source_file))
 
     @classmethod
-    def read_file(cls, source_file: str, sort_transactions: bool = True,
-                  transaction_class: Type = None, file_format: Optional[FileFormat] = None) -> 'GnuCashFile':
+    def read_file(cls, source_file: str, file_format: Any, sort_transactions: bool = True,
+                  transaction_class: Type = None) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -123,33 +87,15 @@ class GnuCashFile:
             logger.warning('Could not find %s', source_file)
             return built_file
 
-        file_format = cls.detect_file_format(source_file) if file_format is None else file_format
-        if file_format == FileFormat.UNKNOWN:
-            raise RuntimeError('Could not detect file format of {}'.format(source_file))
+        return file_format.load(source_file=source_file, sort_transactions=sort_transactions)
 
-        if file_format in [FileFormat.XML, FileFormat.GZIP_XML]:
-            if file_format == FileFormat.XML:
-                root: ElementTree.Element = ElementTree.parse(source=source_file).getroot()
-            elif file_format == FileFormat.GZIP_XML:
-                with gzip.open(source_file, 'rb') as gzipped_file:
-                    contents = gzipped_file.read().decode('utf-8')
-                root = ElementTree.fromstring(contents)
-            namespaces: Dict[str, str] = cls.namespace_data
+        # TODO: Move to SQLite reader
+        # elif file_format == FileFormat.SQLITE:
+        #     sqlite_handle = sqlite3.connect(source_file)
+        #     cursor = sqlite_handle.cursor()
+        #     built_file.books = Book.from_sqlite(cursor)
 
-            books: List[ElementTree.Element] = root.findall('gnc:book', namespaces)
-            for book in books:
-                new_book: 'Book' = Book.from_xml(book, namespaces, sort_transactions=sort_transactions,
-                                                 transaction_class=transaction_class)
-                built_file.books.append(new_book)
-        elif file_format == FileFormat.SQLITE:
-            sqlite_handle = sqlite3.connect(source_file)
-            cursor = sqlite_handle.cursor()
-            built_file.books = Book.from_sqlite(cursor)
-
-        return built_file
-
-    def build_file(self, target_file: str, prettify_xml: bool = False, use_gzip: bool = False,
-                   file_format: Optional[FileFormat] = None) -> None:
+    def build_file(self, target_file: str, file_format: Any, prettify_xml: bool = False) -> None:
         """
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk.
 
@@ -160,47 +106,20 @@ class GnuCashFile:
         :param use_gzip: Use GZip compression when writing file to disk. Default False.
         :type use_gzip: bool
         """
-        namespace_info: Dict[str, str] = self.namespace_data
+        return file_format.dump(self, target_file=target_file, prettify_xml=prettify_xml)
 
-        if file_format in [None, FileFormat.XML, FileFormat.GZIP_XML]:
-            root_node: ElementTree.Element = ElementTree.Element(
-                'gnc-v2', {'xmlns:' + identifier: value for identifier, value in namespace_info.items()}
-            )
-            book_count_node: ElementTree.Element = ElementTree.Element('gnc:count-data', {'cd:type': 'book'})
-            book_count_node.text = str(len(self.books))
-            root_node.append(book_count_node)
-
-            for book in self.books:
-                root_node.append(book.as_xml)
-
-            file_contents: bytes = ElementTree.tostring(root_node, encoding='utf-8', method='xml')
-
-            # Making our resulting XML pretty
-            if prettify_xml:
-                file_contents = minidom.parseString(file_contents).toprettyxml(encoding='utf-8')
-
-            if use_gzip or file_format == FileFormat.GZIP_XML:
-                if use_gzip:
-                    warnings.warn('The "use_gzip" parameter is deprecated. '
-                                  'Use file_format=FileFormat.GZIP_XML for gzipped XML files.')
-                with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
-                    gzip_file.write(file_contents)
-            else:
-                with open(target_file, 'wb') as target_file_handle:
-                    target_file_handle.write(file_contents)
-        elif file_format == FileFormat.SQLITE:
-            create_schema = not os.path.exists(target_file)
-            sqlite_handle = sqlite3.connect(target_file)
-            cursor = sqlite_handle.cursor()
-            if create_schema:
-                self.create_sqlite_schema(cursor)
-
-            for book in self.books:
-                book.to_sqlite(cursor)
-
-            raise NotImplementedError('SQLite support not implemented')
-        else:
-            raise ValueError('Invalid file format type: {}'.format(file_format))
+        # TODO: Move to SQLite writer
+        # elif file_format == FileFormat.SQLITE:
+        #     create_schema = not os.path.exists(target_file)
+        #     sqlite_handle = sqlite3.connect(target_file)
+        #     cursor = sqlite_handle.cursor()
+        #     if create_schema:
+        #         self.create_sqlite_schema(cursor)
+        #
+        #     for book in self.books:
+        #         book.to_sqlite(cursor)
+        #
+        #     raise NotImplementedError('SQLite support not implemented')
 
     @classmethod
     def create_sqlite_schema(cls, sqlite_cursor: sqlite3.Cursor) -> None:
@@ -217,7 +136,7 @@ class GnuCashFile:
                 sqlite_cursor.execute(line)
 
 
-class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class Book(GuidObject, SlottableObject, GnuCashSQLiteObject):
     """Represents a Book in GnuCash."""
 
     def __init__(self, root_account: Optional[Account] = None, transactions: Optional[TransactionManager] = None,
@@ -235,70 +154,6 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
         self.template_transactions: List[Transaction] = template_transactions or []
         self.scheduled_transactions: List[ScheduledTransaction] = scheduled_transactions or []
         self.budgets: List['Budget'] = budgets or []
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current book as GnuCash-compatible XML.
-
-        :return: ElementTree.Element object
-        :rtype: xml.etree.ElementTree.Element
-        """
-        book_node: ElementTree.Element = ElementTree.Element('gnc:book', {'version': '2.0.0'})
-        book_id_node = ElementTree.SubElement(book_node, 'book:id', {'type': 'guid'})
-        book_id_node.text = self.guid
-
-        accounts_xml: Optional[List[ElementTree.Element]] = None
-        if self.root_account:
-            accounts_xml = self.root_account.as_xml
-
-        if self.slots:
-            slot_node = ElementTree.SubElement(book_node, 'book:slots')
-            for slot in self.slots:
-                slot_node.append(slot.as_xml)
-
-        commodity_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'commodity'})
-        commodity_count_node.text = str(len(list(filter(lambda x: x.commodity_id != 'template', self.commodities))))
-
-        account_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'account'})
-        account_count_node.text = str(len(accounts_xml) if accounts_xml else 0)
-
-        transaction_count_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'transaction'})
-        transaction_count_node.text = str(len(self.transactions))
-
-        if self.scheduled_transactions:
-            scheduled_transaction_node = ElementTree.SubElement(book_node, 'gnc:count-data',
-                                                                {'cd:type': 'schedxaction'})
-            scheduled_transaction_node.text = str(len(self.scheduled_transactions))
-
-        if self.budgets:
-            budget_node = ElementTree.SubElement(book_node, 'gnc:count-data', {'cd:type': 'budget'})
-            budget_node.text = str(len(self.budgets))
-
-        for commodity in self.commodities:
-            book_node.append(commodity.as_xml)
-
-        if accounts_xml:
-            for account in accounts_xml:
-                book_node.append(account)
-
-        for transaction in self.transactions:
-            book_node.append(transaction.as_xml)
-
-        if self.template_root_account and self.template_transactions:
-            template_transactions_node = ElementTree.SubElement(book_node, 'gnc:template-transactions')
-            for account in self.template_root_account.as_xml:
-                template_transactions_node.append(account)
-            for transaction in self.template_transactions:
-                template_transactions_node.append(transaction.as_xml)
-
-        for scheduled_transaction in self.scheduled_transactions:
-            book_node.append(scheduled_transaction.as_xml)
-
-        for budget in self.budgets:
-            book_node.append(budget.as_xml)
-
-        return book_node
 
     def get_account(self, *paths_to_account: str, **kwargs: Any) -> Optional[Account]:
         """
@@ -453,7 +308,7 @@ class Book(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
 GnuCashSQLiteObject.register(Book)
 
 
-class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject):
+class Budget(GuidObject, SlottableObject, GnuCashSQLiteObject):
     """Class object representing a Budget in GnuCash."""
 
     def __init__(self) -> None:
@@ -464,40 +319,6 @@ class Budget(GuidObject, SlottableObject, GnuCashXMLObject, GnuCashSQLiteObject)
         self.recurrence_multiplier: Optional[int] = None
         self.recurrence_period_type: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
-
-    @property
-    def as_xml(self) -> ElementTree.Element:
-        """
-        Returns the current budget as GnuCash-compatible XML.
-
-        :return: Current budget as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        budget_node: ElementTree.Element = ElementTree.Element('gnc:budget', attrib={'version': '2.0.0'})
-        ElementTree.SubElement(budget_node, 'bgt:id', {'type': 'guid'}).text = self.guid
-        ElementTree.SubElement(budget_node, 'bgt:name').text = self.name
-        ElementTree.SubElement(budget_node, 'bgt:description').text = self.description
-
-        if self.period_count is not None:
-            ElementTree.SubElement(budget_node, 'bgt:num-periods').text = str(self.period_count)
-
-        if self.recurrence_multiplier is not None or self.recurrence_period_type is not None or \
-                self.recurrence_start is not None:
-            recurrence_node = ElementTree.SubElement(budget_node, 'bgt:recurrence', attrib={'version': '1.0.0'})
-            if self.recurrence_multiplier is not None:
-                ElementTree.SubElement(recurrence_node, 'recurrence:mult').text = str(self.recurrence_multiplier)
-            if self.recurrence_period_type is not None:
-                ElementTree.SubElement(recurrence_node, 'recurrence:period_type').text = self.recurrence_period_type
-            if self.recurrence_start is not None:
-                start_node = ElementTree.SubElement(recurrence_node, 'recurrence:start')
-                ElementTree.SubElement(start_node, 'gdate').text = self.recurrence_start.strftime('%Y-%m-%d')
-
-        if self.slots:
-            slots_node = ElementTree.SubElement(budget_node, 'bgt:slots')
-            for slot in self.slots:
-                slots_node.append(slot.as_xml)
-
-        return budget_node
 
     @classmethod
     def from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> List['Budget']:
@@ -551,7 +372,7 @@ WHERE guid = ?'''.strip()
             sql_args = (self.name, self.description, self.period_count, self.guid)
             sqlite_cursor.execute(sql, sql_args)
 
-        # TODO: Upsert recurrences        
+        # TODO: Upsert recurrences
         # db_action = self.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', self.guid)
         # if db_action == DBAction.INSERT:
 

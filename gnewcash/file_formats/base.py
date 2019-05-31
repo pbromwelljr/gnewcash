@@ -11,8 +11,8 @@ from typing import Any
 from gnewcash.gnucash_file import GnuCashFile
 
 
-class BaseFileFormat(abc.ABC):
-    """Class used to define base structure for file loading and saving."""
+class BaseFileReader(abc.ABC):
+    """Class used to define base structure for file loading."""
     @classmethod
     @abc.abstractmethod
     def load(cls, *args: Any, **kwargs: Any) -> GnuCashFile:
@@ -25,6 +25,9 @@ class BaseFileFormat(abc.ABC):
         """
         raise NotImplementedError
 
+
+class BaseFileWriter(abc.ABC):
+    """Class used to define base structure for file saving."""
     @classmethod
     @abc.abstractmethod
     def dump(cls, *args: Any, **kwargs: Any) -> None:
@@ -34,3 +37,14 @@ class BaseFileFormat(abc.ABC):
         :param kwargs: Method kwargs
         """
         raise NotImplementedError
+
+
+class BaseFileFormat(BaseFileReader, BaseFileWriter, abc.ABC):
+    """Class used to define base structure for file loading and saving."""
+    @classmethod
+    def load(cls, *args: Any, **kwargs: Any) -> GnuCashFile:
+        return super().load(*args, **kwargs)
+
+    @classmethod
+    def dump(cls, *args: Any, **kwargs: Any) -> None:
+        super().dump(*args, **kwargs)
