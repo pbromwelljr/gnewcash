@@ -57,10 +57,21 @@ XML_NAMESPACES: Dict[str, str] = {
 
 class GnuCashXMLReader(BaseFileReader):
     """Class containing the logic for loading XML files."""
+
     LOGGER = logging.getLogger()
 
     @classmethod
     def load(cls, *args: Any, source_file: str = '', sort_transactions: bool = True, **kwargs: Any) -> GnuCashFile:
+        """
+        Loads a GnuCash XML file from disk to memory.
+
+        :param source_file: File to load from disk
+        :type source_file: str
+        :param sort_transactions: Should transactions be sorted by date posted
+        :type sort_transactions: bool
+        :return: GnuCashFile object
+        :rtype: GnuCashFile
+        """
         built_file: GnuCashFile = GnuCashFile()
         built_file.file_name = source_file
 
@@ -80,7 +91,8 @@ class GnuCashXMLReader(BaseFileReader):
     @classmethod
     def get_xml_root(cls, source_path: pathlib.Path) -> ElementTree.Element:
         """
-        Retrieves the root element from a given XML document
+        Retrieves the root element from a given XML document.
+
         :param source_path: Path to XML document
         :type source_path: pathlib.Path
         :return: Root element
@@ -167,13 +179,13 @@ class GnuCashXMLReader(BaseFileReader):
     @classmethod
     def create_slot_from_xml(cls, slot_node: ElementTree.Element) -> Slot:
         """
-         Creates a Slot object from the GnuCash XML.
+        Creates a Slot object from the GnuCash XML.
 
-         :param slot_node: XML node for the slot
-         :type slot_node: ElementTree.Element
-         :return: Slot object from XML
-         :rtype: Slot
-         """
+        :param slot_node: XML node for the slot
+        :type slot_node: ElementTree.Element
+        :return: Slot object from XML
+        :rtype: Slot
+        """
         key_node: Optional[ElementTree.Element] = slot_node.find('slot:key', XML_NAMESPACES)
         if key_node is None or not key_node.text:
             raise ValueError('slot:key missing or empty in slot node')
@@ -598,11 +610,23 @@ class GnuCashXMLReader(BaseFileReader):
 
 class GnuCashXMLWriter(BaseFileWriter):
     """Class containing the logic for saving XML files."""
+
     LOGGER = logging.getLogger()
 
     @classmethod
     def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', prettify_xml: bool = False,
              **kwargs: Any) -> None:
+        """
+        Writes GnuCash XML file from memory to disk.
+
+        :param gnucash_file: File to write to disk
+        :type gnucash_file: GnuCashFile
+        :param target_file: Destination file to write to.
+        :type target_file: str
+        :param prettify_xml: Should the XML be prettified? (default false)
+        :type prettify_xml: bool
+        :return:
+        """
         root_node: ElementTree.Element = ElementTree.Element(
             'gnc-v2', {'xmlns:' + identifier: value for identifier, value in XML_NAMESPACES.items()}
         )
@@ -761,11 +785,11 @@ class GnuCashXMLWriter(BaseFileWriter):
     @classmethod
     def cast_commodity_as_xml(cls, commodity: Commodity) -> ElementTree.Element:
         """
-         Returns the current commodity as GnuCash-compatible XML.
+        Returns the current commodity as GnuCash-compatible XML.
 
-         :return: Current commodity as XML
-         :rtype: xml.etree.ElementTree.Element
-         """
+        :return: Current commodity as XML
+        :rtype: xml.etree.ElementTree.Element
+        """
         commodity_node = ElementTree.Element('gnc:commodity', {'version': '2.0.0'})
         ElementTree.SubElement(commodity_node, 'cmdty:space').text = commodity.space
         ElementTree.SubElement(commodity_node, 'cmdty:id').text = commodity.commodity_id
@@ -972,13 +996,30 @@ class XMLFileFormat(GnuCashXMLReader, GnuCashXMLWriter, BaseFileFormat):
 
 class GZipXMLFileFormat(XMLFileFormat):
     """Class containing the logic for loading and saving XML files with GZip compression."""
+
     @classmethod
     def get_xml_root(cls, source_path: pathlib.Path) -> ElementTree.Element:
+        """
+        Retrieves the XML root element from a GZipped XML file.
+
+        :param source_path: Path to GZipped XML File.
+        :type source_path: str
+        :return: XML root element
+        :rtype: ElementTree.Element
+        """
         with gzip.open(source_path, 'rb') as gzipped_file:
             contents = gzipped_file.read().decode('utf-8')
         return ElementTree.fromstring(contents)
 
     @classmethod
     def write_file_contents(cls, target_file: str, file_contents: bytes) -> None:
+        """
+        Writes the specified contents to the target file, with a level 9 GZip compression.
+
+        :param target_file: Target GZip file to write to.
+        :type target_file: str
+        :param file_contents: Contents to write to the GZip file
+        :type file_contents: bytes
+        """
         with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
             gzip_file.write(file_contents)

@@ -35,6 +35,7 @@ SQLITE_SLOT_TYPE_MAPPING = {
 
 class DBAction(enum.Enum):
     """Enumeration class for record operations in databases."""
+
     INSERT = 1
     UPDATE = 2
 
@@ -65,10 +66,21 @@ class DBAction(enum.Enum):
 
 class GnuCashSQLiteReader(BaseFileReader):
     """Class containing the logic for loading SQlite files."""
+
     LOGGER = logging.getLogger()
 
     @classmethod
     def load(cls, *args: Any, source_file: str = '', sort_transactions: bool = True, **kwargs: Any) -> GnuCashFile:
+        """
+        Loads a GnuCash SQLite file from disk to memory.
+
+        :param source_file: File to load from disk
+        :type source_file: str
+        :param sort_transactions: Should transactions be sorted by date posted
+        :type sort_transactions: bool
+        :return: GnuCashFile object
+        :rtype: GnuCashFile
+        """
         built_file: GnuCashFile = GnuCashFile()
         built_file.file_name = source_file
 
@@ -134,15 +146,15 @@ class GnuCashSQLiteReader(BaseFileReader):
     @classmethod
     def create_account_from_sqlite(cls, sqlite_cursor: Cursor, account_id: str) -> Account:
         """
-         Creates an Account object from the GnuCash SQLite database.
+        Creates an Account object from the GnuCash SQLite database.
 
-         :param sqlite_cursor: Open cursor to the GnuCash SQLite database.
-         :type sqlite_cursor: sqlite3.Cursor
-         :param account_id: ID of the account to load from the SQLite database
-         :type account_id: str
-         :return: Account object from SQLite
-         :rtype: Account
-         """
+        :param sqlite_cursor: Open cursor to the GnuCash SQLite database.
+        :type sqlite_cursor: sqlite3.Cursor
+        :param account_id: ID of the account to load from the SQLite database
+        :type account_id: str
+        :return: Account object from SQLite
+        :rtype: Account
+        """
         account_data_items = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
         if not account_data_items:
             raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))
@@ -364,7 +376,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         new_splits = []
         for split in split_data:
             account_object = root_account.get_subaccount_by_id(split['account_guid']) or \
-                             template_root_account.get_subaccount_by_id(split['account_guid'])
+                template_root_account.get_subaccount_by_id(split['account_guid'])
             new_split = Split(account_object, split['value_num'] / split['value_denom'], split['reconcile_state'])
             new_split.guid = split['guid']
             new_split.memo = split['memo']
@@ -411,8 +423,18 @@ class GnuCashSQLiteReader(BaseFileReader):
 
 class GnuCashSQLiteWriter(BaseFileWriter):
     """Class containing the logic for saving SQlite files."""
+
     @classmethod
     def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', **kwargs: Any) -> None:
+        """
+        Updates GnuCash SQLite file on disk from memory.
+
+        :param gnucash_file: File to write to disk
+        :type gnucash_file: GnuCashFile
+        :param target_file: Destination file to write to.
+        :type target_file: str
+        :return:
+        """
         create_schema: bool = not os.path.exists(target_file)
         sqlite_handle: Connection = sqlite3.connect(target_file)
         cursor: Cursor = sqlite_handle.cursor()
@@ -657,7 +679,7 @@ WHERE guid  = ?
         sql_args: Tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
-    INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num, 
+    INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num,
                        value_denom, quantity_num, quantity_denom, lot_guid)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (split.guid, transaction_guid, split.account.guid, split.reconciled_state,

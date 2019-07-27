@@ -10,6 +10,7 @@ from typing import Any, List, Union
 
 class Slot:
     """Represents a slot in GnuCash."""
+
     def __init__(self, key: str, value: Any, slot_type: str) -> None:
         self.key: str = key
         self.value: Any = value
