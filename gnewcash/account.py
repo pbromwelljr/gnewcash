@@ -11,20 +11,18 @@ from datetime import datetime
 from decimal import Decimal, ROUND_UP
 from collections import namedtuple
 from typing import List, Tuple, Dict, Optional, Union, Pattern
-from sqlite3 import Cursor
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
-from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot, SlottableObject
+from gnewcash.slot import SlottableObject
 
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])
 
 
-class Account(GuidObject, SlottableObject, GnuCashSQLiteObject):
+class Account(GuidObject, SlottableObject):
     """Represents an account in GnuCash."""
 
     def __init__(self) -> None:
@@ -211,9 +209,6 @@ class Account(GuidObject, SlottableObject, GnuCashSQLiteObject):
         for sub_account in self.children:
             account_guids = sub_account.get_account_guids(account_guids)
         return account_guids
-
-
-GnuCashSQLiteObject.register(Account)
 
 
 class BankAccount(Account):

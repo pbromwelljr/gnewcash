@@ -8,17 +8,15 @@ Module containing classes that read, manipulate, and write transactions.
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Iterator, List, Optional, Tuple
-from sqlite3 import Cursor
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
-from gnewcash.file_formats import DBAction, GnuCashSQLiteObject
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot, SlottableObject
+from gnewcash.slot import SlottableObject
 
 
-class Transaction(GuidObject, SlottableObject, GnuCashSQLiteObject):
+class Transaction(GuidObject, SlottableObject):
     """Represents a transaction in GnuCash."""
 
     def __init__(self) -> None:
@@ -152,10 +150,7 @@ class Transaction(GuidObject, SlottableObject, GnuCashSQLiteObject):
         super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
 
-GnuCashSQLiteObject.register(Transaction)
-
-
-class Split(GuidObject, GnuCashSQLiteObject):
+class Split(GuidObject):
     """Represents a split in GnuCash."""
 
     def __init__(self, account: Optional[Account], amount: Optional[Decimal], reconciled_state: str = 'n'):
@@ -172,9 +167,6 @@ class Split(GuidObject, GnuCashSQLiteObject):
 
     def __repr__(self) -> str:
         return str(self)
-
-
-GnuCashSQLiteObject.register(Split)
 
 
 class TransactionManager:
@@ -343,7 +335,7 @@ class TransactionManager:
         yield from self.transactions
 
 
-class ScheduledTransaction(GuidObject, GnuCashSQLiteObject):
+class ScheduledTransaction(GuidObject):
     """Class that represents a scheduled transaction in Gnucash."""
 
     def __init__(self) -> None:
@@ -362,9 +354,6 @@ class ScheduledTransaction(GuidObject, GnuCashSQLiteObject):
         self.recurrence_multiplier: Optional[int] = 0
         self.recurrence_period: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
-
-
-GnuCashSQLiteObject.register(ScheduledTransaction)
 
 
 class SimpleTransaction(Transaction):
