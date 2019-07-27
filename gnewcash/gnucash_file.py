@@ -151,51 +151,6 @@ class Book(GuidObject, SlottableObject):
     def __repr__(self) -> str:
         return str(self)
 
-    def to_sqlite(self, sqlite_handle: sqlite3.Cursor) -> None:
-        book_db_action = self.get_db_action(sqlite_handle, 'books', 'guid', self.guid)
-        if book_db_action == DBAction.INSERT:
-            sqlite_handle.execute('INSERT INTO books (guid, root_account_guid, root_template_guid) VALUES (?, ?, ?)',
-                                  (self.guid, self.root_account.guid, self.template_root_account.guid,))
-        elif book_db_action == DBAction.UPDATE:
-            sqlite_handle.execute('UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?',
-                                  (self.root_account.guid, self.template_root_account.guid, self.guid,))
-
-        self.root_account.to_sqlite(sqlite_handle)
-        self.template_root_account.to_sqlite(sqlite_handle)
-
-        # TODO: Re-enable slots when slots are implemented
-        # for slot in self.slots:
-        #     slot.to_sqlite(sqlite_handle)
-
-        for commodity in self.commodities:
-            commodity.to_sqlite(sqlite_handle)
-
-        # TODO: Implement the rest
-        '''
-        transaction_manager = TransactionManager()
-        transaction_manager.disable_sort = not sort_transactions
-        template_transactions = []
-        template_account_guids = new_book.template_root_account.get_account_guids()
-
-        for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account,
-                                                         new_book.template_root_account):
-            transaction_account_guids = [x.account.guid for x in transaction.splits]
-            if any(map(lambda x: x in template_account_guids, transaction_account_guids)):
-                template_transactions.append(transaction)
-            else:
-                transaction_manager.add(transaction)
-
-        new_book.transactions = transaction_manager
-        new_book.template_transactions = template_transactions
-
-        for scheduled_transaction in ScheduledTransaction.from_sqlite(sqlite_cursor,
-                                                                      new_book.template_root_account):
-            new_book.scheduled_transactions.append(scheduled_transaction)
-
-        new_book.budgets = Budget.from_sqlite(sqlite_cursor)
-        '''
-        raise NotImplementedError
-
 
 class Budget(GuidObject, SlottableObject):
     """Class object representing a Budget in GnuCash."""
@@ -208,31 +163,3 @@ class Budget(GuidObject, SlottableObject):
         self.recurrence_multiplier: Optional[int] = None
         self.recurrence_period_type: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
-
-    def to_sqlite(self, sqlite_cursor: sqlite3.Cursor) -> None:
-        db_action: DBAction = self.get_db_action(sqlite_cursor, 'budgets', 'guid', self.guid)
-        sql: str = ''
-        sql_args: Tuple = tuple()
-        if db_action == DBAction.INSERT:
-            sql = '''
-INSERT INTO budgets(guid, name, description, num_periods)
-VALUES (?, ?, ?, ?)'''.strip()
-            sql_args = (self.guid, self.name, self.description, self.period_count)
-            sqlite_cursor.execute(sql, sql_args)
-        elif db_action == DBAction.UPDATE:
-            sql = '''
-UPDATE budgets
-SET name = ?,
-    description = ?,
-    num_periods = ?
-WHERE guid = ?'''.strip()
-            sql_args = (self.name, self.description, self.period_count, self.guid)
-            sqlite_cursor.execute(sql, sql_args)
-
-        # TODO: Upsert recurrences
-        # db_action = self.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', self.guid)
-        # if db_action == DBAction.INSERT:
-
-        # elif db_action == DBAction.UPDATE:
-
-        # TODO: slots

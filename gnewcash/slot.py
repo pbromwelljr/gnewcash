@@ -16,11 +16,6 @@ class Slot:
         self.value: Any = value
         self.type: str = slot_type
 
-    def to_sqlite(self, sqlite_cursor: Cursor) -> None:
-        # slot_action = self.get_db_action(sqlite_cursor, 'slots', )
-        # TODO: Slots don't have GUIDs. Need to store the DB ID in the object.
-        raise NotImplementedError
-
 
 class SlottableObject(object):
     """Class used to consolidate storing and retrieving slot values."""

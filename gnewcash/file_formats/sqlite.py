@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import sqlite3
-from sqlite3 import Cursor
+from sqlite3 import Cursor, Connection
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -408,16 +408,234 @@ class GnuCashSQLiteWriter(BaseFileWriter):
     """Class containing the logic for saving SQlite files."""
     @classmethod
     def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', **kwargs: Any) -> None:
-        create_schema = not os.path.exists(target_file)
-        sqlite_handle = sqlite3.connect(target_file)
-        cursor = sqlite_handle.cursor()
+        create_schema: bool = not os.path.exists(target_file)
+        sqlite_handle: Connection = sqlite3.connect(target_file)
+        cursor: Cursor = sqlite_handle.cursor()
         if create_schema:
             cls.create_sqlite_schema(cursor)
 
         for book in gnucash_file.books:
-            book.to_sqlite(cursor)
+            cls.write_book_to_sqlite(book, cursor)
 
         raise NotImplementedError('SQLite support not implemented')
+
+    @classmethod
+    def write_book_to_sqlite(cls, book: Book, sqlite_handle: sqlite3.Cursor) -> None:
+        book_db_action = DBAction.get_db_action(sqlite_handle, 'books', 'guid', book.guid)
+        if book_db_action == DBAction.INSERT:
+            sqlite_handle.execute(
+                'INSERT INTO books (guid, root_account_guid, root_template_guid) VALUES (?, ?, ?)',
+                (book.guid, book.root_account.guid, book.template_root_account.guid,))
+        elif book_db_action == DBAction.UPDATE:
+            sqlite_handle.execute('UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?',
+                                  (book.root_account.guid, book.template_root_account.guid, book.guid,))
+
+        cls.write_account_to_sqlite(book.root_account, sqlite_handle)
+        cls.write_account_to_sqlite(book.template_root_account, sqlite_handle)
+
+        # TODO: Re-enable slots when slots are implemented
+        # for slot in self.slots:
+        #     slot.to_sqlite(sqlite_handle)
+
+        for commodity in book.commodities:
+            cls.write_commodity_to_sqlite(commodity, sqlite_handle)
+
+        # TODO: Implement the rest
+        '''
+        transaction_manager = TransactionManager()
+        transaction_manager.disable_sort = not sort_transactions
+        template_transactions = []
+        template_account_guids = new_book.template_root_account.get_account_guids()
+
+        for transaction in transaction_class.from_sqlite(sqlite_cursor, new_book.root_account,
+                                                         new_book.template_root_account):
+            transaction_account_guids = [x.account.guid for x in transaction.splits]
+            if any(map(lambda x: x in template_account_guids, transaction_account_guids)):
+                template_transactions.append(transaction)
+            else:
+                transaction_manager.add(transaction)
+
+        new_book.transactions = transaction_manager
+        new_book.template_transactions = template_transactions
+
+        for scheduled_transaction in ScheduledTransaction.from_sqlite(sqlite_cursor,
+                                                                      new_book.template_root_account):
+            new_book.scheduled_transactions.append(scheduled_transaction)
+
+        new_book.budgets = Budget.from_sqlite(sqlite_cursor)
+        '''
+        raise NotImplementedError
+
+    @classmethod
+    def write_budget_to_sqlite(cls, budget: Budget, sqlite_cursor: sqlite3.Cursor) -> None:
+        db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'budgets', 'guid', budget.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+    INSERT INTO budgets(guid, name, description, num_periods)
+    VALUES (?, ?, ?, ?)'''.strip()
+            sql_args = (budget.guid, budget.name, budget.description, budget.period_count)
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+    UPDATE budgets
+    SET name = ?,
+        description = ?,
+        num_periods = ?
+    WHERE guid = ?'''.strip()
+            sql_args = (budget.name, budget.description, budget.period_count, budget.guid)
+            sqlite_cursor.execute(sql, sql_args)
+
+        # TODO: Upsert recurrences
+        # db_action = self.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', self.guid)
+        # if db_action == DBAction.INSERT:
+
+        # elif db_action == DBAction.UPDATE:
+
+        # TODO: slots
+
+    @classmethod
+    def write_commodity_to_sqlite(cls, commodity: Commodity, sqlite_cursor: Cursor) -> None:
+        db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'commodities', 'guid', commodity.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = 'INSERT INTO commodities(guid, namespace, mnemonic, fullname, cusip, fraction, quote_flag, ' \
+                  'quote_source, quote_tz) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            sql_args = (commodity.guid, commodity.space, commodity.commodity_id, commodity.name, commodity.xcode,
+                        commodity.fraction, 1 if commodity.get_quotes else 0, commodity.quote_source,
+                        commodity.quote_tz,)
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = 'UPDATE commodities SET namespace = ?, mnemonic = ?, fullname = ?, cusip = ?, fraction = ?, ' \
+                  'quote_flag = ?, quote_source = ?, quote_tz = ? WHERE guid = ?'
+            sql_args = (commodity.space, commodity.commodity_id, commodity.name, commodity.xcode, commodity.fraction,
+                        1 if commodity.get_quotes else 0, commodity.quote_source, commodity.quote_tz, commodity.guid,)
+            sqlite_cursor.execute(sql, sql_args)
+
+    @classmethod
+    def write_slot_to_sqlite(cls, slot: Slot, sqlite_cursor: Cursor) -> None:
+        # slot_action = self.get_db_action(sqlite_cursor, 'slots', )
+        # TODO: Slots don't have GUIDs. Need to store the DB ID in the object.
+        raise NotImplementedError
+
+    @classmethod
+    def write_account_to_sqlite(cls, account: Account, sqlite_handle: Cursor) -> None:
+        db_action: DBAction = DBAction.get_db_action(sqlite_handle, 'accounts', 'guid', account.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+INSERT INTO accounts(guid, name, account_type, commodity_guid, commodity_scu, non_std_scu,
+parent_guid, code, description, hidden, placeholder)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
+            sql_args = (account.guid, account.name, account.type, account.commodity.guid if account.commodity else None,
+                        account.commodity_scu,
+                        None,  # TODO: non_std_scu
+                        account.parent.guid if account.parent else None, account.code, account.description,
+                        account.hidden, account.placeholder)
+            sqlite_handle.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+UPDATE accounts
+SET name = ?,
+    account_type = ?,
+    commodity_guid = ?,
+    commodity_scu = ?,
+    non_std_scu = ?,
+    parent_guid = ?,
+    code = ?,
+    description = ?,
+    hidden = ?,
+    placeholder = ?
+WHERE guid  = ?
+'''.strip()
+            sql_args = (account.name, account.type, account.commodity.guid if account.commodity else None,
+                        account.commodity_scu,
+                        None,  # TODO: non_std_scu
+                        account.parent.guid if account.parent else None, account.code, account.description,
+                        account.hidden, account.placeholder, account.guid)
+            sqlite_handle.execute(sql, sql_args)
+
+        # TODO: slots
+        # TODO: subaccounts
+
+    @classmethod
+    def write_transaction_to_sqlite(cls, transaction: Transaction, sqlite_cursor: Cursor) -> None:
+        db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'transactions', 'guid', transaction.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+    INSERT INTO transactions(guid, currency_guid, num, post_date, enter_date, description)
+    VALUES (?, ?, ?, ?, ?, ?)'''.strip()
+            sql_args = (transaction.guid, transaction.currency.guid, transaction.memo, transaction.date_posted,
+                        transaction.date_entered, transaction.description)
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+    UPDATE transactions
+    SET currency_guid = ?,
+        num = ?,
+        post_date = ?,
+        enter_date = ?,
+        description = ?
+    WHERE guid = ?'''.strip()
+            sql_args = (transaction.currency.guid if transaction.currency else None, transaction.memo,
+                        transaction.date_posted, transaction.date_entered, transaction.description, transaction.guid)
+            sqlite_cursor.execute(sql, sql_args)
+
+        # TODO: slots
+        # TODO: splits
+
+    @classmethod
+    def write_split_to_sqlite(cls, split: Split, sqlite_cursor: Cursor, transaction_guid: str) -> None:
+        db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'splits', 'guid', split.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+    INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num, value_denom,
+                       quantity_num, quantity_denom, lot_guid)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
+            sql_args = (split.guid, transaction_guid, split.account.guid, split.reconciled_state,
+                        None,  # TODO: reconcile_date
+                        None,  # TODO: value_num
+                        None,  # TODO: value_denom
+                        None,  # TODO: quantity_num
+                        split.quantity_denominator,
+                        None)  # TODO: lot_guid
+            sqlite_cursor.execute(sql, sql_args)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+    UPDATE splits
+    SET tx_guid = ?,
+        account_guid = ?,
+        memo = ?,
+        action = ?,
+        reconcile_state = ?,
+        reconcile_date = ?,
+        value_num = ?,
+        value_denom = ?,
+        quantity_num ?,
+        quantity_denom = ?,
+        lot_guid = ?
+    WHERE guid = ?'''.strip()
+            sql_args = (transaction_guid, split.account.guid if split.account else None, split.reconciled_state,
+                        None,  # TODO: reconcile_date
+                        None,  # TODO: value_num
+                        None,  # TODO: value_denom
+                        None,  # TODO: quantity_num
+                        split.quantity_denominator,
+                        None,  # TODO: lot_guid
+                        split.guid)
+            sqlite_cursor.execute(sql, sql_args)
+
+    @classmethod
+    def write_scheduled_transaction_to_sqlite(cls, scheduled_transaction: ScheduledTransaction, sqlite_handle: Cursor) \
+            -> None:
+        raise NotImplementedError
 
     @classmethod
     def create_sqlite_schema(cls, sqlite_cursor: sqlite3.Cursor) -> None:
