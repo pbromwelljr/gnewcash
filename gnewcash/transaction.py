@@ -151,37 +151,6 @@ class Transaction(GuidObject, SlottableObject, GnuCashSQLiteObject):
     def associated_uri(self, value: str) -> None:
         super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
 
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: Cursor, root_account: Account,
-                    template_root_account: Account) -> List['Transaction']:
-        """
-        Creates Transaction objects from the GnuCash XML.
-
-        :param sqlite_cursor: Open cursor to the SQLite database.
-        :type sqlite_cursor: sqlite3.Cursor
-        :param root_account: Root account from the SQLite database
-        :type root_account: Account
-        :param template_root_account: Template root account from the SQLite database
-        :type template_root_account: Account
-        :return: Transaction objects from SQLite
-        :rtype: list[Transaction]
-        """
-        transaction_data = cls.get_sqlite_table_data(sqlite_cursor, 'transactions')
-        new_transactions = []
-        for transaction in transaction_data:
-            new_transaction = cls()
-            new_transaction.guid = transaction['guid']
-            new_transaction.memo = transaction['num']
-            new_transaction.date_posted = datetime.strptime(transaction['post_date'], '%Y-%m-%d %H:%M:%S')
-            new_transaction.date_entered = datetime.strptime(transaction['enter_date'], '%Y-%m-%d %H:%M:%S')
-            new_transaction.description = transaction['description']
-            new_transaction.currency = Commodity.from_sqlite(sqlite_cursor, commodity_guid=transaction['currency_guid'])
-            new_transaction.slots = Slot.from_sqlite(sqlite_cursor, transaction['guid'])
-            new_transaction.splits = Split.from_sqlite(sqlite_cursor, transaction['guid'], root_account,
-                                                       template_root_account)
-            new_transactions.append(new_transaction)
-        return new_transactions
-
     def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         db_action: DBAction = self.get_db_action(sqlite_cursor, 'transactions', 'guid', self.guid)
         sql: str = ''
@@ -230,40 +199,6 @@ class Split(GuidObject, GnuCashSQLiteObject):
 
     def __repr__(self) -> str:
         return str(self)
-
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: Cursor, transaction_guid: str, root_account: Account,
-                    template_root_account: Account) -> List['Split']:
-        """
-        Creates Split objects from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the SQLite database.
-        :type sqlite_cursor: sqlite3.Cursor
-        :param transaction_guid: GUID of the transaction to load the splits of
-        :type transaction_guid: str
-        :param root_account: Root account from the SQLite database
-        :type root_account: Account
-        :param template_root_account: Template root account from the SQLite database
-        :type template_root_account: Account
-        :return: Split objects from XML
-        :rtype: list[Split]
-        """
-        split_data = cls.get_sqlite_table_data(sqlite_cursor, 'splits', 'tx_guid = ?', (transaction_guid,))
-        new_splits = []
-        for split in split_data:
-            account_object = root_account.get_subaccount_by_id(split['account_guid']) or \
-                template_root_account.get_subaccount_by_id(split['account_guid'])
-            new_split = cls(account_object, split['value_num'] / split['value_denom'], split['reconcile_state'])
-            new_split.guid = split['guid']
-            new_split.memo = split['memo']
-            new_split.action = split['action']
-            # TODO: reconcile_date
-            # TODO: quantity_num
-            new_split.quantity_denominator = split['quantity_denom']
-            # TODO: lot_guid
-
-            new_splits.append(new_split)
-        return new_splits
 
     def to_sqlite(self, sqlite_cursor: Cursor, transaction_guid: str) -> None:
         db_action: DBAction = self.get_db_action(sqlite_cursor, 'splits', 'guid', self.guid)
@@ -496,50 +431,6 @@ class ScheduledTransaction(GuidObject, GnuCashSQLiteObject):
         self.recurrence_multiplier: Optional[int] = 0
         self.recurrence_period: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
-
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: Cursor, template_root_account: Account) -> List['ScheduledTransaction']:
-        """
-        Creates ScheduledTransaction objects from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the SQLite database
-        :type sqlite_cursor: sqlite3.Cursor
-        :param template_account_root: Root template account
-        :type template_account_root: Account
-        :return: ScheduledTransaction objects from SQLite
-        :rtype: list[ScheduledTransaction]
-        """
-        scheduled_transactions = cls.get_sqlite_table_data(sqlite_cursor, 'schedxactions')
-        new_scheduled_transactions = []
-        for scheduled_transaction in scheduled_transactions:
-            new_scheduled_transaction = cls()
-            new_scheduled_transaction.guid = scheduled_transaction['guid']
-            new_scheduled_transaction.name = scheduled_transaction['name']
-            new_scheduled_transaction.enabled = scheduled_transaction['enabled'] == 1
-            new_scheduled_transaction.start_date = datetime.strptime(scheduled_transaction['start_date'], '%Y%m%d')
-            new_scheduled_transaction.end_date = datetime.strptime(scheduled_transaction['end_date'], '%Y%m%d')
-            new_scheduled_transaction.last_date = datetime.strptime(scheduled_transaction['last_occur'], '%Y%m%d')
-            # TODO: num_occur
-            # TODO: rem_occur
-            new_scheduled_transaction.auto_create = scheduled_transaction['auto_create'] == 1
-            new_scheduled_transaction.auto_create_notify = scheduled_transaction['auto_notify'] == 1
-            new_scheduled_transaction.advance_create_days = scheduled_transaction['adv_creation']
-            new_scheduled_transaction.advance_remind_days = scheduled_transaction['adv_notify']
-            new_scheduled_transaction.instance_count = scheduled_transaction['instance_count']
-            new_scheduled_transaction.template_account = template_root_account.get_subaccount_by_id(
-                scheduled_transaction['template_act_guid'])
-
-            recurrence_info, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
-                                                         (new_scheduled_transaction.guid,))
-
-            new_scheduled_transaction.recurrence_multiplier = recurrence_info['recurrence_mult']
-            new_scheduled_transaction.recurrence_start = datetime.strptime(recurrence_info['recurrence_period_start'],
-                                                                           '%Y%m%d')
-            new_scheduled_transaction.recurrence_period = recurrence_info['recurrence_period_type']
-            # TODO: recurrence_weekend_adjust
-
-            new_scheduled_transactions.append(new_scheduled_transaction)
-        return new_scheduled_transactions
 
     def to_sqlite(self, sqlite_cursor: Cursor) -> None:
         raise NotImplementedError

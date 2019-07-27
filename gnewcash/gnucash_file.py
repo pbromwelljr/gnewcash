@@ -69,12 +69,6 @@ class GnuCashFile:
 
         return file_format.load(source_file=source_file, sort_transactions=sort_transactions)
 
-        # TODO: Move to SQLite reader
-        # elif file_format == FileFormat.SQLITE:
-        #     sqlite_handle = sqlite3.connect(source_file)
-        #     cursor = sqlite_handle.cursor()
-        #     built_file.books = Book.from_sqlite(cursor)
-
     def build_file(self, target_file: str, file_format: Any, prettify_xml: bool = False) -> None:
         """
         Writes the contents of the GnuCashFile object out to a .gnucash file on disk.
@@ -87,19 +81,6 @@ class GnuCashFile:
         :type use_gzip: bool
         """
         return file_format.dump(self, target_file=target_file, prettify_xml=prettify_xml)
-
-        # TODO: Move to SQLite writer
-        # elif file_format == FileFormat.SQLITE:
-        #     create_schema = not os.path.exists(target_file)
-        #     sqlite_handle = sqlite3.connect(target_file)
-        #     cursor = sqlite_handle.cursor()
-        #     if create_schema:
-        #         self.create_sqlite_schema(cursor)
-        #
-        #     for book in self.books:
-        #         book.to_sqlite(cursor)
-        #
-        #     raise NotImplementedError('SQLite support not implemented')
 
 
 class Book(GuidObject, SlottableObject):
@@ -227,38 +208,6 @@ class Budget(GuidObject, SlottableObject):
         self.recurrence_multiplier: Optional[int] = None
         self.recurrence_period_type: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
-
-    @classmethod
-    def from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> List['Budget']:
-        """
-        Creates Budget objects from the GnuCash SQLite database.
-
-        :param sqlite_cursor: Open cursor to the SQLite database
-        :type sqlite_cursor: sqlite3.Cursor
-        :return: Budget objects from SQLite
-        :rtype: list[Budget]
-        """
-        budget_data = cls.get_sqlite_table_data(sqlite_cursor, 'budgets')
-        new_budgets = []
-        for budget in budget_data:
-            new_budget = cls()
-            new_budget.guid = budget['guid']
-            new_budget.name = budget['name']
-            new_budget.description = budget['description']
-            new_budget.period_count = budget['num_periods']
-
-            recurrence_data, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
-                                                         (new_budget.guid,))
-            # TODO: Store recurrence ID
-            new_budget.recurrence_multiplier = recurrence_data['recurrence_mult']
-            new_budget.recurrence_period_type = recurrence_data['recurrence_period_type']
-            new_budget.recurrence_start = datetime.strptime(recurrence_data['recurrence_period_start'],
-                                                            '%Y%m%d')
-
-            new_budget.slots = Slot.from_sqlite(sqlite_cursor, new_budget.guid)
-
-            new_budgets.append(new_budget)
-        return new_budgets
 
     def to_sqlite(self, sqlite_cursor: sqlite3.Cursor) -> None:
         db_action: DBAction = self.get_db_action(sqlite_cursor, 'budgets', 'guid', self.guid)
