@@ -229,8 +229,8 @@ class TransactionManager:
         """
         Retrieves the starting balance for the current account, given the list of transactions.
 
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
+        :param account: Account to get starting balance of.
+        :type account: Account
         :return: First transaction amount if the account has transactions, otherwise 0.
         :rtype: decimal.Decimal
         """
@@ -255,15 +255,15 @@ class TransactionManager:
         """
         return self.get_balance_at_date(account)
 
-    def minimum_balance_past_date(self, account: Account,
-                                  date: datetime) -> Tuple[Optional[Decimal], Optional[datetime]]:
+    def minimum_balance_past_date(self, account: Account, date: datetime) \
+            -> Tuple[Optional[Decimal], Optional[datetime]]:
         """
         Gets the minimum balance for the account after a certain date, given the list of transactions.
 
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
-        :param start_date: datetime object representing the date you want to find the minimum balance for.
-        :type start_date: datetime.datetime
+        :param account: Account to get the minimum balance information of
+        :type account: Account
+        :param date: datetime object representing the date you want to find the minimum balance for.
+        :type date: datetime.datetime
         :return: Tuple containing the minimum balance (element 0) and the date it's at that balance (element 1)
         :rtype: tuple
         """
@@ -288,8 +288,8 @@ class TransactionManager:
 
         If the provided date is None, it will retrieve the ending balance.
 
-        :param transactions: List of transactions or TransactionManager
-        :type transactions: list[Transaction] or TransactionManager
+        :param account: Account to get the balance of
+        :type account: Account
         :param date: Last date to consider when determining the account balance.
         :type date: datetime.datetime
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.

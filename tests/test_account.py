@@ -2,16 +2,15 @@ import os
 
 from datetime import datetime
 from decimal import Decimal
-import pytz
 import unittest
 
-import gnewcash.gnucash_file as gcf
 import gnewcash.account as acc
 
 
 class TestAccount(unittest.TestCase):
     def setUp(self):
         os.chdir(os.path.realpath(os.path.dirname(__file__)))
+
     def test_account_shortcut_classes(self):
         ba = acc.BankAccount()
         self.assertEqual(ba.type, acc.AccountType.BANK)

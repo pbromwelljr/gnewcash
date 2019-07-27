@@ -5,12 +5,9 @@ Module containing classes that read, manipulate, and write commodities.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from sqlite3 import Cursor
-
-from typing import Optional, Union, List
+from typing import Optional
 
 from gnewcash.guid_object import GuidObject
-from gnewcash.file_formats import DBAction
 
 
 class Commodity(GuidObject):

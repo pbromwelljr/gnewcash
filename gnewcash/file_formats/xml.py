@@ -782,6 +782,8 @@ class GnuCashXMLWriter(BaseFileWriter):
         """
         Returns the current commodity as GnuCash-compatible XML (short version used for accounts).
 
+        :param commodity: Commodity being cast to short XML
+        :type commodity: Commodity
         :param node_tag: XML element tag name for the commodity
         :type node_tag: str
         :return: Current commodity as short XML

@@ -10,12 +10,10 @@ from datetime import datetime
 from decimal import Decimal
 import os.path
 from logging import getLogger
-import sqlite3
-from typing import Optional, List, Tuple, Type, Any
+from typing import Optional, List, Any
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
-from gnewcash.file_formats import DBAction
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split
@@ -41,8 +39,7 @@ class GnuCashFile:
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file: str, file_format: Any, sort_transactions: bool = True,
-                  transaction_class: Type = None) -> 'GnuCashFile':
+    def read_file(cls, source_file: str, file_format: Any, sort_transactions: bool = True) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -50,16 +47,12 @@ class GnuCashFile:
         :type source_file: str
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
-        :param transaction_class: Class to use when initializing transactions
-        :type transaction_class: type
         :param file_format: File format of the file being uploaded.
         If no format is provided, GNewCash will try to detect the file format,
         :type file_format: FileFormat
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
-        if transaction_class is None:
-            transaction_class = Transaction
         logger = getLogger()
         built_file: 'GnuCashFile' = cls()
         built_file.file_name = source_file
@@ -75,10 +68,10 @@ class GnuCashFile:
 
         :param target_file: Full or relative path to the target file
         :type target_file: str
+        :param file_format: Class handling the writing of the GnuCash file. See 'file_formats' for more info.
+        :type file_format: Any
         :param prettify_xml: Prettifies XML before writing to disk. Default False.
         :type prettify_xml: bool
-        :param use_gzip: Use GZip compression when writing file to disk. Default False.
-        :type use_gzip: bool
         """
         return file_format.dump(self, target_file=target_file, prettify_xml=prettify_xml)
 

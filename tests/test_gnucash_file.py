@@ -14,8 +14,10 @@ class TestGnuCashFile(unittest.TestCase):
         os.chdir(os.path.realpath(os.path.dirname(__file__)))
 
     def test_read_write(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', sort_transactions=False)
-        gnucash_file.build_file('test_files/Test1.testresult.gnucash', prettify_xml=True)
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat,
+                                                 sort_transactions=False)
+        gnucash_file.build_file('test_files/Test1.testresult.gnucash', file_format=gff.XMLFileFormat,
+                                prettify_xml=True)
 
         original_tree = ElementTree.parse(source='test_files/Test1.gnucash')
         original_root = original_tree.getroot()
@@ -45,42 +47,45 @@ class TestGnuCashFile(unittest.TestCase):
                                         test_path + test_element.tag + '/')
 
     def test_file_not_found(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/thisfiledoesnotexist.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/thisfiledoesnotexist.gnucash',
+                                                 file_format=gff.XMLFileFormat)
         self.assertEqual(0, len(gnucash_file.books))
 
     def test_load_gzipped_file(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gz.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gz.gnucash', file_format=gff.XMLFileFormat)
         self.assertEqual(1, len(gnucash_file.books))
 
     def test_get_account(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         account = book.get_account('Assets', 'Current Assets', 'Checking Account')
         self.assertNotEqual(None, account)
 
     def test_get_account_fail(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         account = book.get_account('This', 'Path', 'Does', 'Not', 'Exist')
         self.assertEqual(None, account)
 
     def test_get_account_balance(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         account = book.get_account('Assets', 'Current Assets', 'Checking Account')
         balance = book.get_account_balance(account)
         self.assertEqual(balance, 1240)
 
     def test_get_account_balance_credit(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         account = book.get_account('Assets', 'Current Assets', 'Credit Card')
         balance = book.get_account_balance(account)
         self.assertEqual(balance, 0)
 
     def test_gzip_write(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', sort_transactions=False)
-        gnucash_file.build_file('test_files/Test1.testresult.gnucash', prettify_xml=True, use_gzip=True)
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.GZipXMLFileFormat,
+                                                 sort_transactions=False)
+        gnucash_file.build_file('test_files/Test1.testresult.gnucash', file_format=gff.GZipXMLFileFormat,
+                                prettify_xml=True)
         with gzip.open('test_files/Test1.testresult.gnucash', 'rb') as test_file, \
                 gzip.open('test_files/Test1.gz.gnucash', 'rb') as actual_file:
             test_file_contents = test_file.read()
@@ -92,9 +97,10 @@ class TestGnuCashFile(unittest.TestCase):
             self.check_gnucash_elements(original_root, test_root)
 
     def test_simple_transaction_load(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', sort_transactions=False,
-                                                 transaction_class=trn.SimpleTransaction)
-        gnucash_file.build_file('test_files/Test1.simpletransaction.testresult.gnucash', prettify_xml=True)
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat,
+                                                 sort_transactions=False)
+        gnucash_file.build_file('test_files/Test1.simpletransaction.testresult.gnucash', file_format=gff.XMLFileFormat,
+                                prettify_xml=True)
 
         original_tree = ElementTree.parse(source='test_files/Test1.gnucash')
         original_root = original_tree.getroot()
@@ -105,6 +111,6 @@ class TestGnuCashFile(unittest.TestCase):
         self.check_gnucash_elements(original_root, test_root)
 
     def test_read_write_sqlite(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.sqlite.gnucash', sort_transactions=False)
-        gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash', file_format=gff.FileFormat.SQLITE)
-        # gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.sqlite.gnucash', file_format=gff.SqliteFileFormat,
+                                                 sort_transactions=False)
+        gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash', file_format=gff.SqliteFileFormat)

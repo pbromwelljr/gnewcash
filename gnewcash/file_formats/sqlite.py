@@ -47,7 +47,7 @@ class DBAction(enum.Enum):
         :return: Appropriate action based on record existence
         :rtype: DBAction
         """
-        sql = 'SELECT 1 FROM {} WHERE {} = ?'.format(table_name, column_name)
+        sql = f'SELECT 1 FROM {table_name} WHERE {column_name} = ?'
         sqlite_cursor.execute(sql, (row_identifier,))
 
         record = sqlite_cursor.fetchone()
@@ -84,8 +84,6 @@ class GnuCashSQLiteReader(BaseFileReader):
         :type sqlite_cursor: sqlite3.Cursor
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from SQLite
         :type sort_transactions: bool
-        :param transaction_class: Class to use when initializing transactions
-        :type transaction_class: type
         :return: Book objects from SQLite
         :rtype: list[Book]
         """
@@ -389,7 +387,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         :return: List of dictionaries (keys being the column names) for each row in the SQLite table
         :rtype: list[dict[str, Any]]
         """
-        sql = 'SELECT * FROM {}'.format(table_name)
+        sql = f'SELECT * FROM {table_name}'
         if where_condition is not None:
             sql += ' WHERE ' + where_condition
         if where_parameters is not None:
@@ -596,8 +594,8 @@ WHERE guid  = ?
         sql_args: Tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
-    INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num, value_denom,
-                       quantity_num, quantity_denom, lot_guid)
+    INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num, 
+                       value_denom, quantity_num, quantity_denom, lot_guid)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (split.guid, transaction_guid, split.account.guid, split.reconciled_state,
                         None,  # TODO: reconcile_date
@@ -618,7 +616,7 @@ WHERE guid  = ?
         reconcile_date = ?,
         value_num = ?,
         value_denom = ?,
-        quantity_num ?,
+        quantity_num = ?,
         quantity_denom = ?,
         lot_guid = ?
     WHERE guid = ?'''.strip()

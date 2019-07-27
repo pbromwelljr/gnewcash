@@ -4,6 +4,7 @@ import os
 import unittest
 
 import gnewcash.gnucash_file as gcf
+import gnewcash.file_formats as gff
 import gnewcash.transaction as trn
 import gnewcash.account as acc
 
@@ -15,7 +16,7 @@ class TestTransaction(unittest.TestCase):
         os.chdir(os.path.realpath(os.path.dirname(__file__)))
 
     def test_transaction_cleared(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         first_transaction = book.transactions[0]
         self.assertFalse(first_transaction.cleared)
@@ -24,7 +25,7 @@ class TestTransaction(unittest.TestCase):
         self.assertTrue(first_transaction.cleared)
 
     def test_add_transaction_chronological(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
         transaction_manager.disable_sort = False
@@ -50,7 +51,7 @@ class TestTransaction(unittest.TestCase):
         self.assertEqual(transaction_manager[-1], end_transaction)
 
     def test_delete_transaction(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
 
@@ -60,7 +61,7 @@ class TestTransaction(unittest.TestCase):
         self.assertNotEqual(transaction_manager[0], first_transaction)
 
     def test_get_transactions(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
         checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -70,7 +71,7 @@ class TestTransaction(unittest.TestCase):
         self.assertLess(len(transactions), len(transaction_manager))
 
     def test_get_account_starting_balance(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
         checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -79,7 +80,7 @@ class TestTransaction(unittest.TestCase):
         self.assertEqual(starting_balance, Decimal('2000'))
 
     def test_get_account_ending_balance(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
         checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -88,7 +89,7 @@ class TestTransaction(unittest.TestCase):
         self.assertEqual(ending_balance, Decimal('1240'))
 
     def test_minimum_balance_past_date(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
         checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -101,7 +102,7 @@ class TestTransaction(unittest.TestCase):
         self.assertEqual(minimum_balance_date, datetime(2019, 12, 31, 5, 59, 0, 0))
 
     def test_get_balance_at_date(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
         book = gnucash_file.books[0]
         transaction_manager = book.transactions
         checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')

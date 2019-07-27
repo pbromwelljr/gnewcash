@@ -5,7 +5,6 @@ Module containing classes that read, manipulate, and write slots.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from sqlite3 import Cursor
 from typing import Any, List, Union
 
 
