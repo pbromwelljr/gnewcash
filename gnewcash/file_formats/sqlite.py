@@ -1,3 +1,10 @@
+"""
+Module containing the logic for loading and saving SQLite files.
+
+.. module:: xml
+   :synopsis:
+.. moduleauthor: Paul Bromwell Jr.
+"""
 import enum
 import logging
 import os.path
@@ -419,6 +426,14 @@ class GnuCashSQLiteWriter(BaseFileWriter):
 
     @classmethod
     def write_book_to_sqlite(cls, book: Book, sqlite_handle: sqlite3.Cursor) -> None:
+        """
+        Writes a Book object to the SQLite database.
+
+        :param book: Book object
+        :type book: Book
+        :param sqlite_handle: Handle to SQLite file
+        :type sqlite_handle: sqlite3.Cursor
+        """
         book_db_action = DBAction.get_db_action(sqlite_handle, 'books', 'guid', book.guid)
         if book_db_action == DBAction.INSERT:
             sqlite_handle.execute(
@@ -466,6 +481,14 @@ class GnuCashSQLiteWriter(BaseFileWriter):
 
     @classmethod
     def write_budget_to_sqlite(cls, budget: Budget, sqlite_cursor: sqlite3.Cursor) -> None:
+        """
+        Writes a Budget object to the SQLite database.
+
+        :param budget: Budget object
+        :type budget: Budget
+        :param sqlite_cursor: Handle to SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'budgets', 'guid', budget.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
@@ -495,6 +518,14 @@ class GnuCashSQLiteWriter(BaseFileWriter):
 
     @classmethod
     def write_commodity_to_sqlite(cls, commodity: Commodity, sqlite_cursor: Cursor) -> None:
+        """
+        Writes a Commodity object to the SQLite database.
+
+        :param commodity: Commodity object
+        :type commodity: Commodity
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
+        """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'commodities', 'guid', commodity.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
@@ -514,12 +545,28 @@ class GnuCashSQLiteWriter(BaseFileWriter):
 
     @classmethod
     def write_slot_to_sqlite(cls, slot: Slot, sqlite_cursor: Cursor) -> None:
+        """
+        Writes a Slot object to the SQLite database.
+
+        :param slot: Slot object
+        :type slot: Slot
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
+        """
         # slot_action = self.get_db_action(sqlite_cursor, 'slots', )
         # TODO: Slots don't have GUIDs. Need to store the DB ID in the object.
         raise NotImplementedError
 
     @classmethod
     def write_account_to_sqlite(cls, account: Account, sqlite_handle: Cursor) -> None:
+        """
+        Writes an Account object to the SQLite database.
+
+        :param account: Account object
+        :type account: Account
+        :param sqlite_handle: Handle to SQLite file
+        :type sqlite_handle: sqlite3.Cursor
+        """
         db_action: DBAction = DBAction.get_db_action(sqlite_handle, 'accounts', 'guid', account.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
@@ -561,6 +608,14 @@ WHERE guid  = ?
 
     @classmethod
     def write_transaction_to_sqlite(cls, transaction: Transaction, sqlite_cursor: Cursor) -> None:
+        """
+        Writes a Transaction object to the SQLite database.
+
+        :param transaction: Transaction object
+        :type transaction: Transaction
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
+        """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'transactions', 'guid', transaction.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
@@ -589,6 +644,14 @@ WHERE guid  = ?
 
     @classmethod
     def write_split_to_sqlite(cls, split: Split, sqlite_cursor: Cursor, transaction_guid: str) -> None:
+        """
+        Writes a Split object to the SQLite database.
+
+        :param split: Split object
+        :type split: Commodity
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
+        """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'splits', 'guid', split.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
@@ -633,6 +696,14 @@ WHERE guid  = ?
     @classmethod
     def write_scheduled_transaction_to_sqlite(cls, scheduled_transaction: ScheduledTransaction, sqlite_handle: Cursor) \
             -> None:
+        """
+        Writes a ScheduledTransaction object to the SQLite database.
+
+        :param scheduled_transaction: ScheduledTransaction object
+        :type scheduled_transaction: ScheduledTransaction
+        :param sqlite_handle: Handle to SQLite file
+        :type sqlite_handle: sqlite3.Cursor
+        """
         raise NotImplementedError
 
     @classmethod

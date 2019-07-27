@@ -79,6 +79,13 @@ class GnuCashXMLReader(BaseFileReader):
 
     @classmethod
     def get_xml_root(cls, source_path: pathlib.Path) -> ElementTree.Element:
+        """
+        Retrieves the root element from a given XML document
+        :param source_path: Path to XML document
+        :type source_path: pathlib.Path
+        :return: Root element
+        :rtype: ElementTree.Element
+        """
         return ElementTree.parse(source=str(source_path)).getroot()
 
     @classmethod
@@ -947,6 +954,14 @@ class GnuCashXMLWriter(BaseFileWriter):
 
     @classmethod
     def write_file_contents(cls, target_file: str, file_contents: bytes) -> None:
+        """
+        Writes the file contents to the target file.
+
+        :param target_file: File that contents will be written to.
+        :type target_file: str
+        :param file_contents: Contents to be written to the file.
+        :type file_contents: bytes
+        """
         with open(target_file, 'wb') as target_file_handle:
             target_file_handle.write(file_contents)
 
