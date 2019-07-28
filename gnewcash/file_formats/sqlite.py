@@ -425,7 +425,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
     """Class containing the logic for saving SQlite files."""
 
     @classmethod
-    def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', **kwargs: Any) -> None:
+    def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', **kwargs: Any) -> None:  # type: ignore
         """
         Updates GnuCash SQLite file on disk from memory.
 
@@ -743,5 +743,5 @@ WHERE guid  = ?
                 sqlite_cursor.execute(line)
 
 
-class SqliteFileFormat(GnuCashSQLiteReader, GnuCashSQLiteWriter, BaseFileFormat):
+class SqliteFileFormat(GnuCashSQLiteReader, GnuCashSQLiteWriter, BaseFileFormat):  # type: ignore
     """Class containing the logic for loading and saving SQlite files."""

@@ -614,8 +614,8 @@ class GnuCashXMLWriter(BaseFileWriter):
     LOGGER = logging.getLogger()
 
     @classmethod
-    def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '', prettify_xml: bool = False,
-             **kwargs: Any) -> None:
+    def dump(cls, gnucash_file: GnuCashFile, *args: Any, target_file: str = '',  # type: ignore
+             prettify_xml: bool = False, **kwargs: Any) -> None:
         """
         Writes GnuCash XML file from memory to disk.
 
@@ -990,7 +990,7 @@ class GnuCashXMLWriter(BaseFileWriter):
             target_file_handle.write(file_contents)
 
 
-class XMLFileFormat(GnuCashXMLReader, GnuCashXMLWriter, BaseFileFormat):
+class XMLFileFormat(GnuCashXMLReader, GnuCashXMLWriter, BaseFileFormat):  # type: ignore
     """Class containing the logic for loading and saving XML files."""
 
 
