@@ -10,7 +10,7 @@ import logging
 import os.path
 import pathlib
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 import sqlite3
 from sqlite3 import Cursor, Connection
@@ -230,6 +230,7 @@ class GnuCashSQLiteReader(BaseFileReader):
     def create_commodities_from_sqlite(cls, sqlite_cursor: Cursor) -> List[Commodity]:
         """
         Creates Commodity objects for all commodities in the SQLite database.
+
         :param sqlite_cursor: Open cursor to the SQLite database
         :type sqlite_cursor: sqlite3.Cursor
         :return: Commodity object(s) from SQLite
@@ -254,7 +255,6 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_commodity.fraction = commodity['fraction']
             new_commodities.append(new_commodity)
         return new_commodities
-
 
     @classmethod
     def create_transactions_from_sqlite(cls, sqlite_cursor: Cursor, root_account: Account,
