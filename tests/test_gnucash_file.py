@@ -52,7 +52,7 @@ class TestGnuCashFile(unittest.TestCase):
         self.assertEqual(0, len(gnucash_file.books))
 
     def test_load_gzipped_file(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gz.gnucash', file_format=gff.XMLFileFormat)
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gz.gnucash', file_format=gff.GZipXMLFileFormat)
         self.assertEqual(1, len(gnucash_file.books))
 
     def test_get_account(self):
@@ -82,7 +82,7 @@ class TestGnuCashFile(unittest.TestCase):
         self.assertEqual(balance, 0)
 
     def test_gzip_write(self):
-        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.GZipXMLFileFormat,
+        gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat,
                                                  sort_transactions=False)
         gnucash_file.build_file('test_files/Test1.testresult.gnucash', file_format=gff.GZipXMLFileFormat,
                                 prettify_xml=True)
@@ -111,6 +111,9 @@ class TestGnuCashFile(unittest.TestCase):
         self.check_gnucash_elements(original_root, test_root)
 
     def test_read_write_sqlite(self):
+        result_sqlite_file = 'test_files/Test1.sqlite.testresult.gnucash'
+        if os.path.exists(result_sqlite_file):
+            os.remove(result_sqlite_file)
         gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.sqlite.gnucash', file_format=gff.SqliteFileFormat,
                                                  sort_transactions=False)
-        gnucash_file.build_file('test_files/Test1.sqlite.testresult.gnucash', file_format=gff.SqliteFileFormat)
+        gnucash_file.build_file(result_sqlite_file, file_format=gff.SqliteFileFormat)

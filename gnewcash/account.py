@@ -181,7 +181,7 @@ class Account(GuidObject, SlottableObject):
         super(Account, self).set_slot_value_bool('hidden', value, 'string')
 
     @property
-    def placeholder(self) -> None:
+    def placeholder(self) -> bool:
         """
         Placeholder flag for the account.
 
