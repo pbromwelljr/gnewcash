@@ -158,7 +158,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         account_data_items = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
         if not account_data_items:
             raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))
-        account_data, = account_data_items
+        account_data = account_data_items[0]
         new_account = Account()
         new_account.guid = account_data['guid']
         new_account.name = account_data['name']
@@ -321,8 +321,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_scheduled_transaction.template_account = template_root_account.get_subaccount_by_id(
                 scheduled_transaction['template_act_guid'])
 
-            recurrence_info, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
-                                                         (new_scheduled_transaction.guid,))
+            recurrence_info = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
+                                                        (new_scheduled_transaction.guid,))[0]
 
             new_scheduled_transaction.recurrence_multiplier = recurrence_info['recurrence_mult']
             new_scheduled_transaction.recurrence_start = datetime.strptime(recurrence_info['recurrence_period_start'],
@@ -352,8 +352,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_budget.description = budget['description']
             new_budget.period_count = budget['num_periods']
 
-            recurrence_data, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
-                                                         (new_budget.guid,))
+            recurrence_data = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
+                                                        (new_budget.guid,))[0]
             # TODO: Store recurrence ID
             new_budget.recurrence_multiplier = recurrence_data['recurrence_mult']
             new_budget.recurrence_period_type = recurrence_data['recurrence_period_type']
