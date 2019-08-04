@@ -89,8 +89,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             cls.LOGGER.warning('Could not find %s', source_file)
             return built_file
 
-        sqlite_handle = sqlite3.connect(source_file)
-        cursor = sqlite_handle.cursor()
+        sqlite_cursor = sqlite3.connect(source_file)
+        cursor = sqlite_cursor.cursor()
         built_file.books = cls.create_books_from_sqlite(cursor, sort_transactions)
         return built_file
 
@@ -446,8 +446,8 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         :return:
         """
         create_schema: bool = not os.path.exists(target_file)
-        sqlite_handle: Connection = sqlite3.connect(target_file)
-        cursor: Cursor = sqlite_handle.cursor()
+        sqlite_cursor: Connection = sqlite3.connect(target_file)
+        cursor: Cursor = sqlite_cursor.cursor()
         if create_schema:
             cls.create_sqlite_schema(cursor)
 
@@ -457,37 +457,37 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         raise NotImplementedError('SQLite support not implemented')
 
     @classmethod
-    def write_book_to_sqlite(cls, book: Book, sqlite_handle: sqlite3.Cursor) -> None:
+    def write_book_to_sqlite(cls, book: Book, sqlite_cursor: sqlite3.Cursor) -> None:
         """
         Writes a Book object to the SQLite database.
 
         :param book: Book object
         :type book: Book
-        :param sqlite_handle: Handle to SQLite file
-        :type sqlite_handle: sqlite3.Cursor
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
         """
-        book_db_action = DBAction.get_db_action(sqlite_handle, 'books', 'guid', book.guid)
+        book_db_action = DBAction.get_db_action(sqlite_cursor, 'books', 'guid', book.guid)
         if book_db_action == DBAction.INSERT:
-            sqlite_handle.execute(
+            sqlite_cursor.execute(
                 'INSERT INTO books (guid, root_account_guid, root_template_guid) VALUES (?, ?, ?)',
                 (book.guid, book.root_account.guid if book.root_account else None,
                  book.template_root_account.guid if book.template_root_account else None,))
         elif book_db_action == DBAction.UPDATE:
-            sqlite_handle.execute('UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?',
+            sqlite_cursor.execute('UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?',
                                   (book.root_account.guid if book.root_account else None,
                                    book.template_root_account.guid if book.template_root_account else None,
                                    book.guid,))
 
         if book.root_account is not None:
-            cls.write_account_to_sqlite(book.root_account, sqlite_handle)
+            cls.write_account_to_sqlite(book.root_account, sqlite_cursor)
         if book.template_root_account is not None:
-            cls.write_account_to_sqlite(book.template_root_account, sqlite_handle)
+            cls.write_account_to_sqlite(book.template_root_account, sqlite_cursor)
 
         for slot in book.slots:
-            cls.write_slot_to_sqlite(slot, sqlite_handle)
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
 
         for commodity in book.commodities:
-            cls.write_commodity_to_sqlite(commodity, sqlite_handle)
+            cls.write_commodity_to_sqlite(commodity, sqlite_cursor)
 
         # TODO: Implement the rest
         '''
@@ -618,16 +618,16 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         raise NotImplementedError
 
     @classmethod
-    def write_account_to_sqlite(cls, account: Account, sqlite_handle: Cursor) -> None:
+    def write_account_to_sqlite(cls, account: Account, sqlite_cursor: Cursor) -> None:
         """
         Writes an Account object to the SQLite database.
 
         :param account: Account object
         :type account: Account
-        :param sqlite_handle: Handle to SQLite file
-        :type sqlite_handle: sqlite3.Cursor
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
         """
-        db_action: DBAction = DBAction.get_db_action(sqlite_handle, 'accounts', 'guid', account.guid)
+        db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'accounts', 'guid', account.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
         if db_action == DBAction.INSERT:
@@ -639,7 +639,7 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
                         account.commodity_scu, account.non_std_scu,
                         account.parent.guid if account.parent else None, account.code, account.description,
                         account.hidden, account.placeholder)
-            sqlite_handle.execute(sql, sql_args)
+            sqlite_cursor.execute(sql, sql_args)
         elif db_action == DBAction.UPDATE:
             sql = '''
 UPDATE accounts
@@ -659,13 +659,13 @@ WHERE guid  = ?
                         account.commodity_scu, account.non_std_scu,
                         account.parent.guid if account.parent else None, account.code, account.description,
                         account.hidden, account.placeholder, account.guid)
-            sqlite_handle.execute(sql, sql_args)
+            sqlite_cursor.execute(sql, sql_args)
 
         for slot in account.slots:
-            cls.write_slot_to_sqlite(slot, sqlite_handle)
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
 
         for sub_account in account.children:
-            cls.write_account_to_sqlite(sub_account, sqlite_handle)
+            cls.write_account_to_sqlite(sub_account, sqlite_cursor)
 
     @classmethod
     def write_transaction_to_sqlite(cls, transaction: Transaction, sqlite_cursor: Cursor) -> None:
@@ -759,15 +759,15 @@ WHERE guid  = ?
             sqlite_cursor.execute(sql, sql_args)
 
     @classmethod
-    def write_scheduled_transaction_to_sqlite(cls, scheduled_transaction: ScheduledTransaction, sqlite_handle: Cursor) \
+    def write_scheduled_transaction_to_sqlite(cls, scheduled_transaction: ScheduledTransaction, sqlite_cursor: Cursor) \
             -> None:
         """
         Writes a ScheduledTransaction object to the SQLite database.
 
         :param scheduled_transaction: ScheduledTransaction object
         :type scheduled_transaction: ScheduledTransaction
-        :param sqlite_handle: Handle to SQLite file
-        :type sqlite_handle: sqlite3.Cursor
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
         """
         raise NotImplementedError
 
