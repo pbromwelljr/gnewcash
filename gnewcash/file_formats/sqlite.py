@@ -354,7 +354,6 @@ class GnuCashSQLiteReader(BaseFileReader):
 
             recurrence_data = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
                                                         (new_budget.guid,))[0]
-            # TODO: Store recurrence ID
             new_budget.recurrence_multiplier = recurrence_data['recurrence_mult']
             new_budget.recurrence_period_type = recurrence_data['recurrence_period_type']
             new_budget.recurrence_start = datetime.strptime(recurrence_data['recurrence_period_start'],
@@ -484,9 +483,8 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         if book.template_root_account is not None:
             cls.write_account_to_sqlite(book.template_root_account, sqlite_handle)
 
-        # TODO: Re-enable slots when slots are implemented
-        # for slot in self.slots:
-        #     slot.to_sqlite(sqlite_handle)
+        for slot in book.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_handle)
 
         for commodity in book.commodities:
             cls.write_commodity_to_sqlite(commodity, sqlite_handle)
@@ -546,13 +544,37 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             sql_args = (budget.name, budget.description, budget.period_count, budget.guid)
             sqlite_cursor.execute(sql, sql_args)
 
-        # TODO: Upsert recurrences
-        # db_action = self.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', self.guid)
-        # if db_action == DBAction.INSERT:
+        cls.write_recurrence_to_sqlite(budget, sqlite_cursor)
 
-        # elif db_action == DBAction.UPDATE:
+        for slot in budget.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
 
-        # TODO: slots
+    @classmethod
+    def write_recurrence_to_sqlite(cls, obj: Budget, sqlite_cursor: Cursor):
+        db_action = DBAction.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', obj.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+    INSERT INTO recurrences(obj_guid, recurrence_mult, recurrence_period_type, recurrence_period_start, 
+                            recurrence_weekend_adjust)
+    VALUES(?, ?, ?, ?, ?)
+'''.strip()
+            sql_args = (obj.guid, obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
+                        obj.recurrence_weekend_adjust)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+    UPDATE recurrences
+    SET recurrence_mult = ?,
+        recurrence_period_type = ?,
+        recurrence_period_start = ?,
+        recurrence_weekend_adjust = ?
+    WHERE obj_guid = ?
+'''.strip()
+            sql_args = (obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
+                        obj.recurrence_weekend_adjust, obj.guid)
+        sqlite_cursor.execute(sql, sql_args)
+
 
     @classmethod
     def write_commodity_to_sqlite(cls, commodity: Commodity, sqlite_cursor: Cursor) -> None:
@@ -639,8 +661,11 @@ WHERE guid  = ?
                         account.hidden, account.placeholder, account.guid)
             sqlite_handle.execute(sql, sql_args)
 
-        # TODO: slots
-        # TODO: subaccounts
+        for slot in account.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_handle)
+
+        for sub_account in account.children:
+            cls.write_account_to_sqlite(sub_account, sqlite_handle)
 
     @classmethod
     def write_transaction_to_sqlite(cls, transaction: Transaction, sqlite_cursor: Cursor) -> None:
@@ -675,8 +700,11 @@ WHERE guid  = ?
                         transaction.date_posted, transaction.date_entered, transaction.description, transaction.guid)
             sqlite_cursor.execute(sql, sql_args)
 
-        # TODO: slots
-        # TODO: splits
+        for slot in transaction.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
+
+        for split in transaction.splits:
+            cls.write_split_to_sqlite(split, sqlite_cursor, transaction.guid)
 
     @classmethod
     def write_split_to_sqlite(cls, split: Split, sqlite_cursor: Cursor, transaction_guid: str) -> None:
