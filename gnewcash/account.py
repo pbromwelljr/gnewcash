@@ -35,6 +35,7 @@ class Account(GuidObject, SlottableObject):
         self.commodity: Optional[Commodity] = None
         self.code: Optional[str] = None
         self.description: Optional[str] = None
+        self.non_std_scu: Optional[int] = None
 
     def __str__(self) -> str:
         return '{} - {}'.format(self.name, self.type)

@@ -174,7 +174,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         if account_data['commodity_guid'] is not None:
             new_account.commodity = cls.create_commodity_from_sqlite(sqlite_cursor, account_data['commodity_guid'])
         new_account.commodity_scu = account_data['commodity_scu']
-        # TODO: non_std_scu
+        new_account.non_std_scu = account_data['non_std_scu']
 
         for subaccount in cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'parent_guid = ?', (account_id,)):
             new_account.children.append(cls.create_account_from_sqlite(sqlite_cursor, subaccount['guid']))
@@ -311,8 +311,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_scheduled_transaction.start_date = datetime.strptime(scheduled_transaction['start_date'], '%Y%m%d')
             new_scheduled_transaction.end_date = datetime.strptime(scheduled_transaction['end_date'], '%Y%m%d')
             new_scheduled_transaction.last_date = datetime.strptime(scheduled_transaction['last_occur'], '%Y%m%d')
-            # TODO: num_occur
-            # TODO: rem_occur
+            new_scheduled_transaction.num_occur = scheduled_transaction['num_occur']
+            new_scheduled_transaction.rem_occur = scheduled_transaction['rem_occur']
             new_scheduled_transaction.auto_create = scheduled_transaction['auto_create'] == 1
             new_scheduled_transaction.auto_create_notify = scheduled_transaction['auto_notify'] == 1
             new_scheduled_transaction.advance_create_days = scheduled_transaction['adv_creation']
@@ -328,7 +328,7 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_scheduled_transaction.recurrence_start = datetime.strptime(recurrence_info['recurrence_period_start'],
                                                                            '%Y%m%d')
             new_scheduled_transaction.recurrence_period = recurrence_info['recurrence_period_type']
-            # TODO: recurrence_weekend_adjust
+            new_scheduled_transaction.recurrence_weekend_adjust = recurrence_info['recurrence_weekend_adjust']
 
             new_scheduled_transactions.append(new_scheduled_transaction)
         return new_scheduled_transactions
@@ -391,10 +391,11 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_split.guid = split['guid']
             new_split.memo = split['memo']
             new_split.action = split['action']
-            # TODO: reconcile_date
-            # TODO: quantity_num
+            new_split.reconcile_date = datetime.strptime(split['reconcile_date'], '%Y-%m-%d %H:%M:%S') \
+                if split['reconcile_date'] else None
+            new_split.quantity_num = split['quantity_num']
             new_split.quantity_denominator = split['quantity_denom']
-            # TODO: lot_guid
+            new_split.lot_guid = split['lot_guid']
 
             new_splits.append(new_split)
         return new_splits
@@ -613,8 +614,7 @@ INSERT INTO accounts(guid, name, account_type, commodity_guid, commodity_scu, no
 parent_guid, code, description, hidden, placeholder)
 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (account.guid, account.name, account.type, account.commodity.guid if account.commodity else None,
-                        account.commodity_scu,
-                        None,  # TODO: non_std_scu
+                        account.commodity_scu, account.non_std_scu,
                         account.parent.guid if account.parent else None, account.code, account.description,
                         account.hidden, account.placeholder)
             sqlite_handle.execute(sql, sql_args)
@@ -634,8 +634,7 @@ SET name = ?,
 WHERE guid  = ?
 '''.strip()
             sql_args = (account.name, account.type, account.commodity.guid if account.commodity else None,
-                        account.commodity_scu,
-                        None,  # TODO: non_std_scu
+                        account.commodity_scu, account.non_std_scu,
                         account.parent.guid if account.parent else None, account.code, account.description,
                         account.hidden, account.placeholder, account.guid)
             sqlite_handle.execute(sql, sql_args)
@@ -699,12 +698,12 @@ WHERE guid  = ?
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (split.guid, transaction_guid, split.account.guid if split.account else None,
                         split.reconciled_state,
-                        None,  # TODO: reconcile_date
+                        split.reconcile_date.strftime('%Y-%m-%d %H:%M:%S') if split.reconcile_date else None,
                         None,  # TODO: value_num
                         None,  # TODO: value_denom
-                        None,  # TODO: quantity_num
+                        split.quantity_num,
                         split.quantity_denominator,
-                        None)  # TODO: lot_guid
+                        split.lot_guid)
             sqlite_cursor.execute(sql, sql_args)
         elif db_action == DBAction.UPDATE:
             sql = '''
@@ -722,12 +721,12 @@ WHERE guid  = ?
         lot_guid = ?
     WHERE guid = ?'''.strip()
             sql_args = (transaction_guid, split.account.guid if split.account else None, split.reconciled_state,
-                        None,  # TODO: reconcile_date
+                        split.reconcile_date.strftime('%Y-%m-%d %H:%M:%S') if split.reconcile_date else None,
                         None,  # TODO: value_num
                         None,  # TODO: value_denom
-                        None,  # TODO: quantity_num
+                        split.quantity_num,
                         split.quantity_denominator,
-                        None,  # TODO: lot_guid
+                        split.lot_guid,
                         split.guid)
             sqlite_cursor.execute(sql, sql_args)
 

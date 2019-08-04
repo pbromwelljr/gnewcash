@@ -161,6 +161,9 @@ class Split(GuidObject):
         self.action: Optional[str] = None
         self.memo: Optional[str] = None
         self.quantity_denominator: str = '100'
+        self.reconcile_date: Optional[datetime] = None
+        self.quantity_num: Optional[int] = None
+        self.lot_guid: Optional[str] = None
 
     def __str__(self) -> str:
         return '{} - {}'.format(self.account, str(self.amount))
@@ -354,6 +357,9 @@ class ScheduledTransaction(GuidObject):
         self.recurrence_multiplier: Optional[int] = 0
         self.recurrence_period: Optional[str] = None
         self.recurrence_start: Optional[datetime] = None
+        self.num_occur: Optional[int] = None
+        self.rem_occur: Optional[int] = None
+        self.recurrence_weekend_adjust: Optional[str] = None
 
 
 class SimpleTransaction(Transaction):
