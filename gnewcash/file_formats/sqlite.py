@@ -550,13 +550,21 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             cls.write_slot_to_sqlite(slot, sqlite_cursor)
 
     @classmethod
-    def write_recurrence_to_sqlite(cls, obj: Budget, sqlite_cursor: Cursor):
+    def write_recurrence_to_sqlite(cls, obj: Budget, sqlite_cursor: Cursor) -> None:
+        """
+        Writes recurrence information from a Budget object to the SQLite database.
+
+        :param obj: Budget object
+        :type obj: Budget
+        :param sqlite_cursor: Handle to SQLite database
+        :type sqlite_cursor: sqlite3.Cursor
+        """
         db_action = DBAction.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', obj.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
-    INSERT INTO recurrences(obj_guid, recurrence_mult, recurrence_period_type, recurrence_period_start, 
+    INSERT INTO recurrences(obj_guid, recurrence_mult, recurrence_period_type, recurrence_period_start,
                             recurrence_weekend_adjust)
     VALUES(?, ?, ?, ?, ?)
 '''.strip()
@@ -574,7 +582,6 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             sql_args = (obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
                         obj.recurrence_weekend_adjust, obj.guid)
         sqlite_cursor.execute(sql, sql_args)
-
 
     @classmethod
     def write_commodity_to_sqlite(cls, commodity: Commodity, sqlite_cursor: Cursor) -> None:
