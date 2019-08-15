@@ -21,7 +21,7 @@
         {
             "label": "Unit Tests",
             "type": "shell",
-            "command": "poetry run coverage run -m unittest discover"
+            "command": "poetry run pytest --cov=gnewcash tests"
         },
         {
             "label": "Poetry Install",

@@ -25,7 +25,7 @@ After dependencies are installed, run ```poetry shell``` and run the following c
 1. ```flake8 gnewcash```
 2. ```pylint gnewcash```
 3. ```mypy gnewcash```
-4. ```coverage run -m unittest discover```
+4. ```pytest --cov=gnewcash tests```
 
 All 4 should succeed without issues.
 

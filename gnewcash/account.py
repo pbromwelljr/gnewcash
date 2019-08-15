@@ -290,7 +290,7 @@ class Account(GuidObject, SlottableObject):
         :return: True if the account is a placeholder, otherwise False
         :rtype: bool
         """
-        return super(Account, self).get_slot_value('placeholder')
+        return super(Account, self).get_slot_value('placeholder') == 'true'
 
     @placeholder.setter
     def placeholder(self, value: bool) -> None:

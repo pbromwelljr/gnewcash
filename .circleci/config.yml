@@ -30,7 +30,7 @@ jobs:
       - run:
           name: run unit tests
           command: |
-            poetry run coverage run -m unittest discover
+            poetry run pytest --cov=gnewcash tests/
       - run:
           name: upload to test PyPI
           command: |
