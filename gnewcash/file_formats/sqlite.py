@@ -89,8 +89,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             cls.LOGGER.warning('Could not find %s', source_file)
             return built_file
 
-        sqlite_handle = sqlite3.connect(source_file)
-        cursor = sqlite_handle.cursor()
+        sqlite_cursor = sqlite3.connect(source_file)
+        cursor = sqlite_cursor.cursor()
         built_file.books = cls.create_books_from_sqlite(cursor, sort_transactions)
         return built_file
 
@@ -158,7 +158,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         account_data_items = cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'guid = ?', (account_id,))
         if not account_data_items:
             raise RuntimeError('Could not find account {} in the SQLite database'.format(account_id))
-        account_data, = account_data_items
+        account_data = account_data_items[0]
         new_account = Account()
         new_account.guid = account_data['guid']
         new_account.name = account_data['name']
@@ -174,7 +174,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         if account_data['commodity_guid'] is not None:
             new_account.commodity = cls.create_commodity_from_sqlite(sqlite_cursor, account_data['commodity_guid'])
         new_account.commodity_scu = account_data['commodity_scu']
-        # TODO: non_std_scu
+        new_account.non_std_scu = account_data['non_std_scu']
 
         for subaccount in cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'parent_guid = ?', (account_id,)):
             new_account.children.append(cls.create_account_from_sqlite(sqlite_cursor, subaccount['guid']))
@@ -311,8 +311,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_scheduled_transaction.start_date = datetime.strptime(scheduled_transaction['start_date'], '%Y%m%d')
             new_scheduled_transaction.end_date = datetime.strptime(scheduled_transaction['end_date'], '%Y%m%d')
             new_scheduled_transaction.last_date = datetime.strptime(scheduled_transaction['last_occur'], '%Y%m%d')
-            # TODO: num_occur
-            # TODO: rem_occur
+            new_scheduled_transaction.num_occur = scheduled_transaction['num_occur']
+            new_scheduled_transaction.rem_occur = scheduled_transaction['rem_occur']
             new_scheduled_transaction.auto_create = scheduled_transaction['auto_create'] == 1
             new_scheduled_transaction.auto_create_notify = scheduled_transaction['auto_notify'] == 1
             new_scheduled_transaction.advance_create_days = scheduled_transaction['adv_creation']
@@ -321,14 +321,14 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_scheduled_transaction.template_account = template_root_account.get_subaccount_by_id(
                 scheduled_transaction['template_act_guid'])
 
-            recurrence_info, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
-                                                         (new_scheduled_transaction.guid,))
+            recurrence_info = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
+                                                        (new_scheduled_transaction.guid,))[0]
 
             new_scheduled_transaction.recurrence_multiplier = recurrence_info['recurrence_mult']
             new_scheduled_transaction.recurrence_start = datetime.strptime(recurrence_info['recurrence_period_start'],
                                                                            '%Y%m%d')
             new_scheduled_transaction.recurrence_period = recurrence_info['recurrence_period_type']
-            # TODO: recurrence_weekend_adjust
+            new_scheduled_transaction.recurrence_weekend_adjust = recurrence_info['recurrence_weekend_adjust']
 
             new_scheduled_transactions.append(new_scheduled_transaction)
         return new_scheduled_transactions
@@ -352,9 +352,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_budget.description = budget['description']
             new_budget.period_count = budget['num_periods']
 
-            recurrence_data, = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
-                                                         (new_budget.guid,))
-            # TODO: Store recurrence ID
+            recurrence_data = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
+                                                        (new_budget.guid,))[0]
             new_budget.recurrence_multiplier = recurrence_data['recurrence_mult']
             new_budget.recurrence_period_type = recurrence_data['recurrence_period_type']
             new_budget.recurrence_start = datetime.strptime(recurrence_data['recurrence_period_start'],
@@ -391,10 +390,11 @@ class GnuCashSQLiteReader(BaseFileReader):
             new_split.guid = split['guid']
             new_split.memo = split['memo']
             new_split.action = split['action']
-            # TODO: reconcile_date
-            # TODO: quantity_num
+            new_split.reconcile_date = datetime.strptime(split['reconcile_date'], '%Y-%m-%d %H:%M:%S') \
+                if split['reconcile_date'] else None
+            new_split.quantity_num = split['quantity_num']
             new_split.quantity_denominator = split['quantity_denom']
-            # TODO: lot_guid
+            new_split.lot_guid = split['lot_guid']
 
             new_splits.append(new_split)
         return new_splits
@@ -446,8 +446,8 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         :return:
         """
         create_schema: bool = not os.path.exists(target_file)
-        sqlite_handle: Connection = sqlite3.connect(target_file)
-        cursor: Cursor = sqlite_handle.cursor()
+        sqlite_cursor: Connection = sqlite3.connect(target_file)
+        cursor: Cursor = sqlite_cursor.cursor()
         if create_schema:
             cls.create_sqlite_schema(cursor)
 
@@ -457,38 +457,37 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         raise NotImplementedError('SQLite support not implemented')
 
     @classmethod
-    def write_book_to_sqlite(cls, book: Book, sqlite_handle: sqlite3.Cursor) -> None:
+    def write_book_to_sqlite(cls, book: Book, sqlite_cursor: sqlite3.Cursor) -> None:
         """
         Writes a Book object to the SQLite database.
 
         :param book: Book object
         :type book: Book
-        :param sqlite_handle: Handle to SQLite file
-        :type sqlite_handle: sqlite3.Cursor
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
         """
-        book_db_action = DBAction.get_db_action(sqlite_handle, 'books', 'guid', book.guid)
+        book_db_action = DBAction.get_db_action(sqlite_cursor, 'books', 'guid', book.guid)
         if book_db_action == DBAction.INSERT:
-            sqlite_handle.execute(
+            sqlite_cursor.execute(
                 'INSERT INTO books (guid, root_account_guid, root_template_guid) VALUES (?, ?, ?)',
                 (book.guid, book.root_account.guid if book.root_account else None,
                  book.template_root_account.guid if book.template_root_account else None,))
         elif book_db_action == DBAction.UPDATE:
-            sqlite_handle.execute('UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?',
+            sqlite_cursor.execute('UPDATE books SET root_account_guid = ?, root_template_guid = ? WHERE guid = ?',
                                   (book.root_account.guid if book.root_account else None,
                                    book.template_root_account.guid if book.template_root_account else None,
                                    book.guid,))
 
         if book.root_account is not None:
-            cls.write_account_to_sqlite(book.root_account, sqlite_handle)
+            cls.write_account_to_sqlite(book.root_account, sqlite_cursor)
         if book.template_root_account is not None:
-            cls.write_account_to_sqlite(book.template_root_account, sqlite_handle)
+            cls.write_account_to_sqlite(book.template_root_account, sqlite_cursor)
 
-        # TODO: Re-enable slots when slots are implemented
-        # for slot in self.slots:
-        #     slot.to_sqlite(sqlite_handle)
+        for slot in book.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
 
         for commodity in book.commodities:
-            cls.write_commodity_to_sqlite(commodity, sqlite_handle)
+            cls.write_commodity_to_sqlite(commodity, sqlite_cursor)
 
         # TODO: Implement the rest
         '''
@@ -545,13 +544,37 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             sql_args = (budget.name, budget.description, budget.period_count, budget.guid)
             sqlite_cursor.execute(sql, sql_args)
 
-        # TODO: Upsert recurrences
-        # db_action = self.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', self.guid)
-        # if db_action == DBAction.INSERT:
+        cls.write_recurrence_to_sqlite(budget, sqlite_cursor)
 
-        # elif db_action == DBAction.UPDATE:
+        for slot in budget.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
 
-        # TODO: slots
+    @classmethod
+    def write_recurrence_to_sqlite(cls, obj: Budget, sqlite_cursor: Cursor):
+        db_action = DBAction.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', obj.guid)
+        sql: str = ''
+        sql_args: Tuple = tuple()
+        if db_action == DBAction.INSERT:
+            sql = '''
+    INSERT INTO recurrences(obj_guid, recurrence_mult, recurrence_period_type, recurrence_period_start, 
+                            recurrence_weekend_adjust)
+    VALUES(?, ?, ?, ?, ?)
+'''.strip()
+            sql_args = (obj.guid, obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
+                        obj.recurrence_weekend_adjust)
+        elif db_action == DBAction.UPDATE:
+            sql = '''
+    UPDATE recurrences
+    SET recurrence_mult = ?,
+        recurrence_period_type = ?,
+        recurrence_period_start = ?,
+        recurrence_weekend_adjust = ?
+    WHERE obj_guid = ?
+'''.strip()
+            sql_args = (obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
+                        obj.recurrence_weekend_adjust, obj.guid)
+        sqlite_cursor.execute(sql, sql_args)
+
 
     @classmethod
     def write_commodity_to_sqlite(cls, commodity: Commodity, sqlite_cursor: Cursor) -> None:
@@ -595,16 +618,16 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         raise NotImplementedError
 
     @classmethod
-    def write_account_to_sqlite(cls, account: Account, sqlite_handle: Cursor) -> None:
+    def write_account_to_sqlite(cls, account: Account, sqlite_cursor: Cursor) -> None:
         """
         Writes an Account object to the SQLite database.
 
         :param account: Account object
         :type account: Account
-        :param sqlite_handle: Handle to SQLite file
-        :type sqlite_handle: sqlite3.Cursor
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
         """
-        db_action: DBAction = DBAction.get_db_action(sqlite_handle, 'accounts', 'guid', account.guid)
+        db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'accounts', 'guid', account.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
         if db_action == DBAction.INSERT:
@@ -613,11 +636,10 @@ INSERT INTO accounts(guid, name, account_type, commodity_guid, commodity_scu, no
 parent_guid, code, description, hidden, placeholder)
 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (account.guid, account.name, account.type, account.commodity.guid if account.commodity else None,
-                        account.commodity_scu,
-                        None,  # TODO: non_std_scu
+                        account.commodity_scu, account.non_std_scu,
                         account.parent.guid if account.parent else None, account.code, account.description,
                         account.hidden, account.placeholder)
-            sqlite_handle.execute(sql, sql_args)
+            sqlite_cursor.execute(sql, sql_args)
         elif db_action == DBAction.UPDATE:
             sql = '''
 UPDATE accounts
@@ -634,14 +656,16 @@ SET name = ?,
 WHERE guid  = ?
 '''.strip()
             sql_args = (account.name, account.type, account.commodity.guid if account.commodity else None,
-                        account.commodity_scu,
-                        None,  # TODO: non_std_scu
+                        account.commodity_scu, account.non_std_scu,
                         account.parent.guid if account.parent else None, account.code, account.description,
                         account.hidden, account.placeholder, account.guid)
-            sqlite_handle.execute(sql, sql_args)
+            sqlite_cursor.execute(sql, sql_args)
 
-        # TODO: slots
-        # TODO: subaccounts
+        for slot in account.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
+
+        for sub_account in account.children:
+            cls.write_account_to_sqlite(sub_account, sqlite_cursor)
 
     @classmethod
     def write_transaction_to_sqlite(cls, transaction: Transaction, sqlite_cursor: Cursor) -> None:
@@ -676,8 +700,11 @@ WHERE guid  = ?
                         transaction.date_posted, transaction.date_entered, transaction.description, transaction.guid)
             sqlite_cursor.execute(sql, sql_args)
 
-        # TODO: slots
-        # TODO: splits
+        for slot in transaction.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor)
+
+        for split in transaction.splits:
+            cls.write_split_to_sqlite(split, sqlite_cursor, transaction.guid)
 
     @classmethod
     def write_split_to_sqlite(cls, split: Split, sqlite_cursor: Cursor, transaction_guid: str) -> None:
@@ -699,12 +726,12 @@ WHERE guid  = ?
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (split.guid, transaction_guid, split.account.guid if split.account else None,
                         split.reconciled_state,
-                        None,  # TODO: reconcile_date
+                        split.reconcile_date.strftime('%Y-%m-%d %H:%M:%S') if split.reconcile_date else None,
                         None,  # TODO: value_num
                         None,  # TODO: value_denom
-                        None,  # TODO: quantity_num
+                        split.quantity_num,
                         split.quantity_denominator,
-                        None)  # TODO: lot_guid
+                        split.lot_guid)
             sqlite_cursor.execute(sql, sql_args)
         elif db_action == DBAction.UPDATE:
             sql = '''
@@ -722,25 +749,25 @@ WHERE guid  = ?
         lot_guid = ?
     WHERE guid = ?'''.strip()
             sql_args = (transaction_guid, split.account.guid if split.account else None, split.reconciled_state,
-                        None,  # TODO: reconcile_date
+                        split.reconcile_date.strftime('%Y-%m-%d %H:%M:%S') if split.reconcile_date else None,
                         None,  # TODO: value_num
                         None,  # TODO: value_denom
-                        None,  # TODO: quantity_num
+                        split.quantity_num,
                         split.quantity_denominator,
-                        None,  # TODO: lot_guid
+                        split.lot_guid,
                         split.guid)
             sqlite_cursor.execute(sql, sql_args)
 
     @classmethod
-    def write_scheduled_transaction_to_sqlite(cls, scheduled_transaction: ScheduledTransaction, sqlite_handle: Cursor) \
+    def write_scheduled_transaction_to_sqlite(cls, scheduled_transaction: ScheduledTransaction, sqlite_cursor: Cursor) \
             -> None:
         """
         Writes a ScheduledTransaction object to the SQLite database.
 
         :param scheduled_transaction: ScheduledTransaction object
         :type scheduled_transaction: ScheduledTransaction
-        :param sqlite_handle: Handle to SQLite file
-        :type sqlite_handle: sqlite3.Cursor
+        :param sqlite_cursor: Handle to SQLite file
+        :type sqlite_cursor: sqlite3.Cursor
         """
         raise NotImplementedError
 
