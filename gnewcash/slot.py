@@ -5,7 +5,7 @@ Module containing classes that read, manipulate, and write slots.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from typing import Any, List, Union
+from typing import Any, List, Optional, Union
 
 
 class Slot:
@@ -15,6 +15,7 @@ class Slot:
         self.key: str = key
         self.value: Any = value
         self.type: str = slot_type
+        self.sqlite_id: Optional[int] = None
 
 
 class SlottableObject(object):
