@@ -1,11 +1,11 @@
 import gzip
 import json
 import os
+import sqlite3
 from xml.etree import ElementTree
 
 import gnewcash.file_formats as gff
 import gnewcash.gnucash_file as gcf
-import gnewcash.transaction as trn
 
 
 def test_read_write():
@@ -122,3 +122,69 @@ def test_read_write_sqlite():
     gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.sqlite.gnucash', file_format=gff.SqliteFileFormat,
                                              sort_transactions=False)
     gnucash_file.build_file(result_sqlite_file, file_format=gff.SqliteFileFormat)
+
+    original_conn, new_conn = (sqlite3.connect('test_files/Test1.sqlite.gnucash'),
+                               sqlite3.connect('test_files/Test1.sqlite.testresult.gnucash'))
+
+    # Asserting we have the same tables
+    original_tables, new_tables = (get_sqlite_tables(original_conn),
+                                   get_sqlite_tables(new_conn))
+    assert original_tables == new_tables
+
+    for table_name in original_tables:
+        # Asserting we have the same table schema
+        original_columns, new_columns = (get_sqlite_columns(original_conn, table_name),
+                                         get_sqlite_columns(new_conn, table_name))
+        assert original_columns == new_columns
+
+        # Asserting we have the same data
+        original_data, new_data = (get_sqlite_table_data(original_conn, table_name),
+                                   get_sqlite_table_data(new_conn, table_name))
+        for original_row, new_row in zip(original_data, new_data):
+            print('Testing row')
+            assert original_row == new_row
+
+    original_conn.close()
+    new_conn.close()
+
+
+def get_sqlite_tables(conn: sqlite3.Connection):
+    cursor = conn.cursor()
+    sql = 'SELECT DISTINCT tbl_name FROM sqlite_master ORDER BY tbl_name ASC'
+    cursor.execute(sql)
+    tables = []
+    for table_name, in cursor.fetchall():
+        if not table_name.startswith('sqlite_'):
+            tables.append(table_name)
+    cursor.close()
+
+    return tables
+
+
+def get_sqlite_columns(conn: sqlite3.Connection, table_name: str):
+    cursor = conn.cursor()
+    sql = f'pragma table_info({table_name})'
+    cursor.execute(sql)
+    columns = []
+    for _, column_name, data_type, nullable, default_value, is_primary_key in cursor.fetchall():
+        columns.append({
+            'name': column_name,
+            'data_type': data_type,
+            'nullable': nullable,
+            'default_value': default_value,
+            'is_primary_key': is_primary_key
+        })
+    cursor.close()
+    return columns
+
+
+def get_sqlite_table_data(conn: sqlite3.Connection, table_name: str):
+    cursor = conn.cursor()
+    sql = f'SELECT * FROM {table_name}'
+    cursor.execute(sql)
+    column_names = [column[0] for column in cursor.description]
+    rows = []
+    for row in cursor.fetchall():
+        row_data = dict(zip(column_names, row))
+        rows.append(row_data)
+    return rows
