@@ -48,8 +48,7 @@ class GnuCashFile:
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
         :param file_format: File format of the file being uploaded.
-        If no format is provided, GNewCash will try to detect the file format,
-        :type file_format: FileFormat
+        :type file_format: BaseFileFormat subclass
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """

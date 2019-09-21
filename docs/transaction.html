@@ -169,22 +169,6 @@
 <em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">Transaction</code><a class="reference internal" href="_modules/transaction.html#Transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a transaction in GnuCash.</p>
 <dl class="attribute">
-<dt id="transaction.Transaction.as_xml">
-<code class="descname">as_xml</code><a class="headerlink" href="#transaction.Transaction.as_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the current transaction as GnuCash-compatible XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current transaction as XML</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="transaction.Transaction.associated_uri">
 <code class="descname">associated_uri</code><a class="headerlink" href="#transaction.Transaction.associated_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>URI associated with the transaction.</p>
@@ -211,56 +195,6 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean indicating if all splits in the transaction are cleared.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.Transaction.from_sqlite">
-<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>root_account</em>, <em>template_root_account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.from_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates Transaction objects from the GnuCash XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database.</li>
-<li><strong>root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root account from the SQLite database</li>
-<li><strong>template_root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Template root account from the SQLite database</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Transaction objects from SQLite</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a>]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.Transaction.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.Transaction<a class="reference internal" href="_modules/transaction.html#Transaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.from_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a Transaction object from the GnuCash XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transaction_node</strong> (<em>ElementTree.Element</em>) – XML node for the transaction</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
-<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning accounts)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Transaction object from XML</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a></p>
-</td>
 </tr>
 </tbody>
 </table>
@@ -299,20 +233,6 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Transaction GUID</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="transaction.Transaction.to_sqlite">
-<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Transaction.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Transaction.to_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract method for writing an object to a SQLite database.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
 </tr>
 </tbody>
 </table>
@@ -372,87 +292,6 @@
 <dt id="transaction.Split">
 <em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">Split</code><span class="sig-paren">(</span><em>account: Optional[gnewcash.account.Account], amount: Optional[decimal.Decimal], reconciled_state: str = 'n'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a split in GnuCash.</p>
-<dl class="attribute">
-<dt id="transaction.Split.as_xml">
-<code class="descname">as_xml</code><a class="headerlink" href="#transaction.Split.as_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the current split as GnuCash-compatible XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current split as XML</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.Split.from_sqlite">
-<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>transaction_guid</em>, <em>root_account</em>, <em>template_root_account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.from_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates Split objects from the GnuCash SQLite database.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database.</li>
-<li><strong>transaction_guid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – GUID of the transaction to load the splits of</li>
-<li><strong>root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root account from the SQLite database</li>
-<li><strong>template_root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Template root account from the SQLite database</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Split objects from XML</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="#transaction.Split" title="transaction.Split">Split</a>]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.Split.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>split_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.Split<a class="reference internal" href="_modules/transaction.html#Split.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.from_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates an Split object from the GnuCash XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>split_node</strong> (<em>ElementTree.Element</em>) – XML node for the split</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
-<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning parent account)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Split object from XML</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.Split" title="transaction.Split">Split</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="transaction.Split.to_sqlite">
-<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#Split.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.Split.to_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract method for writing an object to a SQLite database.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -513,7 +352,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get starting balance of.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">First transaction amount if the account has transactions, otherwise 0.</td>
 </tr>
@@ -533,7 +372,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
+<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the balance of</li>
 <li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – Last date to consider when determining the account balance.</li>
 </ul>
 </td>
@@ -575,8 +414,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a><em>] or </em><a class="reference internal" href="#transaction.TransactionManager" title="transaction.TransactionManager"><em>TransactionManager</em></a>) – List of transactions or TransactionManager</li>
-<li><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
+<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account to get the minimum balance information of</li>
+<li><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><em>datetime.datetime</em></a>) – datetime object representing the date you want to find the minimum balance for.</li>
 </ul>
 </td>
 </tr>
@@ -596,185 +435,6 @@
 <dt id="transaction.ScheduledTransaction">
 <em class="property">class </em><code class="descclassname">transaction.</code><code class="descname">ScheduledTransaction</code><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class that represents a scheduled transaction in Gnucash.</p>
-<dl class="attribute">
-<dt id="transaction.ScheduledTransaction.as_xml">
-<code class="descname">as_xml</code><a class="headerlink" href="#transaction.ScheduledTransaction.as_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the current scheduled transaction as GnuCash-compatible XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current scheduled transaction as XML</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.7)">xml.etree.ElementTree.Element</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.ScheduledTransaction.from_sqlite">
-<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>template_root_account</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates ScheduledTransaction objects from the GnuCash SQLite database.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
-<li><strong>template_account_root</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root template account</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ScheduledTransaction objects from SQLite</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="#transaction.ScheduledTransaction" title="transaction.ScheduledTransaction">ScheduledTransaction</a>]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.ScheduledTransaction.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>xml_obj: xml.etree.ElementTree.Element, namespaces: Dict[str, str], template_account_root: Optional[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.ScheduledTransaction<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a ScheduledTransaction object from the GnuCash XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>xml_obj</strong> (<em>ElementTree.Element</em>) – XML node for the scheduled transaction</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
-<li><strong>template_account_root</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root template account</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ScheduledTransaction object from XML</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.ScheduledTransaction" title="transaction.ScheduledTransaction">ScheduledTransaction</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.ScheduledTransaction.read_xml_child_boolean">
-<em class="property">classmethod </em><code class="descname">read_xml_child_boolean</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[bool]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_boolean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads the text from a specific child XML element and returns a Boolean if the text is “Y” or “y”.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
-<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if child node’s text is “Y” or “Y”, otherwise False.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.ScheduledTransaction.read_xml_child_date">
-<em class="property">classmethod </em><code class="descname">read_xml_child_date</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[datetime.datetime]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads the text from a specific child XML element and returns its inner gdate text as a datetime.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
-<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child’s gdate’s text as datetime</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)">datetime.datetime</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.ScheduledTransaction.read_xml_child_int">
-<em class="property">classmethod </em><code class="descname">read_xml_child_int</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[int]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_int" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads the text from a specific child XML element and returns its text as an integer value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
-<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child’s text as an integer value</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.ScheduledTransaction.read_xml_child_text">
-<em class="property">classmethod </em><code class="descname">read_xml_child_text</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[str]<a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.read_xml_child_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.read_xml_child_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads the text from a specific child XML element.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
-<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Child tag name</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child node’s text</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="transaction.ScheduledTransaction.to_sqlite">
-<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transaction.html#ScheduledTransaction.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.ScheduledTransaction.to_sqlite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract method for writing an object to a SQLite database.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -808,31 +468,6 @@
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Account which the transaction transfers funds from.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="account.html#account.Account" title="account.Account">Account</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="transaction.SimpleTransaction.from_xml">
-<em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>transaction_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str], account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; transaction.SimpleTransaction<a class="reference internal" href="_modules/transaction.html#SimpleTransaction.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#transaction.SimpleTransaction.from_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a SimpleTransaction object from the GnuCash XML.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>transaction_node</strong> (<em>ElementTree.Element</em>) – XML node for the transaction</li>
-<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – XML namespaces for GnuCash elements</li>
-<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning accounts)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Transaction object from XML</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#transaction.Transaction" title="transaction.Transaction">Transaction</a></p>
-</td>
 </tr>
 </tbody>
 </table>
