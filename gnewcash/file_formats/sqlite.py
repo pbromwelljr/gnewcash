@@ -549,6 +549,10 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         db_action = DBAction.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', obj.guid)
         sql: str = ''
         sql_args: Tuple = tuple()
+
+        recurrence_weekend_adjust = ''
+        if hasattr(obj, 'recurrence_weekend_adjust'):
+            recurrence_weekend_adjust = getattr(obj, 'recurrence_weekend_adjust')
         if db_action == DBAction.INSERT:
             sql = '''
     INSERT INTO recurrences(obj_guid, recurrence_mult, recurrence_period_type, recurrence_period_start,
@@ -556,7 +560,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
     VALUES(?, ?, ?, ?, ?)
 '''.strip()
             sql_args = (obj.guid, obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
-                        obj.recurrence_weekend_adjust if hasattr(obj, 'recurrence_weekend_adjust') else '')
+                        recurrence_weekend_adjust)
         elif db_action == DBAction.UPDATE:
             sql = '''
     UPDATE recurrences
@@ -567,7 +571,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
     WHERE obj_guid = ?
 '''.strip()
             sql_args = (obj.recurrence_multiplier, obj.recurrence_period_type, obj.recurrence_start,
-                        obj.recurrence_weekend_adjust if hasattr(obj, 'recurrence_weekend_adjust') else '', obj.guid)
+                        recurrence_weekend_adjust, obj.guid)
         sqlite_cursor.execute(sql, sql_args)
 
     @classmethod
