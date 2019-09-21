@@ -503,7 +503,10 @@ class InterestAccount(InterestAccountBase):
             if iterator_date in self.skip_payment_dates:
                 continue
 
-            interest = Decimal(interest_rate / 12 * iterator_balance).quantize(Decimal('.01'), rounding=ROUND_UP)
+            if not self.interest_start_date or iterator_date > self.interest_start_date:
+                interest = Decimal(interest_rate / 12 * iterator_balance).quantize(Decimal('.01'), rounding=ROUND_UP)
+            else:
+                interest = Decimal(0)
             amount_to_capital = self.payment_amount - interest
             payments.append((iterator_date, iterator_balance, amount_to_capital))
             new_balance = iterator_balance - amount_to_capital

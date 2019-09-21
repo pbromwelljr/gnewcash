@@ -393,7 +393,7 @@ class GnuCashXMLReader(BaseFileReader):
         if value_node is None or not value_node.text:
             raise ValueError('Invalid or missing split:value node')
         value_str: str = value_node.text
-        value: Decimal = Decimal(value_str[:value_str.find('/')]) / Decimal(100)
+        value: Decimal = Decimal(value_str[:value_str.find('/')]) / Decimal(value_str[value_str.find('/') + 1:])
 
         reconciled_state_node: Optional[ElementTree.Element] = split_node.find('split:reconciled-state',
                                                                                XML_NAMESPACES)
