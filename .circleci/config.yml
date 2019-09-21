@@ -4,6 +4,7 @@ jobs:
     branches:
       only:
         - develop
+        - /feature\/.*/
     docker:
       - image: python:3
     steps:

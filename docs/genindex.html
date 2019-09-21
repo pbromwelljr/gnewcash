@@ -170,6 +170,7 @@
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
+ | <a href="#X"><strong>X</strong></a>
  
 </div>
 <h2 id="_">_</h2>
@@ -202,21 +203,17 @@
       <li><a href="account.html#account.Account.as_dict">as_dict() (account.Account method)</a>
 </li>
       <li><a href="commodity.html#commodity.Commodity.as_short_xml">as_short_xml() (commodity.Commodity method)</a>
-
-      <ul>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity.as_short_xml">(gnucash_file.Commodity method)</a>
 </li>
-      </ul></li>
       <li><a href="account.html#account.Account.as_xml">as_xml (account.Account attribute)</a>
 
       <ul>
         <li><a href="commodity.html#commodity.Commodity.as_xml">(commodity.Commodity attribute)</a>
 </li>
+        <li><a href="file_formats.html#file_formats.GnuCashXMLObject.as_xml">(file_formats.GnuCashXMLObject attribute)</a>
+</li>
         <li><a href="gnucash_file.html#gnucash_file.Book.as_xml">(gnucash_file.Book attribute)</a>
 </li>
         <li><a href="gnucash_file.html#gnucash_file.Budget.as_xml">(gnucash_file.Budget attribute)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity.as_xml">(gnucash_file.Commodity attribute)</a>
 </li>
         <li><a href="slot.html#slot.Slot.as_xml">(slot.Slot attribute)</a>
 </li>
@@ -260,14 +257,12 @@
       <li><a href="account.html#account.Account.color">color (account.Account attribute)</a>
 </li>
       <li><a href="commodity.html#commodity.Commodity">Commodity (class in commodity)</a>
-
-      <ul>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity">(class in gnucash_file)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="commodity.html#module-commodity">commodity (module)</a>
+</li>
+      <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.create_sqlite_schema">create_sqlite_schema() (gnucash_file.GnuCashFile class method)</a>
 </li>
       <li><a href="account.html#account.CreditAccount">CreditAccount (class in account)</a>
 </li>
@@ -277,11 +272,15 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.DBAction">DBAction (class in file_formats)</a>
+</li>
       <li><a href="transaction.html#transaction.TransactionManager.delete">delete() (transaction.TransactionManager method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#utils.delete_log_files">delete_log_files() (in module utils)</a>
+</li>
+      <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.detect_file_format">detect_file_format() (gnucash_file.GnuCashFile class method)</a>
 </li>
       <li><a href="account.html#account.Account.dict_entry_name">dict_entry_name (account.Account attribute)</a>
 </li>
@@ -303,18 +302,44 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#module-file_formats">file_formats (module)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.FileFormat">FileFormat (class in file_formats)</a>
+</li>
       <li><a href="transaction.html#transaction.SimpleTransaction.from_account">from_account (transaction.SimpleTransaction attribute)</a>
 </li>
+      <li><a href="account.html#account.Account.from_sqlite">from_sqlite() (account.Account class method)</a>
+
+      <ul>
+        <li><a href="commodity.html#commodity.Commodity.from_sqlite">(commodity.Commodity class method)</a>
+</li>
+        <li><a href="file_formats.html#file_formats.GnuCashSQLiteObject.from_sqlite">(file_formats.GnuCashSQLiteObject class method)</a>
+</li>
+        <li><a href="gnucash_file.html#gnucash_file.Book.from_sqlite">(gnucash_file.Book class method)</a>
+</li>
+        <li><a href="gnucash_file.html#gnucash_file.Budget.from_sqlite">(gnucash_file.Budget class method)</a>
+</li>
+        <li><a href="slot.html#slot.Slot.from_sqlite">(slot.Slot class method)</a>
+</li>
+        <li><a href="transaction.html#transaction.ScheduledTransaction.from_sqlite">(transaction.ScheduledTransaction class method)</a>
+</li>
+        <li><a href="transaction.html#transaction.Split.from_sqlite">(transaction.Split class method)</a>
+</li>
+        <li><a href="transaction.html#transaction.Transaction.from_sqlite">(transaction.Transaction class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.Account.from_xml">from_xml() (account.Account class method)</a>
 
       <ul>
         <li><a href="commodity.html#commodity.Commodity.from_xml">(commodity.Commodity class method)</a>
 </li>
+        <li><a href="file_formats.html#file_formats.GnuCashXMLObject.from_xml">(file_formats.GnuCashXMLObject class method)</a>
+</li>
         <li><a href="gnucash_file.html#gnucash_file.Book.from_xml">(gnucash_file.Book class method)</a>
 </li>
         <li><a href="gnucash_file.html#gnucash_file.Budget.from_xml">(gnucash_file.Budget class method)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity.from_xml">(gnucash_file.Commodity class method)</a>
 </li>
         <li><a href="slot.html#slot.Slot.from_xml">(slot.Slot class method)</a>
 </li>
@@ -339,6 +364,8 @@
 </li>
       <li><a href="transaction.html#transaction.TransactionManager.get_account_ending_balance">get_account_ending_balance() (transaction.TransactionManager method)</a>
 </li>
+      <li><a href="account.html#account.Account.get_account_guids">get_account_guids() (account.Account method)</a>
+</li>
       <li><a href="transaction.html#transaction.TransactionManager.get_account_starting_balance">get_account_starting_balance() (transaction.TransactionManager method)</a>
 </li>
       <li><a href="account.html#account.InterestAccount.get_all_payments">get_all_payments() (account.InterestAccount method)</a>
@@ -350,6 +377,8 @@
 </li>
       </ul></li>
       <li><a href="transaction.html#transaction.TransactionManager.get_balance_at_date">get_balance_at_date() (transaction.TransactionManager method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.GnuCashSQLiteObject.get_db_action">get_db_action() (file_formats.GnuCashSQLiteObject class method)</a>
 </li>
       <li><a href="guid_object.html#guid_object.GuidObject.get_guid">get_guid() (guid_object.GuidObject class method)</a>
 </li>
@@ -367,6 +396,8 @@
 </li>
       <li><a href="slot.html#slot.SlottableObject.get_slot_value">get_slot_value() (slot.SlottableObject method)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.GnuCashSQLiteObject.get_sqlite_table_data">get_sqlite_table_data() (file_formats.GnuCashSQLiteObject class method)</a>
+</li>
       <li><a href="account.html#account.Account.get_subaccount_by_id">get_subaccount_by_id() (account.Account method)</a>
 </li>
       <li><a href="transaction.html#transaction.TransactionManager.get_transactions">get_transactions() (transaction.TransactionManager method)</a>
@@ -375,9 +406,15 @@
 </li>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile">GnuCashFile (class in gnucash_file)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.GnuCashSQLiteObject">GnuCashSQLiteObject (class in file_formats)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.GnuCashXMLObject">GnuCashXMLObject (class in file_formats)</a>
+</li>
       <li><a href="guid_object.html#module-guid_object">guid_object (module)</a>
 </li>
       <li><a href="guid_object.html#guid_object.GuidObject">GuidObject (class in guid_object)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.FileFormat.GZIP_XML">GZIP_XML (file_formats.FileFormat attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -394,6 +431,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.IncomeAccount">IncomeAccount (class in account)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.DBAction.INSERT">INSERT (file_formats.DBAction attribute)</a>
 </li>
       <li><a href="account.html#account.LoanStatus.interest">interest (account.LoanStatus attribute)</a>
 </li>
@@ -527,6 +566,8 @@
 </li>
       <li><a href="transaction.html#transaction.Split">Split (class in transaction)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.FileFormat.SQLITE">SQLITE (file_formats.FileFormat attribute)</a>
+</li>
       <li><a href="account.html#account.InterestAccount.starting_balance">starting_balance (account.InterestAccount attribute)</a>
 
       <ul>
@@ -551,10 +592,30 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transaction.html#transaction.SimpleTransaction.to_account">to_account (transaction.SimpleTransaction attribute)</a>
 </li>
-      <li><a href="transaction.html#transaction.Transaction">Transaction (class in transaction)</a>
+      <li><a href="account.html#account.Account.to_sqlite">to_sqlite() (account.Account method)</a>
+
+      <ul>
+        <li><a href="commodity.html#commodity.Commodity.to_sqlite">(commodity.Commodity method)</a>
 </li>
+        <li><a href="file_formats.html#file_formats.GnuCashSQLiteObject.to_sqlite">(file_formats.GnuCashSQLiteObject method)</a>
+</li>
+        <li><a href="gnucash_file.html#gnucash_file.Book.to_sqlite">(gnucash_file.Book method)</a>
+</li>
+        <li><a href="gnucash_file.html#gnucash_file.Budget.to_sqlite">(gnucash_file.Budget method)</a>
+</li>
+        <li><a href="slot.html#slot.Slot.to_sqlite">(slot.Slot method)</a>
+</li>
+        <li><a href="transaction.html#transaction.ScheduledTransaction.to_sqlite">(transaction.ScheduledTransaction method)</a>
+</li>
+        <li><a href="transaction.html#transaction.Split.to_sqlite">(transaction.Split method)</a>
+</li>
+        <li><a href="transaction.html#transaction.Transaction.to_sqlite">(transaction.Transaction method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transaction.html#transaction.Transaction">Transaction (class in transaction)</a>
+</li>
       <li><a href="transaction.html#module-transaction">transaction (module)</a>
 </li>
       <li><a href="transaction.html#transaction.TransactionManager">TransactionManager (class in transaction)</a>
@@ -565,6 +626,12 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.FileFormat.UNKNOWN">UNKNOWN (file_formats.FileFormat attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.DBAction.UPDATE">UPDATE (file_formats.DBAction attribute)</a>
+</li>
       <li><a href="utils.html#module-utils">utils (module)</a>
 </li>
   </ul></td>
@@ -580,6 +647,14 @@
       <li><a href="transaction.html#transaction.Transaction.void_time">void_time (transaction.Transaction attribute)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.voided">voided (transaction.Transaction attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.FileFormat.XML">XML (file_formats.FileFormat attribute)</a>
 </li>
   </ul></td>
 </tr></table>

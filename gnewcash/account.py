@@ -9,14 +9,13 @@ import abc
 import re
 from datetime import datetime
 from decimal import Decimal, ROUND_UP
-from xml.etree import ElementTree
 from collections import namedtuple
 from typing import List, Tuple, Dict, Optional, Union, Pattern
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import Slot, SlottableObject
+from gnewcash.slot import SlottableObject
 
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
@@ -36,6 +35,7 @@ class Account(GuidObject, SlottableObject):
         self.commodity: Optional[Commodity] = None
         self.code: Optional[str] = None
         self.description: Optional[str] = None
+        self.non_std_scu: Optional[int] = None
 
     def __str__(self) -> str:
         return '{} - {}'.format(self.name, self.type)
@@ -50,107 +50,6 @@ class Account(GuidObject, SlottableObject):
 
     def __hash__(self) -> int:
         return hash(self.guid)
-
-    @property
-    def as_xml(self) -> List[ElementTree.Element]:
-        """
-        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.
-
-        :return: Current account and children as XML
-        :rtype: list[xml.etree.ElementTree.Element]
-        :raises: ValueError if no commodity found.
-        """
-        node_and_children: List = list()
-        account_node: ElementTree.Element = ElementTree.Element('gnc:account', {'version': '2.0.0'})
-        ElementTree.SubElement(account_node, 'act:name').text = self.name
-        ElementTree.SubElement(account_node, 'act:id', {'type': 'guid'}).text = self.guid
-        ElementTree.SubElement(account_node, 'act:type').text = self.type
-        if self.commodity:
-            account_node.append(self.commodity.as_short_xml('act:commodity'))
-        else:
-            parent_commodity: Optional[Commodity] = self.get_parent_commodity()
-            if parent_commodity:
-                account_node.append(parent_commodity.as_short_xml('act:commodity'))
-
-        if self.commodity_scu:
-            ElementTree.SubElement(account_node, 'act:commodity-scu').text = str(self.commodity_scu)
-
-        if self.code:
-            ElementTree.SubElement(account_node, 'act:code').text = str(self.code)
-
-        if self.description:
-            ElementTree.SubElement(account_node, 'act:description').text = str(self.description)
-
-        if self.slots:
-            slots_node = ElementTree.SubElement(account_node, 'act:slots')
-            for slot in self.slots:
-                slots_node.append(slot.as_xml)
-
-        if self.parent is not None:
-            ElementTree.SubElement(account_node, 'act:parent', {'type': 'guid'}).text = self.parent.guid
-        node_and_children.append(account_node)
-
-        if self.children:
-            for child in self.children:
-                node_and_children += child.as_xml
-
-        return node_and_children
-
-    @classmethod
-    def from_xml(cls, account_node: ElementTree.Element, namespaces: Dict[str, str],
-                 account_objects: List['Account']) -> 'Account':
-        """
-        Creates an Account object from the GnuCash XML.
-
-        :param account_node: XML node for the account
-        :type account_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
-        :param account_objects: Account objects already created from XML (used for assigning parent account)
-        :type account_objects: list[Account]
-        :return: Account object from XML
-        :rtype: Account
-        """
-        account_object: 'Account' = cls()
-        account_guid_node = account_node.find('act:id', namespaces)
-        if account_guid_node is None or not account_guid_node.text:
-            raise ValueError('Account guid node is missing or empty')
-        account_object.guid = account_guid_node.text
-        account_name_node = account_node.find('act:name', namespaces)
-        if account_name_node is not None and account_name_node.text:
-            account_object.name = account_name_node.text
-        account_type_node = account_node.find('act:type', namespaces)
-        if account_type_node is not None and account_type_node.text:
-            account_object.type = account_type_node.text
-
-        commodity: Optional[ElementTree.Element] = account_node.find('act:commodity', namespaces)
-        if commodity is not None and commodity.find('cmdty:id', namespaces) is not None:
-            account_object.commodity = Commodity.from_xml(commodity, namespaces)
-        else:
-            account_object.commodity = None
-
-        commodity_scu: Optional[ElementTree.Element] = account_node.find('act:commodity-scu', namespaces)
-        if commodity_scu is not None:
-            account_object.commodity_scu = commodity_scu.text
-
-        slots: Optional[ElementTree.Element] = account_node.find('act:slots', namespaces)
-        if slots is not None:
-            for slot in slots.findall('slot', namespaces):
-                account_object.slots.append(Slot.from_xml(slot, namespaces))
-
-        code: Optional[ElementTree.Element] = account_node.find('act:code', namespaces)
-        if code is not None:
-            account_object.code = code.text
-
-        description: Optional[ElementTree.Element] = account_node.find('act:description', namespaces)
-        if description is not None:
-            account_object.description = description.text
-
-        parent: Optional[ElementTree.Element] = account_node.find('act:parent', namespaces)
-        if parent is not None:
-            account_object.parent = [x for x in account_objects if x.guid == parent.text][0]
-
-        return account_object
 
     def as_dict(self, account_hierarchy: Dict[str, 'Account'] = None, path_to_self: str = '/') -> Dict[str, 'Account']:
         """
@@ -283,7 +182,7 @@ class Account(GuidObject, SlottableObject):
         super(Account, self).set_slot_value_bool('hidden', value, 'string')
 
     @property
-    def placeholder(self) -> None:
+    def placeholder(self) -> bool:
         """
         Placeholder flag for the account.
 
@@ -295,6 +194,22 @@ class Account(GuidObject, SlottableObject):
     @placeholder.setter
     def placeholder(self, value: bool) -> None:
         super(Account, self).set_slot_value_bool('placeholder', value, 'string')
+
+    def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
+        """
+        Gets a flat list of account GUIDs under the current account.
+
+        :param account_guids: Running list of account GUIDs (should be None on first call)
+        :type account_guids: list[str]
+        :return: List of account GUIDs under the current account
+        :rtype: list[str]
+        """
+        if account_guids is None:
+            account_guids = []
+        account_guids.append(self.guid)
+        for sub_account in self.children:
+            account_guids = sub_account.get_account_guids(account_guids)
+        return account_guids
 
 
 class BankAccount(Account):

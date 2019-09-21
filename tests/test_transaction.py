@@ -5,11 +5,12 @@ import pytz
 
 import gnewcash.account as acc
 import gnewcash.gnucash_file as gcf
+import gnewcash.file_formats as gff
 import gnewcash.transaction as trn
 
 
 def test_transaction_cleared():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     first_transaction = book.transactions[0]
     assert first_transaction.cleared is False
@@ -19,7 +20,7 @@ def test_transaction_cleared():
 
 
 def test_add_transaction_chronological():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
     transaction_manager.disable_sort = False
@@ -46,7 +47,7 @@ def test_add_transaction_chronological():
 
 
 def test_delete_transaction():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
 
@@ -55,8 +56,9 @@ def test_delete_transaction():
 
     assert transaction_manager[0] != first_transaction
 
+
 def test_get_transactions():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
     checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -67,7 +69,7 @@ def test_get_transactions():
 
 
 def test_get_account_starting_balance():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
     checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -77,7 +79,7 @@ def test_get_account_starting_balance():
 
 
 def test_get_account_ending_balance():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
     checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -87,7 +89,7 @@ def test_get_account_ending_balance():
 
 
 def test_minimum_balance_past_date():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
     checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -101,7 +103,7 @@ def test_minimum_balance_past_date():
 
 
 def test_get_balance_at_date():
-    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash')
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
     book = gnucash_file.books[0]
     transaction_manager = book.transactions
     checking_account = book.get_account('Assets', 'Current Assets', 'Checking Account')
@@ -134,6 +136,7 @@ def test_transaction_notes():
     test_transaction = trn.Transaction()
     test_transaction.reversed_by = 'test123456'
     assert test_transaction.notes is None
+
 
 def test_transaction_reversed_by():
     test_transaction = trn.Transaction()

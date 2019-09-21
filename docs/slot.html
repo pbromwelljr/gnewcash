@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Versions" href="versions.html" />
-    <link rel="prev" title="Commodity" href="commodity.html" /> 
+    <link rel="next" title="Transaction" href="transaction.html" />
+    <link rel="prev" title="GUID Object" href="guid_object.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,12 +86,13 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Slot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Slot</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
@@ -184,6 +185,30 @@
 </dd></dl>
 
 <dl class="classmethod">
+<dt id="slot.Slot.from_sqlite">
+<em class="property">classmethod </em><code class="descname">from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em>, <em>object_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#Slot.from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.Slot.from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Slot objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
+<li><strong>object_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – ID of the object that the slot belongs to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Slot objects from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>[<a class="reference internal" href="#slot.Slot" title="slot.Slot">Slot</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
 <dt id="slot.Slot.from_xml">
 <em class="property">classmethod </em><code class="descname">from_xml</code><span class="sig-paren">(</span><em>slot_node: xml.etree.ElementTree.Element, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; slot.Slot<a class="reference internal" href="_modules/slot.html#Slot.from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.Slot.from_xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Slot object from the GnuCash XML.</p>
@@ -202,6 +227,20 @@
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#slot.Slot" title="slot.Slot">Slot</a></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="slot.Slot.to_sqlite">
+<code class="descname">to_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/slot.html#Slot.to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#slot.Slot.to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for writing an object to a SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.7)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
 </tr>
 </tbody>
 </table>
@@ -283,10 +322,10 @@ Converts “false” (case insensitive) and False to “false”.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="versions.html" class="btn btn-neutral float-right" title="Versions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="transaction.html" class="btn btn-neutral float-right" title="Transaction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="commodity.html" class="btn btn-neutral float-left" title="Commodity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guid_object.html" class="btn btn-neutral float-left" title="GUID Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
