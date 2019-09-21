@@ -164,6 +164,8 @@ class Split(GuidObject):
         self.reconcile_date: Optional[datetime] = None
         self.quantity_num: Optional[int] = None
         self.lot_guid: Optional[str] = None
+        self.value_num: Optional[int] = None
+        self.value_denom: Optional[int] = None
 
     def __str__(self) -> str:
         return '{} - {}'.format(self.account, str(self.amount))

@@ -635,7 +635,13 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             sql = f'INSERT INTO slots (obj_guid, name, slot_type, {update_field_name}) VALUES(?, ?, ?, ?)'
             sql_args = (object_guid, slot.key, slot_type_id, slot.value)
             sqlite_cursor.execute(sql, sql_args)
-            # TODO: Retrieve new ID and store in the slot object
+
+            # Populate the ID of the insert
+            sql = f'select seq from sqlite_sequence where name = ?'
+            sql_args = ('slots',)
+            sqlite_cursor.execute(sql, sql_args)
+            new_id, = sqlite_cursor.fetchone()
+            slot.sqlite_id = new_id
         else:
             sql = f'UPDATE slots SET obj_guid = ?, name = ?, slot_type = ?, {update_field_name} = ? ' \
                   'WHERE id = ?'
@@ -750,11 +756,11 @@ WHERE guid  = ?
                        value_denom, quantity_num, quantity_denom, lot_guid)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''.strip()
             sql_args = (split.guid, transaction_guid, split.account.guid if split.account else None,
-                        split.memo, '',  # TODO: action
+                        split.memo, split.action if split.action else '',
                         split.reconciled_state,
                         split.reconcile_date.strftime('%Y-%m-%d %H:%M:%S') if split.reconcile_date else None,
-                        '',  # TODO: value_num
-                        '',  # TODO: value_denom
+                        split.value_num if split.value_num is not None else '',
+                        split.value_denom if split.value_denom else '',
                         split.quantity_num,
                         split.quantity_denominator,
                         split.lot_guid)
@@ -774,11 +780,11 @@ WHERE guid  = ?
         quantity_denom = ?,
         lot_guid = ?
     WHERE guid = ?'''.strip()
-            sql_args = (transaction_guid, split.account.guid if split.account else None, split.memo, '',  # TODO: action
+            sql_args = (transaction_guid, split.account.guid if split.account else None, split.memo, split.action,
                         split.reconciled_state,
                         split.reconcile_date.strftime('%Y-%m-%d %H:%M:%S') if split.reconcile_date else None,
-                        '',  # TODO: value_num
-                        '',  # TODO: value_denom
+                        split.value_num if split.value_num is not None else '',
+                        split.value_denom if split.value_denom is not None else '',
                         split.quantity_num,
                         split.quantity_denominator,
                         split.lot_guid,
