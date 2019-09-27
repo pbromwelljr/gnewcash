@@ -7,7 +7,7 @@ Module containing classes that read, manipulate, and write transactions.
 """
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Iterator, List, Optional, Tuple
+from typing import Iterator, List, Optional, Tuple, Any
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -318,6 +318,42 @@ class TransactionManager:
                     amount = amount * -1
                 balance += amount
         return balance
+
+    def pandas_dataframe(self, account: Optional[Account] = None, start_date: Optional[datetime] = None,
+                         end_date: Optional[datetime] = None) -> Any:
+        """
+        Converts the transactions in the TransactionManager to a Pandas DataFrame.
+
+        :param account: Account to pull transactions for (optional, default all accounts)
+        :type account: Account
+        :param start_date: Minimum date for transactions based on date posted (optional, default all days)
+        :type start_date: datetime
+        :param end_date: Maximum date for transactions based on date posted (optional, default all days)
+        :type end_date: datetime
+        :return: Pandas DataFrame
+        :raises: ImportError, if pandas is not installed
+        """
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError('pandas is required for the pandas_dataframe call. Please install and try again.')
+
+        pandas_data: List[List[Any]] = []
+        for transaction in self.transactions:
+            if account is not None and account not in list(map(lambda x: x.account, transaction.splits)):
+                continue
+            if start_date is not None and transaction.date_posted < start_date:
+                continue
+            if end_date is not None and transaction.date_posted > end_date:
+                continue
+
+
+            if account is not None:
+
+                pandas_data.append([transaction.guid, transaction.date_entered, transaction.date_posted,
+                                    transaction.description, transaction.memo])
+        return pd.DataFrame(pandas_data,
+                            columns=['transaction_guid', 'date_entered', 'date_posted', 'description', 'memo'])
 
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:
