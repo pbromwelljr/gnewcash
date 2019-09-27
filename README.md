@@ -1,7 +1,9 @@
 # gnewcash
 
-CircleCI:
-
+[![image](https://img.shields.io/pypi/v/gnewcash.svg)](https://pypi.org/project/gnewcash)
+[![Python 3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
+[![image](https://img.shields.io/pypi/l/gnewcash.svg)](https://pypi.org/project/gnewcash)
+[![image](https://img.shields.io/badge/code%20style-pep8-000000.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![CircleCI](https://circleci.com/gh/pbromwelljr/gnewcash.svg?style=svg)](https://circleci.com/gh/pbromwelljr/gnucash)
 
 A Python library for reading, manipulating, and writing to GnuCash files.
