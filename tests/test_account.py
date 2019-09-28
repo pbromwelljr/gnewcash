@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 import gnewcash.account as acc
+from gnewcash.enums import AccountType
 
 
 def test_account_shortcut_classes():
@@ -405,3 +406,17 @@ def test_account_placeholder():
     test_account = acc.Account()
     test_account.hidden = True
     assert test_account.placeholder is False
+
+def test_account_full_path():
+    root_account = acc.Account()
+    root_account.type = AccountType.ROOT
+
+    level1_account = acc.AssetAccount()
+    level1_account.name = 'Level 1'
+    level1_account.parent = root_account
+
+    level2_account = acc.AssetAccount()
+    level2_account.name = 'Level 2'
+    level2_account.parent = level1_account
+
+    assert level2_account.full_path == 'Level 1:Level 2'

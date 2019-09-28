@@ -340,20 +340,14 @@ class TransactionManager:
 
         pandas_data: List[List[Any]] = []
         for transaction in self.transactions:
-            if account is not None and account not in list(map(lambda x: x.account, transaction.splits)):
-                continue
-            if start_date is not None and transaction.date_posted < start_date:
-                continue
-            if end_date is not None and transaction.date_posted > end_date:
-                continue
-
-
-            if account is not None:
-
-                pandas_data.append([transaction.guid, transaction.date_entered, transaction.date_posted,
-                                    transaction.description, transaction.memo])
-        return pd.DataFrame(pandas_data,
-                            columns=['transaction_guid', 'date_entered', 'date_posted', 'description', 'memo'])
+            for split in transaction.splits:
+                pandas_data.append([transaction.guid, split.guid, transaction.date_entered, transaction.date_posted,
+                                    transaction.description, split.account.full_path if split.account else None, 
+                                    split.amount, transaction.memo])
+        pandas_columns: List[str] = ['transaction_guid', 'split_guid', 'date_entered', 'date_posted', 'description',
+                                     'account', 'amount', 'memo']
+        data_frame: Any = pd.DataFrame(pandas_data, columns=pandas_columns)
+        return data_frame
 
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:

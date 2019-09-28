@@ -195,6 +195,20 @@ class Account(GuidObject, SlottableObject):
     def placeholder(self, value: bool) -> None:
         super(Account, self).set_slot_value_bool('placeholder', value, 'string')
 
+    @property
+    def full_path(self) -> str:
+        """
+        Full path to the account, GnuCash-style.
+
+        :return: Full path to the account
+        :rtype: str
+        """
+        if self.parent and self.parent.type != AccountType.ROOT:
+            return self.parent.full_path + ':' + self.name
+        elif self.parent and self.parent.type == AccountType.ROOT:
+            return self.name
+        return ''
+
     def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
         """
         Gets a flat list of account GUIDs under the current account.

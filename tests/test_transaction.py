@@ -280,3 +280,13 @@ def test_create_transaction():
     assert test_transaction.splits[0].amount == Decimal('-60.00')
     assert test_transaction.splits[1].account == test_to_account
     assert test_transaction.splits[1].amount == Decimal('60.00')
+
+
+def test_pandas_dataframe():
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
+    book = gnucash_file.books[0]
+    transaction_manager = book.transactions
+
+    pandas_frame = transaction_manager.pandas_dataframe()
+    pandas_frame.to_csv('test.csv')
+    assert True is False
