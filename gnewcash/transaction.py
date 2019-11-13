@@ -198,7 +198,7 @@ class TransactionManager:
                 if transaction.date_posted > new_transaction.date_posted:
                     self.transactions.insert(index, new_transaction)
                     break
-                elif transaction.date_posted == new_transaction.date_posted:
+                if transaction.date_posted == new_transaction.date_posted:
                     self.transactions.insert(index, new_transaction)
                     break
             else:
@@ -334,7 +334,7 @@ class TransactionManager:
         :raises: ImportError, if pandas is not installed
         """
         try:
-            import pandas as pd
+            import pandas as pd  # pylint: disable=C0415
         except ImportError:
             raise ImportError('pandas is required for the pandas_dataframe call. Please install and try again.')
 
@@ -342,16 +342,16 @@ class TransactionManager:
         for transaction in self.transactions:
             if account is not None and account not in list(map(lambda x: x.account, transaction.splits)):
                 continue
-            if start_date is not None and transaction.date_posted < start_date:
+            if start_date is not None and transaction.date_posted < start_date:  # type: ignore
                 continue
-            if end_date is not None and transaction.date_posted > end_date:
+            if end_date is not None and transaction.date_posted > end_date:  # type: ignore
                 continue
 
+            if account is not None and account not in list(map(lambda x: x.account, transaction.splits)):
+                continue
 
-            if account is not None:
-
-                pandas_data.append([transaction.guid, transaction.date_entered, transaction.date_posted,
-                                    transaction.description, transaction.memo])
+            pandas_data.append([transaction.guid, transaction.date_entered, transaction.date_posted,
+                                transaction.description, transaction.memo])
         return pd.DataFrame(pandas_data,
                             columns=['transaction_guid', 'date_entered', 'date_posted', 'description', 'memo'])
 

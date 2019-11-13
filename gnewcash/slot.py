@@ -79,9 +79,7 @@ class SlottableObject(object):
             value = True
         elif isinstance(value, str) and value.lower() == 'false':
             value = False
-        elif isinstance(value, bool):
-            value = value
-        else:
+        elif not isinstance(value, bool):
             raise ValueError('"bool" slot values must be "true", "false", True, or False.')
 
         value = 'true' if value else 'false'
