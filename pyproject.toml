@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gnewcash"
-version = "1.0.3%%GNEWCASH_BETA_VERSION%%"
+version = "1.0.3"
 description = "Python Library for reading, interacting with, and writing GnuCash files"
 authors = ["Paul Bromwell Jr. <pbromwelljr@gmail.com>"]
 license = "MIT"
