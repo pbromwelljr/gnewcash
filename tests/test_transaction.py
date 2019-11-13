@@ -289,3 +289,13 @@ def test_pandas_no_args():
     print(pandas_dataframe)
 
     assert False
+
+
+def test_pandas_dataframe():
+    gnucash_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', file_format=gff.XMLFileFormat)
+    book = gnucash_file.books[0]
+    transaction_manager = book.transactions
+
+    pandas_frame = transaction_manager.pandas_dataframe()
+    pandas_frame.to_csv('test.csv')
+    assert True is False
