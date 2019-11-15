@@ -35,9 +35,14 @@ jobs:
       - name: Run unit tests
         run: |
           poetry run pytest --cov=gnewcash tests/
-#      - run:
-#          name: upload to test PyPI
-#          command: |
-#            poetry build
-#            poetry config repositories.testpypi https://test.pypi.org/legacy/
-#            poetry publish --repository testpypi --username $PYPI_USERNAME --password $PYPI_PASSWORD
+  publish-test-pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish to Test PyPI
+        uses: actions/setup-python@v1
+        run: |
+          poetry build
+          poetry config repositories.testpypi https://test.pypi.org/legacy/
+          poetry publish --repository testpypi --username ${{secrets.PYPI_USERNAME}} --password ${{secrets.PYPI_PASSWORD}}
