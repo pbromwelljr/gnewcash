@@ -496,6 +496,9 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         for transaction in book.transactions:
             cls.write_transaction_to_sqlite(transaction, sqlite_cursor)
 
+        for deleted_transaction_guid in book.transactions.deleted_transaction_guids:
+            cls.delete_transaction_from_sqlite(deleted_transaction_guid, sqlite_cursor)
+
         for scheduled_transaction in book.scheduled_transactions:
             cls.write_scheduled_transaction_to_sqlite(scheduled_transaction, sqlite_cursor)
 
@@ -736,6 +739,27 @@ WHERE guid  = ?
 
         for split in transaction.splits:
             cls.write_split_to_sqlite(split, sqlite_cursor, transaction.guid)
+
+    @classmethod
+    def delete_transaction_from_sqlite(cls, deleted_transaction_guid: str, sqlite_cursor: Cursor) -> None:
+        """Removes a transaction from the SQLite database, as well as all dependent objects."""
+
+        # Delete slots for deleted transaction
+        sql: str = 'DELETE FROM slots WHERE obj_guid = ?'
+        sql_args: Tuple = (deleted_transaction_guid,)
+        sqlite_cursor.execute(sql, sql_args)
+
+        # Delete slots for splits in transaction
+        sql = 'DELETE FROM slots WHERE obj_guid IN (SELECT guid FROM splits WHERE tx_guid = ?)'
+        sqlite_cursor.execute(sql, sql_args)
+
+        # Delete splits for the transaction
+        sql = 'DELETE FROM splits WHERE tx_guid = ?'
+        sqlite_cursor.execute(sql, sql_args)
+
+        # Delete the transaction
+        sql = 'DELETE FROM transactions WHERE guid = ?'
+        sqlite_cursor.execute(sql, sql_args)
 
     @classmethod
     def write_split_to_sqlite(cls, split: Split, sqlite_cursor: Cursor, transaction_guid: str) -> None:

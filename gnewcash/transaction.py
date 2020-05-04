@@ -180,6 +180,7 @@ class TransactionManager:
     def __init__(self) -> None:
         self.transactions: List[Transaction] = []
         self.disable_sort: bool = False
+        self.deleted_transaction_guids: List[str] = []
 
     def add(self, new_transaction: Transaction) -> None:
         """
@@ -214,6 +215,7 @@ class TransactionManager:
         # We're looking up by GUID here because a simple list remove doesn't work
         for index, iter_transaction in enumerate(self.transactions):
             if iter_transaction.guid == transaction.guid:
+                self.deleted_transaction_guids.append(transaction.guid)
                 del self.transactions[index]
                 break
 
