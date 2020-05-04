@@ -12,7 +12,7 @@ setup(
     description='Python Library for reading, interacting with, and writing GnuCash files',
     author='Paul Bromwell Jr.',
     author_email='pbromwelljr@gmail.com',
-    packages=find_packages(),
+    packages=find_packages(exclude=('tests',)),
     license='MIT',
     keywords='gnucash finance finances cash personal banking',
     url='https://github.com/pbromwelljr/gnewcash',
