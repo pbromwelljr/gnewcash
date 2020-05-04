@@ -743,7 +743,6 @@ WHERE guid  = ?
     @classmethod
     def delete_transaction_from_sqlite(cls, deleted_transaction_guid: str, sqlite_cursor: Cursor) -> None:
         """Removes a transaction from the SQLite database, as well as all dependent objects."""
-
         # Delete slots for deleted transaction
         sql: str = 'DELETE FROM slots WHERE obj_guid = ?'
         sql_args: Tuple = (deleted_transaction_guid,)
