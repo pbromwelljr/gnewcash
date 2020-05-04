@@ -153,7 +153,7 @@
 <h1>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><dl class="first docutils">
-<dt>1.1.0 POPULATE DATE</dt>
+<dt>1.1.0 (May 4, 2020)</dt>
 <dd><ul class="first last">
 <li><strong>BREAKING CHANGE</strong>: Only Python 3.6+ supported in favor of variable-level typing.</li>
 <li><strong>BREAKING CHANGE</strong>: as_xml and from_xml have been removed from most classes.</li>
@@ -162,6 +162,8 @@
 <li><strong>BREAKING CHANGE</strong>: Subaccount support has been removed from <a class="reference external" href="account.html#account.InterestAccount">InterestAccount</a>. Please use <a class="reference external" href="account.InterestAccountWithSubaccounts">InterestAccountWithSubaccounts</a> instead in those situations.</li>
 <li><strong>BREAKING CHANGE</strong>: Book class’s <a class="reference external" href="gnucash_file.html#gnucash_file.GnuCashFile.build_file">build_file</a> and <a class="reference external" href="gnucash_file.html#gnucash_file.GnuCashFile.read_file">read_file</a> now require the “file_format” parameter. This should be an object that extends the BaseFileFormat class. See <a class="reference external" href="file_formats.html#file_formats.xml.XMLFileFormat">XMLFileFormat</a>, <a class="reference external" href="file_formats.html#file_formats.xml.GZipXMLFileFormat">GZipXMLFileFormat</a>, and <a class="reference external" href="file_formats.html#file_formats.sqlite.SqliteFileFormat">SqliteFileFormat</a>.</li>
 <li>MyPy type annotations added to all function calls and variables.</li>
+<li>List of used GUIDs are kept in a set, rather than a list. Thanks to <a class="reference external" href="https://www.github.com/peap/">Eric Petersen (peap)</a> for this contribution!</li>
+<li>The file_formats package was inaccessable/not provided through the pip installer. Thanks to <a class="reference external" href="https://www.github.com/peap/">Eric Petersen (peap)</a> for catching this and providing the fix!</li>
 </ul>
 </dd>
 </dl>
