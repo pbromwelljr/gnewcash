@@ -18,32 +18,34 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -168,13 +170,19 @@
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
  
 </div>
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.InterestAccount.__init__">__init__() (account.InterestAccount method)</a>
+
+      <ul>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.__init__">(account.InterestAccountWithSubaccounts method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -186,43 +194,21 @@
       <li><a href="account.html#module-account">account (module)</a>, <a href="utils.html#module-account">[1]</a>
 </li>
       <li><a href="account.html#account.AccountType">AccountType (class in account)</a>
+
+      <ul>
+        <li><a href="enums.html#enums.AccountType">(class in enums)</a>
 </li>
+      </ul></li>
       <li><a href="transaction.html#transaction.TransactionManager.add">add() (transaction.TransactionManager method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transaction.html#transaction.SimpleTransaction.amount">amount (transaction.SimpleTransaction attribute)</a>
 </li>
       <li><a href="account.html#account.LoanStatus.amount_to_capital">amount_to_capital (account.LoanStatus attribute)</a>
 </li>
       <li><a href="account.html#account.Account.as_dict">as_dict() (account.Account method)</a>
 </li>
-      <li><a href="commodity.html#commodity.Commodity.as_short_xml">as_short_xml() (commodity.Commodity method)</a>
-
-      <ul>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity.as_short_xml">(gnucash_file.Commodity method)</a>
-</li>
-      </ul></li>
-      <li><a href="account.html#account.Account.as_xml">as_xml (account.Account attribute)</a>
-
-      <ul>
-        <li><a href="commodity.html#commodity.Commodity.as_xml">(commodity.Commodity attribute)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Book.as_xml">(gnucash_file.Book attribute)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Budget.as_xml">(gnucash_file.Budget attribute)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity.as_xml">(gnucash_file.Commodity attribute)</a>
-</li>
-        <li><a href="slot.html#slot.Slot.as_xml">(slot.Slot attribute)</a>
-</li>
-        <li><a href="transaction.html#transaction.ScheduledTransaction.as_xml">(transaction.ScheduledTransaction attribute)</a>
-</li>
-        <li><a href="transaction.html#transaction.Split.as_xml">(transaction.Split attribute)</a>
-</li>
-        <li><a href="transaction.html#transaction.Transaction.as_xml">(transaction.Transaction attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.AssetAccount">AssetAccount (class in account)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.associated_uri">associated_uri (transaction.Transaction attribute)</a>
@@ -249,19 +235,69 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_account_as_xml">cast_account_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_book_as_xml">cast_book_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_budget_as_xml">cast_budget_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_commodity_as_short_xml">cast_commodity_as_short_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_commodity_as_xml">cast_commodity_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_scheduled_transaction_as_xml">cast_scheduled_transaction_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_slot_as_xml">cast_slot_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_split_as_xml">cast_split_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.cast_transaction_as_xml">cast_transaction_as_xml() (file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
       <li><a href="transaction.html#transaction.Transaction.cleared">cleared (transaction.Transaction attribute)</a>
 </li>
       <li><a href="account.html#account.Account.color">color (account.Account attribute)</a>
 </li>
       <li><a href="commodity.html#commodity.Commodity">Commodity (class in commodity)</a>
-
-      <ul>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity">(class in gnucash_file)</a>
 </li>
-      </ul></li>
+      <li><a href="commodity.html#module-commodity">commodity (module)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_account_from_sqlite">create_account_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_account_from_xml">create_account_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_book_from_xml">create_book_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="commodity.html#module-commodity">commodity (module)</a>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_books_from_sqlite">create_books_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_budget_from_sqlite">create_budget_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_budget_from_xml">create_budget_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_commodities_from_sqlite">create_commodities_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_commodity_from_sqlite">create_commodity_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_commodity_from_xml">create_commodity_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_scheduled_transaction_from_xml">create_scheduled_transaction_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_scheduled_transactions_from_sqlite">create_scheduled_transactions_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_slot_from_xml">create_slot_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_slots_from_sqlite">create_slots_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_split_from_xml">create_split_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_splits_from_sqlite">create_splits_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.create_sqlite_schema">create_sqlite_schema() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.create_transaction_from_xml">create_transaction_from_xml() (file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.create_transactions_from_sqlite">create_transactions_from_sqlite() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
 </li>
       <li><a href="account.html#account.CreditAccount">CreditAccount (class in account)</a>
 </li>
@@ -271,24 +307,36 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.sqlite.DBAction">DBAction (class in file_formats.sqlite)</a>
+</li>
       <li><a href="transaction.html#transaction.TransactionManager.delete">delete() (transaction.TransactionManager method)</a>
+</li>
+      <li><a href="utils.html#utils.delete_log_files">delete_log_files() (in module utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="utils.html#utils.delete_log_files">delete_log_files() (in module utils)</a>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.delete_transaction_from_sqlite">delete_transaction_from_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
 </li>
       <li><a href="account.html#account.Account.dict_entry_name">dict_entry_name (account.Account attribute)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.dump">dump() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+
+      <ul>
+        <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.dump">(file_formats.xml.GnuCashXMLWriter class method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="account.html#account.EquityAccount">EquityAccount (class in account)</a>
+      <li><a href="enums.html#module-enums">enums (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="account.html#account.EquityAccount">EquityAccount (class in account)</a>
+</li>
       <li><a href="account.html#account.ExpenseAccount">ExpenseAccount (class in account)</a>
 </li>
   </ul></td>
@@ -297,30 +345,14 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#module-file_formats.sqlite">file_formats.sqlite (module)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#module-file_formats.xml">file_formats.xml (module)</a>
+</li>
       <li><a href="transaction.html#transaction.SimpleTransaction.from_account">from_account (transaction.SimpleTransaction attribute)</a>
 </li>
-      <li><a href="account.html#account.Account.from_xml">from_xml() (account.Account class method)</a>
-
-      <ul>
-        <li><a href="commodity.html#commodity.Commodity.from_xml">(commodity.Commodity class method)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Book.from_xml">(gnucash_file.Book class method)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Budget.from_xml">(gnucash_file.Budget class method)</a>
-</li>
-        <li><a href="gnucash_file.html#gnucash_file.Commodity.from_xml">(gnucash_file.Commodity class method)</a>
-</li>
-        <li><a href="slot.html#slot.Slot.from_xml">(slot.Slot class method)</a>
-</li>
-        <li><a href="transaction.html#transaction.ScheduledTransaction.from_xml">(transaction.ScheduledTransaction class method)</a>
-</li>
-        <li><a href="transaction.html#transaction.SimpleTransaction.from_xml">(transaction.SimpleTransaction class method)</a>
-</li>
-        <li><a href="transaction.html#transaction.Split.from_xml">(transaction.Split class method)</a>
-</li>
-        <li><a href="transaction.html#transaction.Transaction.from_xml">(transaction.Transaction class method)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -333,41 +365,65 @@
 </li>
       <li><a href="transaction.html#transaction.TransactionManager.get_account_ending_balance">get_account_ending_balance() (transaction.TransactionManager method)</a>
 </li>
+      <li><a href="account.html#account.Account.get_account_guids">get_account_guids() (account.Account method)</a>
+</li>
       <li><a href="transaction.html#transaction.TransactionManager.get_account_starting_balance">get_account_starting_balance() (transaction.TransactionManager method)</a>
 </li>
       <li><a href="account.html#account.InterestAccount.get_all_payments">get_all_payments() (account.InterestAccount method)</a>
-</li>
-      <li><a href="account.html#account.Account.get_balance_at_date">get_balance_at_date() (account.Account method)</a>
 
       <ul>
-        <li><a href="transaction.html#transaction.TransactionManager.get_balance_at_date">(transaction.TransactionManager method)</a>
+        <li><a href="account.html#account.InterestAccountBase.get_all_payments">(account.InterestAccountBase method)</a>
+</li>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.get_all_payments">(account.InterestAccountWithSubaccounts method)</a>
 </li>
       </ul></li>
-      <li><a href="account.html#account.Account.get_ending_balance">get_ending_balance() (account.Account method)</a>
+      <li><a href="transaction.html#transaction.TransactionManager.get_balance_at_date">get_balance_at_date() (transaction.TransactionManager method)</a>
 </li>
       <li><a href="guid_object.html#guid_object.GuidObject.get_guid">get_guid() (guid_object.GuidObject class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.InterestAccount.get_info_at_date">get_info_at_date() (account.InterestAccount method)</a>
+
+      <ul>
+        <li><a href="account.html#account.InterestAccountBase.get_info_at_date">(account.InterestAccountBase method)</a>
 </li>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.get_info_at_date">(account.InterestAccountWithSubaccounts method)</a>
+</li>
+      </ul></li>
       <li><a href="account.html#account.Account.get_parent_commodity">get_parent_commodity() (account.Account method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="slot.html#slot.SlottableObject.get_slot_value">get_slot_value() (slot.SlottableObject method)</a>
 </li>
-      <li><a href="account.html#account.Account.get_starting_balance">get_starting_balance() (account.Account method)</a>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.get_sqlite_table_data">get_sqlite_table_data() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
 </li>
       <li><a href="account.html#account.Account.get_subaccount_by_id">get_subaccount_by_id() (account.Account method)</a>
 </li>
       <li><a href="transaction.html#transaction.TransactionManager.get_transactions">get_transactions() (transaction.TransactionManager method)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.get_xml_root">get_xml_root() (file_formats.xml.GnuCashXMLReader class method)</a>
+
+      <ul>
+        <li><a href="file_formats.html#file_formats.xml.GZipXMLFileFormat.get_xml_root">(file_formats.xml.GZipXMLFileFormat class method)</a>
+</li>
+      </ul></li>
       <li><a href="gnucash_file.html#module-gnucash_file">gnucash_file (module)</a>
 </li>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile">GnuCashFile (class in gnucash_file)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader">GnuCashSQLiteReader (class in file_formats.sqlite)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter">GnuCashSQLiteWriter (class in file_formats.sqlite)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader">GnuCashXMLReader (class in file_formats.xml)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter">GnuCashXMLWriter (class in file_formats.xml)</a>
+</li>
       <li><a href="guid_object.html#module-guid_object">guid_object (module)</a>
 </li>
       <li><a href="guid_object.html#guid_object.GuidObject">GuidObject (class in guid_object)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GZipXMLFileFormat">GZipXMLFileFormat (class in file_formats.xml)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -388,10 +444,20 @@
       <li><a href="account.html#account.LoanStatus.interest">interest (account.LoanStatus attribute)</a>
 </li>
       <li><a href="account.html#account.InterestAccount.interest_percentage">interest_percentage (account.InterestAccount attribute)</a>
+
+      <ul>
+        <li><a href="account.html#account.InterestAccountBase.interest_percentage">(account.InterestAccountBase attribute)</a>
 </li>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.interest_percentage">(account.InterestAccountWithSubaccounts attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.InterestAccount">InterestAccount (class in account)</a>
+</li>
+      <li><a href="account.html#account.InterestAccountBase">InterestAccountBase (class in account)</a>
+</li>
+      <li><a href="account.html#account.InterestAccountWithSubaccounts">InterestAccountWithSubaccounts (class in account)</a>
 </li>
       <li><a href="account.html#account.LoanStatus.iterator_balance">iterator_balance (account.LoanStatus attribute)</a>
 </li>
@@ -405,10 +471,24 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.LiabilityAccount">LiabilityAccount (class in account)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteReader.load">load() (file_formats.sqlite.GnuCashSQLiteReader class method)</a>
+
+      <ul>
+        <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.load">(file_formats.xml.GnuCashXMLReader class method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="account.html#account.LoanExtraPayment">LoanExtraPayment (class in account)</a>
+</li>
       <li><a href="account.html#account.LoanStatus">LoanStatus (class in account)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.LOGGER">LOGGER (file_formats.xml.GnuCashXMLReader attribute)</a>
+
+      <ul>
+        <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.LOGGER">(file_formats.xml.GnuCashXMLWriter attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -419,12 +499,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="account.html#account.Account.minimum_balance_past_date">minimum_balance_past_date() (account.Account method)</a>
-
-      <ul>
-        <li><a href="transaction.html#transaction.TransactionManager.minimum_balance_past_date">(transaction.TransactionManager method)</a>
+      <li><a href="transaction.html#transaction.TransactionManager.minimum_balance_past_date">minimum_balance_past_date() (transaction.TransactionManager method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -445,9 +521,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.Account.parent">parent (account.Account attribute)</a>
 </li>
+      <li><a href="account.html#account.InterestAccount.payment_amount">payment_amount (account.InterestAccount attribute)</a>
+
+      <ul>
+        <li><a href="account.html#account.InterestAccountBase.payment_amount">(account.InterestAccountBase attribute)</a>
+</li>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.payment_amount">(account.InterestAccountWithSubaccounts attribute)</a>
+</li>
+        <li><a href="account.html#account.LoanExtraPayment.payment_amount">(account.LoanExtraPayment attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="account.html#account.InterestAccount.payment_amount">payment_amount (account.InterestAccount attribute)</a>
+      <li><a href="account.html#account.LoanExtraPayment.payment_date">payment_date (account.LoanExtraPayment attribute)</a>
 </li>
       <li><a href="account.html#account.Account.placeholder">placeholder (account.Account attribute)</a>
 </li>
@@ -459,15 +545,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.read_file">read_file() (gnucash_file.GnuCashFile class method)</a>
 </li>
-      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_boolean">read_xml_child_boolean() (transaction.ScheduledTransaction class method)</a>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.read_xml_child_boolean">read_xml_child_boolean() (file_formats.xml.GnuCashXMLReader class method)</a>
 </li>
-      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_date">read_xml_child_date() (transaction.ScheduledTransaction class method)</a>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.read_xml_child_date">read_xml_child_date() (file_formats.xml.GnuCashXMLReader class method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_int">read_xml_child_int() (transaction.ScheduledTransaction class method)</a>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.read_xml_child_int">read_xml_child_int() (file_formats.xml.GnuCashXMLReader class method)</a>
 </li>
-      <li><a href="transaction.html#transaction.ScheduledTransaction.read_xml_child_text">read_xml_child_text() (transaction.ScheduledTransaction class method)</a>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLReader.read_xml_child_text">read_xml_child_text() (file_formats.xml.GnuCashXMLReader class method)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.reversed_by">reversed_by (transaction.Transaction attribute)</a>
 </li>
@@ -477,6 +563,10 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#utils.safe_iso_date_formatting">safe_iso_date_formatting() (in module utils)</a>
+</li>
+      <li><a href="utils.html#utils.safe_iso_date_parsing">safe_iso_date_parsing() (in module utils)</a>
+</li>
       <li><a href="transaction.html#transaction.ScheduledTransaction">ScheduledTransaction (class in transaction)</a>
 </li>
       <li><a href="slot.html#slot.SlottableObject.set_slot_value">set_slot_value() (slot.SlottableObject method)</a>
@@ -487,18 +577,32 @@
 </li>
       <li><a href="slot.html#slot.Slot">Slot (class in slot)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="slot.html#module-slot">slot (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="slot.html#slot.SlottableObject">SlottableObject (class in slot)</a>
 </li>
       <li><a href="transaction.html#transaction.Split">Split (class in transaction)</a>
 </li>
+      <li><a href="file_formats.html#file_formats.sqlite.SqliteFileFormat">SqliteFileFormat (class in file_formats.sqlite)</a>
+</li>
       <li><a href="account.html#account.InterestAccount.starting_balance">starting_balance (account.InterestAccount attribute)</a>
+
+      <ul>
+        <li><a href="account.html#account.InterestAccountBase.starting_balance">(account.InterestAccountBase attribute)</a>
 </li>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.starting_balance">(account.InterestAccountWithSubaccounts attribute)</a>
+</li>
+      </ul></li>
       <li><a href="account.html#account.InterestAccount.starting_date">starting_date (account.InterestAccount attribute)</a>
+
+      <ul>
+        <li><a href="account.html#account.InterestAccountBase.starting_date">(account.InterestAccountBase attribute)</a>
 </li>
+        <li><a href="account.html#account.InterestAccountWithSubaccounts.starting_date">(account.InterestAccountWithSubaccounts attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -540,6 +644,46 @@
   </ul></td>
 </tr></table>
 
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_account_to_sqlite">write_account_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_book_to_sqlite">write_book_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_budget_to_sqlite">write_budget_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_commodity_to_sqlite">write_commodity_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.xml.GnuCashXMLWriter.write_file_contents">write_file_contents() (file_formats.xml.GnuCashXMLWriter class method)</a>
+
+      <ul>
+        <li><a href="file_formats.html#file_formats.xml.GZipXMLFileFormat.write_file_contents">(file_formats.xml.GZipXMLFileFormat class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_recurrence_to_sqlite">write_recurrence_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_scheduled_transaction_to_sqlite">write_scheduled_transaction_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_slot_to_sqlite">write_slot_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_split_to_sqlite">write_split_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+      <li><a href="file_formats.html#file_formats.sqlite.GnuCashSQLiteWriter.write_transaction_to_sqlite">write_transaction_to_sqlite() (file_formats.sqlite.GnuCashSQLiteWriter class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.xml.XMLFileFormat">XMLFileFormat (class in file_formats.xml)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 
 
            </div>
@@ -569,26 +713,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

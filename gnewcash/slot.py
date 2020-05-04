@@ -1,96 +1,33 @@
 """
+Module containing classes that read, manipulate, and write slots.
+
 .. module:: slot
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from datetime import datetime
-from decimal import Decimal
-from xml.etree import ElementTree
+from typing import Any, List, Optional, Union
 
 
-class Slot(object):
-    """
-    Represents a slot in GnuCash.
-    """
-    def __init__(self, key, value, slot_type):
-        self.key = key
-        self.value = value
-        self.type = slot_type
+class Slot:
+    """Represents a slot in GnuCash."""
 
-    @property
-    def as_xml(self):
-        """
-        Returns the current slot as GnuCash-compatible XML
-
-        :return: Current slot as XML
-        :rtype: xml.etree.ElementTree.Element
-        """
-        slot_node = ElementTree.Element('slot')
-        ElementTree.SubElement(slot_node, 'slot:key').text = self.key
-
-        slot_value_node = ElementTree.SubElement(slot_node, 'slot:value', {'type': self.type})
-        if self.type == 'gdate':
-            ElementTree.SubElement(slot_value_node, 'gdate').text = datetime.strftime(self.value, '%Y-%m-%d')
-        elif self.type in ['string', 'guid', 'numeric']:
-            slot_value_node.text = self.value
-        elif self.type in ['integer', 'double']:
-            slot_value_node.text = str(self.value)
-        elif isinstance(self.value, list) and self.value:
-            for sub_slot in self.value:
-                slot_value_node.append(sub_slot.as_xml)
-        elif self.type == 'frame':
-            pass  # Empty frame element, just leave it
-        else:
-            raise NotImplementedError('Slot type {} is not implemented.'.format(self.type))
-
-        return slot_node
-
-    @classmethod
-    def from_xml(cls, slot_node, namespaces):
-        """
-        Creates a Slot object from the GnuCash XML
-
-        :param slot_node: XML node for the slot
-        :type slot_node: ElementTree.Element
-        :param namespaces: XML namespaces for GnuCash elements
-        :type namespaces: dict[str, str]
-        :return: Slot object from XML
-        :rtype: Slot
-        """
-        key = slot_node.find('slot:key', namespaces).text
-        value_node = slot_node.find('slot:value', namespaces)
-        slot_type = value_node.attrib['type']
-        if slot_type == 'gdate':
-            value = datetime.strptime(value_node.find('gdate').text, '%Y-%m-%d')
-        elif slot_type in ['string', 'guid', 'numeric']:
-            value = value_node.text
-        elif slot_type == 'integer':
-            value = int(value_node.text)
-        elif slot_type == 'double':
-            value = Decimal(value_node.text)
-        else:
-            child_tags = list(set(map(lambda x: x.tag, value_node)))
-            if len(child_tags) == 1 and child_tags[0] == 'slot':
-                value = [Slot.from_xml(x, namespaces) for x in value_node]
-            elif slot_type == 'frame':
-                value = None   # Empty frame element, just leave it
-            else:
-                raise NotImplementedError('Slot type {} is not implemented.'.format(slot_type))
-
-        return cls(key, value, slot_type)
+    def __init__(self, key: str, value: Any, slot_type: str) -> None:
+        self.key: str = key
+        self.value: Any = value
+        self.type: str = slot_type
+        self.sqlite_id: Optional[int] = None
 
 
 class SlottableObject(object):
-    """
-    Class used to consolidate storing and retrieving slot values.
-    """
-    def __init__(self):
-        super(SlottableObject, self).__init__()
-        self.slots = []
+    """Class used to consolidate storing and retrieving slot values."""
 
-    def get_slot_value(self, key):
+    def __init__(self) -> None:
+        super(SlottableObject, self).__init__()
+        self.slots: List[Slot] = []
+
+    def get_slot_value(self, key: str) -> Any:
         """
-        Retrieves the value of the slot given a certain key
+        Retrieves the value of the slot given a certain key.
 
         :param key: Name of the slot
         :type key: str
@@ -101,15 +38,15 @@ class SlottableObject(object):
         if not self.slots:
             return None
 
-        target_slot = list(filter(lambda x: x.key == key, self.slots))
+        target_slot: List[Slot] = list(filter(lambda x: x.key == key, self.slots))
         if not target_slot:
             return None
 
         return target_slot[0].value
 
-    def set_slot_value(self, key, value, slot_type):
+    def set_slot_value(self, key: str, value: Any, slot_type: str) -> None:
         """
-        Sets the value of the slot given a certain key and slot type
+        Sets the value of the slot given a certain key and slot type.
 
         :param key: Name of the slot
         :type key: str
@@ -118,15 +55,16 @@ class SlottableObject(object):
         :param slot_type: Type of slot
         :type slot_type: str
         """
-        target_slot = list(filter(lambda x: x.key == key, self.slots))
+        target_slot: List[Slot] = list(filter(lambda x: x.key == key, self.slots))
         if target_slot:
             target_slot[0].value = value
         else:
             self.slots.append(Slot(key, value, slot_type))
 
-    def set_slot_value_bool(self, key, value, slot_type):
+    def set_slot_value_bool(self, key: str, value: Union[str, bool], slot_type: str) -> None:
         """
         Helper function for slots that expect "true" or "false" GnuCash-side.
+
         Converts "true" (case insensitive) and True to "true".
         Converts "false" (case insensitive) and False to "false".
 

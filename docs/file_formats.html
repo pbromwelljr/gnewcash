@@ -1,0 +1,1292 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>File Formats &mdash; gnewcash 1.0alpha documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GnuCash File" href="gnucash_file.html" />
+    <link rel="prev" title="Commodity" href="commodity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> gnewcash
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File Formats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-file_formats.xml">XML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-file_formats.sqlite">SQLite</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gnewcash</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="code_documentation.html">Code Documentation</a> &raquo;</li>
+        
+      <li>File Formats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/file_formats.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="file-formats">
+<h1>File Formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-file_formats.xml">
+<span id="xml"></span><h2>XML<a class="headerlink" href="#module-file_formats.xml" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="file_formats.xml.XMLFileFormat">
+<em class="property">class </em><code class="descclassname">file_formats.xml.</code><code class="descname">XMLFileFormat</code><a class="reference internal" href="_modules/file_formats/xml.html#XMLFileFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.XMLFileFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for loading and saving XML files.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="file_formats.xml.GZipXMLFileFormat">
+<em class="property">class </em><code class="descclassname">file_formats.xml.</code><code class="descname">GZipXMLFileFormat</code><a class="reference internal" href="_modules/file_formats/xml.html#GZipXMLFileFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GZipXMLFileFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for loading and saving XML files with GZip compression.</p>
+<dl class="classmethod">
+<dt id="file_formats.xml.GZipXMLFileFormat.get_xml_root">
+<em class="property">classmethod </em><code class="descname">get_xml_root</code><span class="sig-paren">(</span><em>source_path: pathlib.Path</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GZipXMLFileFormat.get_xml_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GZipXMLFileFormat.get_xml_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the XML root element from a GZipped XML file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Path to GZipped XML File.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">XML root element</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ElementTree.Element</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GZipXMLFileFormat.write_file_contents">
+<em class="property">classmethod </em><code class="descname">write_file_contents</code><span class="sig-paren">(</span><em>target_file: str</em>, <em>file_contents: bytes</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/xml.html#GZipXMLFileFormat.write_file_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GZipXMLFileFormat.write_file_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the specified contents to the target file, with a level 9 GZip compression.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>target_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Target GZip file to write to.</li>
+<li><strong>file_contents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – Contents to write to the GZip file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="file_formats.xml.GnuCashXMLReader">
+<em class="property">class </em><code class="descclassname">file_formats.xml.</code><code class="descname">GnuCashXMLReader</code><a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for loading XML files.</p>
+<dl class="attribute">
+<dt id="file_formats.xml.GnuCashXMLReader.LOGGER">
+<code class="descname">LOGGER</code><em class="property"> = &lt;RootLogger root (WARNING)&gt;</em><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.LOGGER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_account_from_xml">
+<em class="property">classmethod </em><code class="descname">create_account_from_xml</code><span class="sig-paren">(</span><em>account_node: xml.etree.ElementTree.Element, account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; gnewcash.account.Account<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_account_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_account_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Account object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>account_node</strong> (<em>ElementTree.Element</em>) – XML node for the account</li>
+<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning parent account)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Account object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="account.html#account.Account" title="account.Account">Account</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_book_from_xml">
+<em class="property">classmethod </em><code class="descname">create_book_from_xml</code><span class="sig-paren">(</span><em>book_node: xml.etree.ElementTree.Element</em>, <em>sort_transactions: bool = True</em><span class="sig-paren">)</span> &#x2192; gnewcash.gnucash_file.Book<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_book_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_book_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Book object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_node</strong> (<em>ElementTree.Element</em>) – XML node for the book</li>
+<li><strong>sort_transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Flag for if transactions should be sorted by date_posted when reading from XML</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Book object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book" title="gnucash_file.Book">Book</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_budget_from_xml">
+<em class="property">classmethod </em><code class="descname">create_budget_from_xml</code><span class="sig-paren">(</span><em>budget_node: xml.etree.ElementTree.Element</em><span class="sig-paren">)</span> &#x2192; gnewcash.gnucash_file.Budget<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_budget_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_budget_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Budget object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>budget_node</strong> (<em>ElementTree.Element</em>) – XML node for the budget</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Budget object from XML</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="gnucash_file.html#gnucash_file.Budget" title="gnucash_file.Budget">Budget</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_commodity_from_xml">
+<em class="property">classmethod </em><code class="descname">create_commodity_from_xml</code><span class="sig-paren">(</span><em>commodity_node: xml.etree.ElementTree.Element</em><span class="sig-paren">)</span> &#x2192; gnewcash.commodity.Commodity<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_commodity_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_commodity_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Commodity object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>commodity_node</strong> (<em>ElementTree.Element</em>) – XML node for the commodity</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Commodity object from XML</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity">Commodity</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_scheduled_transaction_from_xml">
+<em class="property">classmethod </em><code class="descname">create_scheduled_transaction_from_xml</code><span class="sig-paren">(</span><em>xml_obj: xml.etree.ElementTree.Element, template_account_root: Optional[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; gnewcash.transaction.ScheduledTransaction<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_scheduled_transaction_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_scheduled_transaction_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ScheduledTransaction object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_obj</strong> (<em>ElementTree.Element</em>) – XML node for the scheduled transaction</li>
+<li><strong>template_account_root</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root template account</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ScheduledTransaction object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="transaction.html#transaction.ScheduledTransaction" title="transaction.ScheduledTransaction">ScheduledTransaction</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_slot_from_xml">
+<em class="property">classmethod </em><code class="descname">create_slot_from_xml</code><span class="sig-paren">(</span><em>slot_node: xml.etree.ElementTree.Element</em><span class="sig-paren">)</span> &#x2192; gnewcash.slot.Slot<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_slot_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_slot_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Slot object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>slot_node</strong> (<em>ElementTree.Element</em>) – XML node for the slot</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Slot object from XML</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="slot.html#slot.Slot" title="slot.Slot">Slot</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_split_from_xml">
+<em class="property">classmethod </em><code class="descname">create_split_from_xml</code><span class="sig-paren">(</span><em>split_node: xml.etree.ElementTree.Element, account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; gnewcash.transaction.Split<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_split_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_split_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Split object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>split_node</strong> (<em>ElementTree.Element</em>) – XML node for the split</li>
+<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning parent account)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Split object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="transaction.html#transaction.Split" title="transaction.Split">Split</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.create_transaction_from_xml">
+<em class="property">classmethod </em><code class="descname">create_transaction_from_xml</code><span class="sig-paren">(</span><em>transaction_node: xml.etree.ElementTree.Element, account_objects: List[gnewcash.account.Account]</em><span class="sig-paren">)</span> &#x2192; gnewcash.transaction.Transaction<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.create_transaction_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.create_transaction_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Transaction object from the GnuCash XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>transaction_node</strong> (<em>ElementTree.Element</em>) – XML node for the transaction</li>
+<li><strong>account_objects</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a><em>]</em>) – Account objects already created from XML (used for assigning accounts)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Transaction object from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction">Transaction</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.get_xml_root">
+<em class="property">classmethod </em><code class="descname">get_xml_root</code><span class="sig-paren">(</span><em>source_path: pathlib.Path</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.get_xml_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.get_xml_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the root element from a given XML document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)"><em>pathlib.Path</em></a>) – Path to XML document</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Root element</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ElementTree.Element</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.load">
+<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>*args</em>, <em>source_file: str = ''</em>, <em>sort_transactions: bool = True</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; gnewcash.gnucash_file.GnuCashFile<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a GnuCash XML file from disk to memory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – File to load from disk</li>
+<li><strong>sort_transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Should transactions be sorted by date posted</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">GnuCashFile object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile" title="gnucash_file.GnuCashFile">GnuCashFile</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.read_xml_child_boolean">
+<em class="property">classmethod </em><code class="descname">read_xml_child_boolean</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[bool]<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.read_xml_child_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.read_xml_child_boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element and returns a Boolean if the text is “Y” or “y”.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if child node’s text is “Y” or “Y”, otherwise False.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.read_xml_child_date">
+<em class="property">classmethod </em><code class="descname">read_xml_child_date</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[datetime.datetime]<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.read_xml_child_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.read_xml_child_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element and returns its inner gdate text as a datetime.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child’s gdate’s text as datetime</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)">datetime.datetime</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.read_xml_child_int">
+<em class="property">classmethod </em><code class="descname">read_xml_child_int</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[int]<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.read_xml_child_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.read_xml_child_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element and returns its text as an integer value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child’s text as an integer value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLReader.read_xml_child_text">
+<em class="property">classmethod </em><code class="descname">read_xml_child_text</code><span class="sig-paren">(</span><em>xml_object: xml.etree.ElementTree.Element, tag_name: str, namespaces: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Optional[str]<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLReader.read_xml_child_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLReader.read_xml_child_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the text from a specific child XML element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xml_object</strong> (<em>ElementTree.Element</em>) – Current XML object</li>
+<li><strong>tag_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Child tag name</li>
+<li><strong>namespaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – GnuCash namespaces</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Child node’s text</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="file_formats.xml.GnuCashXMLWriter">
+<em class="property">class </em><code class="descclassname">file_formats.xml.</code><code class="descname">GnuCashXMLWriter</code><a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for saving XML files.</p>
+<dl class="attribute">
+<dt id="file_formats.xml.GnuCashXMLWriter.LOGGER">
+<code class="descname">LOGGER</code><em class="property"> = &lt;RootLogger root (WARNING)&gt;</em><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.LOGGER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_account_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_account_as_xml</code><span class="sig-paren">(</span><em>account: gnewcash.account.Account</em><span class="sig-paren">)</span> &#x2192; List[xml.etree.ElementTree.Element]<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_account_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_account_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current account and children as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a>]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">ValueError if no commodity found.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_book_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_book_as_xml</code><span class="sig-paren">(</span><em>book: gnewcash.gnucash_file.Book</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_book_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_book_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current book as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ElementTree.Element object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_budget_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_budget_as_xml</code><span class="sig-paren">(</span><em>budget: gnewcash.gnucash_file.Budget</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_budget_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_budget_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current budget as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current budget as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_commodity_as_short_xml">
+<em class="property">classmethod </em><code class="descname">cast_commodity_as_short_xml</code><span class="sig-paren">(</span><em>commodity: gnewcash.commodity.Commodity</em>, <em>node_tag: str</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_commodity_as_short_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_commodity_as_short_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current commodity as GnuCash-compatible XML (short version used for accounts).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>commodity</strong> (<a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity"><em>Commodity</em></a>) – Commodity being cast to short XML</li>
+<li><strong>node_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – XML element tag name for the commodity</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Current commodity as short XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_commodity_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_commodity_as_xml</code><span class="sig-paren">(</span><em>commodity: gnewcash.commodity.Commodity</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_commodity_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_commodity_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current commodity as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current commodity as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_scheduled_transaction_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_scheduled_transaction_as_xml</code><span class="sig-paren">(</span><em>scheduled_transaction: gnewcash.transaction.ScheduledTransaction</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_scheduled_transaction_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_scheduled_transaction_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current scheduled transaction as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current scheduled transaction as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_slot_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_slot_as_xml</code><span class="sig-paren">(</span><em>slot: gnewcash.slot.Slot</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_slot_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_slot_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current slot as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current slot as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_split_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_split_as_xml</code><span class="sig-paren">(</span><em>split: gnewcash.transaction.Split</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_split_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_split_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current split as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current split as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.cast_transaction_as_xml">
+<em class="property">classmethod </em><code class="descname">cast_transaction_as_xml</code><span class="sig-paren">(</span><em>transaction: gnewcash.transaction.Transaction</em><span class="sig-paren">)</span> &#x2192; xml.etree.ElementTree.Element<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.cast_transaction_as_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.cast_transaction_as_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current transaction as GnuCash-compatible XML.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Current transaction as XML</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element" title="(in Python v3.8)">xml.etree.ElementTree.Element</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.dump">
+<em class="property">classmethod </em><code class="descname">dump</code><span class="sig-paren">(</span><em>gnucash_file: gnewcash.gnucash_file.GnuCashFile</em>, <em>*args</em>, <em>target_file: str = ''</em>, <em>prettify_xml: bool = False</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes GnuCash XML file from memory to disk.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gnucash_file</strong> (<a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile" title="gnucash_file.GnuCashFile"><em>GnuCashFile</em></a>) – File to write to disk</li>
+<li><strong>target_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Destination file to write to.</li>
+<li><strong>prettify_xml</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Should the XML be prettified? (default false)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.xml.GnuCashXMLWriter.write_file_contents">
+<em class="property">classmethod </em><code class="descname">write_file_contents</code><span class="sig-paren">(</span><em>target_file: str</em>, <em>file_contents: bytes</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/xml.html#GnuCashXMLWriter.write_file_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.xml.GnuCashXMLWriter.write_file_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the file contents to the target file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>target_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – File that contents will be written to.</li>
+<li><strong>file_contents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.8)"><em>bytes</em></a>) – Contents to be written to the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-file_formats.sqlite">
+<span id="sqlite"></span><h2>SQLite<a class="headerlink" href="#module-file_formats.sqlite" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="file_formats.sqlite.SqliteFileFormat">
+<em class="property">class </em><code class="descclassname">file_formats.sqlite.</code><code class="descname">SqliteFileFormat</code><a class="reference internal" href="_modules/file_formats/sqlite.html#SqliteFileFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.SqliteFileFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for loading and saving SQlite files.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader">
+<em class="property">class </em><code class="descclassname">file_formats.sqlite.</code><code class="descname">GnuCashSQLiteReader</code><a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for loading SQlite files.</p>
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_account_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_account_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>account_id: str</em><span class="sig-paren">)</span> &#x2192; gnewcash.account.Account<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_account_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_account_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Account object from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the GnuCash SQLite database.</li>
+<li><strong>account_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – ID of the account to load from the SQLite database</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Account object from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="account.html#account.Account" title="account.Account">Account</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_books_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_books_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>sort_transactions: bool</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.gnucash_file.Book]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_books_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_books_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Book objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
+<li><strong>sort_transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Flag for if transactions should be sorted by date_posted when reading from SQLite</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Book objects from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="gnucash_file.html#gnucash_file.Book" title="gnucash_file.Book">Book</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_budget_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_budget_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.gnucash_file.Budget]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_budget_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_budget_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Budget objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Budget objects from SQLite</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="gnucash_file.html#gnucash_file.Budget" title="gnucash_file.Budget">Budget</a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_commodities_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_commodities_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.commodity.Commodity]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_commodities_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_commodities_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Commodity objects for all commodities in the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Commodity object(s) from SQLite</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity">Commodity</a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_commodity_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_commodity_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>commodity_guid: str</em><span class="sig-paren">)</span> &#x2192; gnewcash.commodity.Commodity<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_commodity_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_commodity_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Commodity object from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
+<li><strong>commodity_guid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Commodity to pull from the database. None pulls all commodities.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Commodity object(s) from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity">Commodity</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity">Commodity</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_scheduled_transactions_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_scheduled_transactions_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>template_root_account: gnewcash.account.Account</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.transaction.ScheduledTransaction]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_scheduled_transactions_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_scheduled_transactions_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates ScheduledTransaction objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
+<li><strong>template_root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root template account</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ScheduledTransaction objects from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="transaction.html#transaction.ScheduledTransaction" title="transaction.ScheduledTransaction">ScheduledTransaction</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_slots_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_slots_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>object_id: str</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.slot.Slot]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_slots_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_slots_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Slot objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database</li>
+<li><strong>object_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – ID of the object that the slot belongs to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Slot objects from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="slot.html#slot.Slot" title="slot.Slot">Slot</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_splits_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_splits_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>transaction_guid: str</em>, <em>root_account: gnewcash.account.Account</em>, <em>template_root_account: gnewcash.account.Account</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.transaction.Split]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_splits_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_splits_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Split objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database.</li>
+<li><strong>transaction_guid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – GUID of the transaction to load the splits of</li>
+<li><strong>root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root account from the SQLite database</li>
+<li><strong>template_root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Template root account from the SQLite database</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Split objects from XML</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="transaction.html#transaction.Split" title="transaction.Split">Split</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.create_transactions_from_sqlite">
+<em class="property">classmethod </em><code class="descname">create_transactions_from_sqlite</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>root_account: gnewcash.account.Account</em>, <em>template_root_account: gnewcash.account.Account</em><span class="sig-paren">)</span> &#x2192; List[gnewcash.transaction.Transaction]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.create_transactions_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.create_transactions_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates Transaction objects from the GnuCash SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to the SQLite database.</li>
+<li><strong>root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Root account from the SQLite database</li>
+<li><strong>template_root_account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Template root account from the SQLite database</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Transaction objects from SQLite</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction">Transaction</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.get_sqlite_table_data">
+<em class="property">classmethod </em><code class="descname">get_sqlite_table_data</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em>, <em>table_name: str</em>, <em>where_condition: Optional[str] = None</em>, <em>where_parameters: Optional[Tuple[Any]] = None</em><span class="sig-paren">)</span> &#x2192; List[Dict[str, Any]]<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.get_sqlite_table_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.get_sqlite_table_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method for retrieving data from a SQLite table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</li>
+<li><strong>table_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – SQLite table name</li>
+<li><strong>where_condition</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – SQL WHERE condition for the query (if any)</li>
+<li><strong>where_parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – SQL WHERE parameters for the query (if any)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of dictionaries (keys being the column names) for each row in the SQLite table</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, Any]]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteReader.load">
+<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>*args</em>, <em>source_file: str = ''</em>, <em>sort_transactions: bool = True</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; gnewcash.gnucash_file.GnuCashFile<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteReader.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteReader.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a GnuCash SQLite file from disk to memory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – File to load from disk</li>
+<li><strong>sort_transactions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Should transactions be sorted by date posted</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">GnuCashFile object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile" title="gnucash_file.GnuCashFile">GnuCashFile</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter">
+<em class="property">class </em><code class="descclassname">file_formats.sqlite.</code><code class="descname">GnuCashSQLiteWriter</code><a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the logic for saving SQlite files.</p>
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.create_sqlite_schema">
+<em class="property">classmethod </em><code class="descname">create_sqlite_schema</code><span class="sig-paren">(</span><em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.create_sqlite_schema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.create_sqlite_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the SQLite schema using the provided SQLite cursor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Open cursor to a SQLite database.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.delete_transaction_from_sqlite">
+<em class="property">classmethod </em><code class="descname">delete_transaction_from_sqlite</code><span class="sig-paren">(</span><em>deleted_transaction_guid: str</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.delete_transaction_from_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.delete_transaction_from_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a transaction from the SQLite database, as well as all dependent objects.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.dump">
+<em class="property">classmethod </em><code class="descname">dump</code><span class="sig-paren">(</span><em>gnucash_file: gnewcash.gnucash_file.GnuCashFile</em>, <em>*args</em>, <em>target_file: str = ''</em>, <em>**kwargs</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates GnuCash SQLite file on disk from memory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>gnucash_file</strong> (<a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile" title="gnucash_file.GnuCashFile"><em>GnuCashFile</em></a>) – File to write to disk</li>
+<li><strong>target_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Destination file to write to.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_account_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_account_to_sqlite</code><span class="sig-paren">(</span><em>account: gnewcash.account.Account</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_account_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_account_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes an Account object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>account</strong> (<a class="reference internal" href="account.html#account.Account" title="account.Account"><em>Account</em></a>) – Account object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_book_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_book_to_sqlite</code><span class="sig-paren">(</span><em>book: gnewcash.gnucash_file.Book</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_book_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_book_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a Book object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>book</strong> (<a class="reference internal" href="gnucash_file.html#gnucash_file.Book" title="gnucash_file.Book"><em>Book</em></a>) – Book object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_budget_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_budget_to_sqlite</code><span class="sig-paren">(</span><em>budget: gnewcash.gnucash_file.Budget</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_budget_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_budget_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a Budget object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>budget</strong> (<a class="reference internal" href="gnucash_file.html#gnucash_file.Budget" title="gnucash_file.Budget"><em>Budget</em></a>) – Budget object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite database</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_commodity_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_commodity_to_sqlite</code><span class="sig-paren">(</span><em>commodity: gnewcash.commodity.Commodity</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_commodity_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_commodity_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a Commodity object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>commodity</strong> (<a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity"><em>Commodity</em></a>) – Commodity object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_recurrence_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_recurrence_to_sqlite</code><span class="sig-paren">(</span><em>obj: gnewcash.gnucash_file.Budget</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_recurrence_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_recurrence_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes recurrence information from a Budget object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj</strong> (<a class="reference internal" href="gnucash_file.html#gnucash_file.Budget" title="gnucash_file.Budget"><em>Budget</em></a>) – Budget object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite database</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_scheduled_transaction_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_scheduled_transaction_to_sqlite</code><span class="sig-paren">(</span><em>scheduled_transaction: gnewcash.transaction.ScheduledTransaction</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_scheduled_transaction_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_scheduled_transaction_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a ScheduledTransaction object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>scheduled_transaction</strong> (<a class="reference internal" href="transaction.html#transaction.ScheduledTransaction" title="transaction.ScheduledTransaction"><em>ScheduledTransaction</em></a>) – ScheduledTransaction object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_slot_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_slot_to_sqlite</code><span class="sig-paren">(</span><em>slot: gnewcash.slot.Slot</em>, <em>sqlite_cursor: sqlite3.Cursor</em>, <em>object_guid: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_slot_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_slot_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a Slot object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>slot</strong> (<a class="reference internal" href="slot.html#slot.Slot" title="slot.Slot"><em>Slot</em></a>) – Slot object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_split_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_split_to_sqlite</code><span class="sig-paren">(</span><em>split: gnewcash.transaction.Split</em>, <em>sqlite_cursor: sqlite3.Cursor</em>, <em>transaction_guid: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_split_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_split_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a Split object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>split</strong> (<a class="reference internal" href="commodity.html#commodity.Commodity" title="commodity.Commodity"><em>Commodity</em></a>) – Split object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="file_formats.sqlite.GnuCashSQLiteWriter.write_transaction_to_sqlite">
+<em class="property">classmethod </em><code class="descname">write_transaction_to_sqlite</code><span class="sig-paren">(</span><em>transaction: gnewcash.transaction.Transaction</em>, <em>sqlite_cursor: sqlite3.Cursor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/file_formats/sqlite.html#GnuCashSQLiteWriter.write_transaction_to_sqlite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.GnuCashSQLiteWriter.write_transaction_to_sqlite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a Transaction object to the SQLite database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>transaction</strong> (<a class="reference internal" href="transaction.html#transaction.Transaction" title="transaction.Transaction"><em>Transaction</em></a>) – Transaction object</li>
+<li><strong>sqlite_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor" title="(in Python v3.8)"><em>sqlite3.Cursor</em></a>) – Handle to SQLite file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="file_formats.sqlite.DBAction">
+<em class="property">class </em><code class="descclassname">file_formats.sqlite.</code><code class="descname">DBAction</code><a class="reference internal" href="_modules/file_formats/sqlite.html#DBAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_formats.sqlite.DBAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enumeration class for record operations in databases.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gnucash_file.html" class="btn btn-neutral float-right" title="GnuCash File" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="commodity.html" class="btn btn-neutral float-left" title="Commodity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paul Bromwell Jr.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

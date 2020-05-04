@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -146,6 +148,8 @@
             
   <h1>Source code for gnewcash.commodity</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing classes that read, manipulate, and write commodities.</span>
+
 <span class="sd">.. module:: commodity</span>
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
@@ -153,12 +157,15 @@
 
 <span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
 
+<span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
+<span class="kn">from</span> <span class="nn">gnewcash.file_formats</span> <span class="k">import</span> <span class="n">DBAction</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span>
 
-<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a Commodity in GnuCash</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Commodity"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity">[docs]</a><span class="k">class</span> <span class="nc">Commodity</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a Commodity in GnuCash.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">space</span> <span class="o">=</span> <span class="n">space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span> <span class="o">=</span> <span class="kc">False</span>
@@ -171,7 +178,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current commodity as GnuCash-compatible XML</span>
+<span class="sd">        Returns the current commodity as GnuCash-compatible XML.</span>
 
 <span class="sd">        :return: Current commodity as XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -197,7 +204,7 @@
 <div class="viewcode-block" id="Commodity.from_xml"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">commodity_node</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a Commodity object from the GnuCash XML</span>
+<span class="sd">        Creates a Commodity object from the GnuCash XML.</span>
 
 <span class="sd">        :param commodity_node: XML node for the commodity</span>
 <span class="sd">        :type commodity_node: ElementTree.Element</span>
@@ -235,7 +242,7 @@
 
 <div class="viewcode-block" id="Commodity.as_short_xml"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity.as_short_xml">[docs]</a>    <span class="k">def</span> <span class="nf">as_short_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tag</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current commodity as GnuCash-compatible XML (short version used for accounts)</span>
+<span class="sd">        Returns the current commodity as GnuCash-compatible XML (short version used for accounts).</span>
 
 <span class="sd">        :return: Current commodity as short XML</span>
 <span class="sd">        :rtype: xml.etree.ElementTree.Element</span>
@@ -243,7 +250,61 @@
         <span class="n">commodity_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">node_tag</span><span class="p">)</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:space&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span>
         <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">commodity_node</span><span class="p">,</span> <span class="s1">&#39;cmdty:id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span>
-        <span class="k">return</span> <span class="n">commodity_node</span></div></div>
+        <span class="k">return</span> <span class="n">commodity_node</span></div>
+
+<div class="viewcode-block" id="Commodity.from_sqlite"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">commodity_guid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Commodity object from the GnuCash SQLite database.</span>
+
+<span class="sd">        :param sqlite_cursor: Open cursor to the SQLite database</span>
+<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
+<span class="sd">        :param commodity_guid: Commodity to pull from the database. None pulls all commodities.</span>
+<span class="sd">        :type commodity_guid: str</span>
+<span class="sd">        :return: Commodity object(s) from SQLite</span>
+<span class="sd">        :rtype: Commodity or list[Commodity]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">commodity_guid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">commodity_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;commodities&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">commodity_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;commodities&#39;</span><span class="p">,</span> <span class="s1">&#39;guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">commodity_guid</span><span class="p">,))</span>
+
+        <span class="n">new_commodities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">commodity</span> <span class="ow">in</span> <span class="n">commodity_data</span><span class="p">:</span>
+            <span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;mnemonic&#39;</span><span class="p">]</span>
+            <span class="n">space</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;namespace&#39;</span><span class="p">]</span>
+
+            <span class="n">new_commodity</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">commodity_id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">get_quotes</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;quote_flag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">quote_source</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;quote_source&#39;</span><span class="p">]</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">quote_tz</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;quote_tz&#39;</span><span class="p">]</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;fullname&#39;</span><span class="p">]</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">xcode</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;cusip&#39;</span><span class="p">]</span>
+            <span class="n">new_commodity</span><span class="o">.</span><span class="n">fraction</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;fraction&#39;</span><span class="p">]</span>
+            <span class="n">new_commodities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_commodity</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">commodity_guid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">new_commodities</span>
+        <span class="k">return</span> <span class="n">new_commodities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Commodity.to_sqlite"><a class="viewcode-back" href="../../gnucash_file.html#gnucash_file.Commodity.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">):</span>
+        <span class="n">db_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;commodities&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;INSERT INTO commodities(guid, namespace, mnemonic, fullname, cusip, fraction, quote_flag, &#39;</span>\
+                  <span class="s1">&#39;quote_source, quote_tz) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)&#39;</span>
+            <span class="n">sql_args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xcode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">,</span>
+                        <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_tz</span><span class="p">,)</span>
+            <span class="n">sqlite_cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">sql_args</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">UPDATE</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;UPDATE commodities SET namespace = ?, mnemonic = ?, fullname = ?, cusip = ?, fraction = ?, &#39;</span>\
+                  <span class="s1">&#39;quote_flag = ?, quote_source = ?, quote_tz = ? WHERE guid = ?&#39;</span>
+            <span class="n">sql_args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xcode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fraction</span><span class="p">,</span>
+                        <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_quotes</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_tz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">,)</span>
+            <span class="n">sqlite_cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">sql_args</span><span class="p">)</span></div></div>
+
+
+<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Commodity</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -273,26 +334,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

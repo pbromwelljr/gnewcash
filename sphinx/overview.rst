@@ -13,10 +13,8 @@ Compatibility
 
 Python
 ~~~~~~
-GNewCash is developed on and tested on Python 3.7. I rely on `PyCharm <http://www.jetbrains.com/pycharm/>`_'s Inspections to ensure backwards compatibility,
-so your mileage may vary depending on Python version. The Inspections are set to support:
+GNewCash is developed on Python 3.7, and unit tests run on the following versions:
 
-- 2.7
 - 3.4
 - 3.5
 - 3.6
@@ -29,7 +27,7 @@ GNewCash
 
 This package only relies on the Python standard library, so it should be compatible with Windows, Mac OSX, and Linux.
 
-All code and tests are designed for GnuCash version 2 files. Version 3 is currently not supported.
+All code and tests are designed for GnuCash version 2 files. Version 3 is also supported.
 
 Liability
 ---------

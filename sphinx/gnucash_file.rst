@@ -9,8 +9,5 @@ GnuCash File
 .. autoclass:: Book
    :members:
 
-.. autoclass:: Commodity
-   :members:
-
 .. autoclass:: Budget
    :members:

@@ -1,5 +1,5 @@
 import os
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 def read(file_name):
@@ -12,7 +12,7 @@ setup(
     description='Python Library for reading, interacting with, and writing GnuCash files',
     author='Paul Bromwell Jr.',
     author_email='pbromwelljr@gmail.com',
-    packages=find_packages(),
+    packages=find_packages(exclude=('tests',)),
     license='MIT',
     keywords='gnucash finance finances cash personal banking',
     url='https://github.com/pbromwelljr/gnewcash',
@@ -24,7 +24,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Financial and Insurance Industry',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',

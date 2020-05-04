@@ -5,9 +5,10 @@ Code Documentation
    :maxdepth: 3
 
    account
+   commodity
+   file_formats
    gnucash_file
    guid_object
+   slot
    transaction
    utils
-   commodity
-   slot
