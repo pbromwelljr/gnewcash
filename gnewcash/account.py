@@ -63,7 +63,7 @@ class Account(GuidObject, SlottableObject):
         :rtype: dict
         """
         if account_hierarchy is None:
-            account_hierarchy = dict()
+            account_hierarchy = {}
         account_hierarchy[path_to_self] = self
         for child in self.children:
             if path_to_self != '/':
@@ -484,7 +484,7 @@ class InterestAccount(InterestAccountBase):
         iterator_date = self.starting_date
         iterator_balance = self.starting_balance
         interest_rate = self.interest_percentage
-        payments = list()
+        payments = []
         if interest_rate > 1:
             interest_rate /= 100
         while iterator_balance > 0:

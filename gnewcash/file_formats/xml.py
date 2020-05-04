@@ -128,7 +128,7 @@ class GnuCashXMLReader(BaseFileReader):
         for commodity in commodities:
             new_book.commodities.append(cls.create_commodity_from_xml(commodity))
 
-        account_objects: List[Account] = list()
+        account_objects: List[Account] = []
         transaction_manager: TransactionManager = TransactionManager()
         transaction_manager.disable_sort = not sort_transactions
 
@@ -718,7 +718,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         :rtype: list[xml.etree.ElementTree.Element]
         :raises: ValueError if no commodity found.
         """
-        node_and_children: List = list()
+        node_and_children: List = []
         account_node: ElementTree.Element = ElementTree.Element('gnc:account', {'version': '2.0.0'})
         ElementTree.SubElement(account_node, 'act:name').text = account.name
         ElementTree.SubElement(account_node, 'act:id', {'type': 'guid'}).text = account.guid

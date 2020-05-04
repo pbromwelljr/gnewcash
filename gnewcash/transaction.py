@@ -178,7 +178,7 @@ class TransactionManager:
     """Class used to add/remove transactions, maintaining a chronological order based on transaction posted date."""
 
     def __init__(self) -> None:
-        self.transactions: List[Transaction] = list()
+        self.transactions: List[Transaction] = []
         self.disable_sort: bool = False
 
     def add(self, new_transaction: Transaction) -> None:
