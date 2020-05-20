@@ -57,7 +57,6 @@ def safe_iso_date_formatting(date_obj: datetime) -> str:
     :return: Formatted date string
     :rtype: str
     """
-    try:
+    if date_obj.tzinfo is not None:
         return date_obj.strftime('%Y-%m-%d %H:%M:%S %z')
-    except ValueError:
-        return date_obj.strftime('%Y-%m-%d %H:%M:%S')
+    return date_obj.strftime('%Y-%m-%d %H:%M:%S')
