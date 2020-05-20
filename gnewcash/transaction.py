@@ -5,6 +5,7 @@ Module containing classes that read, manipulate, and write transactions.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
+import warnings
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Iterator, List, Optional, Tuple
@@ -417,3 +418,37 @@ class SimpleTransaction(Transaction):
     def amount(self, value: Decimal) -> None:
         self.from_split.amount = value * -1
         self.to_split.amount = value
+
+    @classmethod
+    def from_transaction(cls, other: Transaction) -> 'SimpleTransaction':
+        """Creates a SimpleTransaction from a regular Transaction."""
+        simple: SimpleTransaction = cls()
+        simple.guid = other.guid
+        simple.currency = other.currency
+        simple.date_posted = other.date_posted
+        simple.date_entered = other.date_entered
+        simple.description = other.description
+        simple.splits = other.splits
+        simple.memo = other.memo
+
+        if len(simple.splits) > 2:
+            raise Exception('SimpleTransactions can only be created when transactions have less than 2 splits')
+        if not simple.splits:
+            raise Exception('SimpleTransactions cannot be created from transactions with no splits')
+
+        if len(simple.splits) == 1:
+            simple.to_split = simple.splits[0]
+            simple.from_split = simple.splits[0]
+        elif simple.splits[0].amount > simple.splits[1].amount:
+            simple.to_split = simple.splits[0]
+            simple.from_split = simple.splits[1]
+        elif simple.splits[0].amount < simple.splits[1].amount:
+            simple.to_split = simple.splits[1]
+            simple.from_split = simple.splits[0]
+        else:
+            warnings.warn(f'Could not determine to/from split on SimpleTransaction for {simple.guid}.' +
+                          'Assuming first split is "from" split, assuming second is "to" split.')
+            simple.from_split = simple.splits[0]
+            simple.to_split = simple.splits[1]
+
+        return simple

@@ -16,7 +16,7 @@ from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split
+from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split, SimpleTransaction
 
 
 class GnuCashFile:
@@ -73,6 +73,21 @@ class GnuCashFile:
         :type prettify_xml: bool
         """
         return file_format.dump(self, target_file=target_file, prettify_xml=prettify_xml)
+
+    def simplify_transactions(self) -> None:
+        """Converts every transaction to a SimpleTransaction."""
+        for book in self.books:
+            for index, transaction in enumerate(book.transactions.transactions):
+                book.transactions.transactions[index] = SimpleTransaction.from_transaction(transaction)
+
+    def strip_transaction_timezones(self) -> None:
+        """Removes timezone information from the date_posted and date_entered properties in every transaction."""
+        for book in self.books:
+            for transaction in book.transactions.transactions:
+                if transaction.date_posted.tzinfo is not None:
+                    transaction.date_posted = transaction.date_posted.replace(tzinfo=None)
+                if transaction.date_entered.tzinfo is not None:
+                    transaction.date_entered = transaction.date_entered.replace(tzinfo=None)
 
 
 class Book(GuidObject, SlottableObject):
