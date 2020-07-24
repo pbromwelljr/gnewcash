@@ -84,9 +84,9 @@ class GnuCashFile:
         """Removes timezone information from the date_posted and date_entered properties in every transaction."""
         for book in self.books:
             for transaction in book.transactions.transactions:
-                if transaction.date_posted.tzinfo is not None:
+                if transaction.date_posted is not None and transaction.date_posted.tzinfo is not None:
                     transaction.date_posted = transaction.date_posted.replace(tzinfo=None)
-                if transaction.date_entered.tzinfo is not None:
+                if transaction.date_entered is not None and transaction.date_entered.tzinfo is not None:
                     transaction.date_entered = transaction.date_entered.replace(tzinfo=None)
 
 
