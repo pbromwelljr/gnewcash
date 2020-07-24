@@ -431,24 +431,21 @@ class SimpleTransaction(Transaction):
         simple.splits = other.splits
         simple.memo = other.memo
 
-        if len(simple.splits) > 2:
-            raise Exception('SimpleTransactions can only be created when transactions have less than 2 splits')
-        if not simple.splits:
-            raise Exception('SimpleTransactions cannot be created from transactions with no splits')
+        if len(simple.splits) != 2:
+            raise Exception('SimpleTransactions can only be created from transactions with 2 splits')
 
-        if len(simple.splits) == 1:
-            simple.to_split = simple.splits[0]
-            simple.from_split = simple.splits[0]
-        elif simple.splits[0].amount > simple.splits[1].amount:
-            simple.to_split = simple.splits[0]
-            simple.from_split = simple.splits[1]
-        elif simple.splits[0].amount < simple.splits[1].amount:
-            simple.to_split = simple.splits[1]
-            simple.from_split = simple.splits[0]
-        else:
+        first_split_amount = simple.splits[0].amount
+        second_split_amount = simple.splits[1].amount
+        if first_split_amount is None or second_split_amount is None or first_split_amount == second_split_amount:
             warnings.warn(f'Could not determine to/from split on SimpleTransaction for {simple.guid}.' +
                           'Assuming first split is "from" split, assuming second is "to" split.')
             simple.from_split = simple.splits[0]
             simple.to_split = simple.splits[1]
+        elif first_split_amount > second_split_amount:
+            simple.to_split = simple.splits[0]
+            simple.from_split = simple.splits[1]
+        elif first_split_amount < second_split_amount:
+            simple.to_split = simple.splits[1]
+            simple.from_split = simple.splits[0]
 
         return simple
