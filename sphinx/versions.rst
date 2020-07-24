@@ -1,6 +1,8 @@
 Versions
 ********
 
+- 1.1.1 (July 24, 2020)
+    - Bugfixes
 - 1.1.0 (May 4, 2020)
     - **BREAKING CHANGE**: Only Python 3.6+ supported in favor of variable-level typing.
     - **BREAKING CHANGE**: as_xml and from_xml have been removed from most classes.
