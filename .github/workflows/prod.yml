@@ -35,7 +35,7 @@ jobs:
       - name: Run unit tests
         run: |
           poetry run pytest --cov=gnewcash tests/
-  publish-test-pypi:
+  publish-pypi:
     needs: build
     runs-on: ubuntu-latest
     steps:
