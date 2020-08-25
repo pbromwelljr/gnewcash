@@ -640,7 +640,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             sqlite_cursor.execute(sql, sql_args)
 
             # Populate the ID of the insert
-            sql = f'select seq from sqlite_sequence where name = ?'
+            sql = 'select seq from sqlite_sequence where name = ?'
             sql_args = ('slots',)
             sqlite_cursor.execute(sql, sql_args)
             new_id, = sqlite_cursor.fetchone()
