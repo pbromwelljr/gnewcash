@@ -200,7 +200,7 @@ class TransactionManager:
                 if transaction.date_posted > new_transaction.date_posted:
                     self.transactions.insert(index, new_transaction)
                     break
-                elif transaction.date_posted == new_transaction.date_posted:
+                if transaction.date_posted == new_transaction.date_posted:
                     self.transactions.insert(index, new_transaction)
                     break
             else:
@@ -431,8 +431,13 @@ class SimpleTransaction(Transaction):
         simple.splits = other.splits
         simple.memo = other.memo
 
-        if len(simple.splits) != 2:
-            raise Exception('SimpleTransactions can only be created from transactions with 2 splits')
+        if len(simple.splits) > 2 or not simple.splits:
+            raise Exception('SimpleTransactions can only be created from transactions with 1 or 2 splits')
+
+        if len(simple.splits) == 1:
+            simple.from_split = simple.splits[0]
+            simple.to_split = simple.splits[0]
+            return simple
 
         first_split_amount = simple.splits[0].amount
         second_split_amount = simple.splits[1].amount
