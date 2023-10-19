@@ -215,7 +215,7 @@ class GnuCashXMLReader(BaseFileReader):
             elif slot_type == 'frame':
                 value = None  # Empty frame element, just leave it
             else:
-                raise NotImplementedError('Slot type {} is not implemented.'.format(slot_type))
+                raise NotImplementedError(f'Slot type {slot_type} is not implemented.')
 
         return Slot(key, value, slot_type)
 
@@ -778,7 +778,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         elif slot.type == 'frame':
             pass  # Empty frame element, just leave it
         else:
-            raise NotImplementedError('Slot type {} is not implemented.'.format(slot.type))
+            raise NotImplementedError(f'Slot type {slot.type} is not implemented.')
 
         return slot_node
 

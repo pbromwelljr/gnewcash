@@ -5,18 +5,17 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-
+import os.path
 from datetime import datetime
 from decimal import Decimal
-import os.path
 from logging import getLogger
-from typing import Optional, List, Any
+from typing import Any, List, Optional
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split, SimpleTransaction
+from gnewcash.transaction import ScheduledTransaction, SimpleTransaction, Split, Transaction, TransactionManager
 
 
 class GnuCashFile:
@@ -32,7 +31,7 @@ class GnuCashFile:
         as_string: str = ''
         if self.file_name:
             as_string = self.file_name + ', '
-        as_string += '{} books'.format(len(self.books))
+        as_string += f'{len(self.books)} books'
         return as_string
 
     def __repr__(self) -> str:
@@ -153,7 +152,7 @@ class Book(GuidObject, SlottableObject):
         return account_balance
 
     def __str__(self) -> str:
-        return '{} transactions'.format(len(self.transactions))
+        return f'{len(self.transactions)} transactions'
 
     def __repr__(self) -> str:
         return str(self)

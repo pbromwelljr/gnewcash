@@ -7,11 +7,11 @@ Catch-all ,odule containing methods that might be helpful to GNewCash users.
 """
 import re
 from datetime import datetime
-from genericpath import isfile, exists
 from os import listdir, remove
 from os.path import join
-
 from typing import Pattern
+
+from genericpath import exists, isfile
 
 
 def delete_log_files(gnucash_file_path: str) -> None:

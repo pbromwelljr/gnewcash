@@ -5,8 +5,8 @@ Module containing classes that manage GUID objects.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from typing import Set
 import uuid
+from typing import Set
 
 
 class GuidObject:

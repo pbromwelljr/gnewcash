@@ -31,7 +31,7 @@ class Transaction(GuidObject, SlottableObject):
 
     def __str__(self) -> str:
         if self.date_posted:
-            return '{} - {}'.format(self.date_posted.strftime('%m/%d/%Y'), self.description)
+            return f'{self.date_posted.strftime("%m/%d/%Y")} - {self.description}'
         return self.description
 
     def __repr__(self) -> str:
@@ -169,7 +169,7 @@ class Split(GuidObject):
         self.value_denom: Optional[int] = None
 
     def __str__(self) -> str:
-        return '{} - {}'.format(self.account, str(self.amount))
+        return f'{self.account} - {self.amount}'
 
     def __repr__(self) -> str:
         return str(self)

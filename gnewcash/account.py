@@ -7,10 +7,10 @@ Module containing classes that read, manipulate, and write accounts.
 """
 import abc
 import re
+from collections import namedtuple
 from datetime import datetime
 from decimal import Decimal, ROUND_UP
-from collections import namedtuple
-from typing import List, Tuple, Dict, Optional, Union, Pattern
+from typing import Dict, List, Optional, Pattern, Tuple, Union
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
@@ -38,7 +38,7 @@ class Account(GuidObject, SlottableObject):
         self.non_std_scu: Optional[int] = None
 
     def __str__(self) -> str:
-        return '{} - {}'.format(self.name, self.type)
+        return f'{self.name} - {self.type}'
 
     def __repr__(self) -> str:
         return str(self)
@@ -354,7 +354,7 @@ class InterestAccount(InterestAccountBase):
         self.interest_start_date: Optional[datetime] = interest_start_date
 
     def __str__(self) -> str:
-        return '{} - {} - {}'.format(self.payment_amount, self.starting_balance, self.interest_percentage)
+        return f'{self.payment_amount} - {self.starting_balance} - {self.interest_percentage}'
 
     def __repr__(self) -> str:
         return str(self)
