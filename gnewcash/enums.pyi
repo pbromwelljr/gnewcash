@@ -1,0 +1,9 @@
+class AccountType:
+    ROOT: str
+    BANK: str
+    INCOME: str
+    ASSET: str
+    CREDIT: str
+    EXPENSE: str
+    EQUITY: str
+    LIABILITY: str
