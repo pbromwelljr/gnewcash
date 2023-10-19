@@ -431,26 +431,25 @@ class SimpleTransaction(Transaction):
         simple.splits = other.splits
         simple.memo = other.memo
 
-        if len(simple.splits) > 2 or not simple.splits:
-            raise Exception('SimpleTransactions can only be created from transactions with 1 or 2 splits')
+        if len(simple.splits) > 2:
+            raise Exception('SimpleTransactions can only be created from transactions with 2 splits: ' +
+                            f'{other} has {len(simple.splits)} splits - {", ".join([str(x) for x in other.splits])}')
 
-        if len(simple.splits) == 1:
-            simple.from_split = simple.splits[0]
-            simple.to_split = simple.splits[0]
-            return simple
+        first_split = simple.splits[0]
+        second_split = simple.splits[1] if len(simple.splits) > 1 else first_split
+        first_split_amount = first_split.amount
+        second_split_amount = second_split.amount
 
-        first_split_amount = simple.splits[0].amount
-        second_split_amount = simple.splits[1].amount
-        if first_split_amount is None or second_split_amount is None or first_split_amount == second_split_amount:
-            warnings.warn(f'Could not determine to/from split on SimpleTransaction for {simple.guid}.' +
+        if any((first_split_amount is None, second_split_amount is None, first_split_amount == second_split_amount)):
+            warnings.warn(f'Could not determine to/from split on SimpleTransaction for {simple.guid}. ' +
                           'Assuming first split is "from" split, assuming second is "to" split.')
-            simple.from_split = simple.splits[0]
-            simple.to_split = simple.splits[1]
+            simple.from_split = first_split
+            simple.to_split = second_split
         elif first_split_amount > second_split_amount:
-            simple.to_split = simple.splits[0]
-            simple.from_split = simple.splits[1]
+            simple.to_split = first_split
+            simple.from_split = second_split
         elif first_split_amount < second_split_amount:
-            simple.to_split = simple.splits[1]
-            simple.from_split = simple.splits[0]
+            simple.to_split = second_split
+            simple.from_split = first_split
 
         return simple
