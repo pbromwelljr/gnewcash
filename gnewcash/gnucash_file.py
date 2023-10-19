@@ -98,7 +98,7 @@ class Book(GuidObject, SlottableObject):
                  template_transactions: Optional[List[Transaction]] = None,
                  scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
                  budgets: Optional[List['Budget']] = None) -> None:
-        super(Book, self).__init__()
+        super().__init__()
         self.root_account: Optional[Account] = root_account
         self.transactions: TransactionManager = transactions or TransactionManager()
         self.commodities: List[Commodity] = commodities or []
@@ -162,7 +162,7 @@ class Budget(GuidObject, SlottableObject):
     """Class object representing a Budget in GnuCash."""
 
     def __init__(self) -> None:
-        super(Budget, self).__init__()
+        super().__init__()
         self.name: Optional[str] = None
         self.description: Optional[str] = None
         self.period_count: Optional[int] = None

@@ -17,11 +17,15 @@ from gnewcash.guid_object import GuidObject
 from gnewcash.slot import SlottableObject
 
 
+class TransactionException(Exception):
+    """Exception class used to handle transaction-related exceptions."""
+
+
 class Transaction(GuidObject, SlottableObject):
     """Represents a transaction in GnuCash."""
 
     def __init__(self) -> None:
-        super(Transaction, self).__init__()
+        super().__init__()
         self.currency: Optional[Commodity] = None
         self.date_posted: Optional[datetime] = None
         self.date_entered: Optional[datetime] = None
@@ -59,7 +63,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Boolean indicating if all splits in the transaction are cleared.
         :rtype: bool
         """
-        return sum([1 for split in self.splits if split.reconciled_state.lower() == 'c']) > 0
+        return sum(1 for split in self.splits if split.reconciled_state.lower() == 'c') > 0
 
     def mark_transaction_cleared(self) -> None:
         """Marks all splits in the transaction as cleared (reconciled_state = 'c')."""
@@ -74,11 +78,11 @@ class Transaction(GuidObject, SlottableObject):
         :return: Notes tied to the transaction
         :rtype: str
         """
-        return super(Transaction, self).get_slot_value('notes')
+        return super().get_slot_value('notes')
 
     @notes.setter
     def notes(self, value: str) -> None:
-        super(Transaction, self).set_slot_value('notes', value, 'string')
+        super().set_slot_value('notes', value, 'string')
 
     @property
     def reversed_by(self) -> str:
@@ -88,11 +92,11 @@ class Transaction(GuidObject, SlottableObject):
         :return: Transaction GUID
         :rtype: str
         """
-        return super(Transaction, self).get_slot_value('reversed-by')
+        return super().get_slot_value('reversed-by')
 
     @reversed_by.setter
     def reversed_by(self, value: str) -> None:
-        super(Transaction, self).set_slot_value('reversed-by', value, 'guid')
+        super().set_slot_value('reversed-by', value, 'guid')
 
     @property
     def voided(self) -> str:
@@ -102,11 +106,11 @@ class Transaction(GuidObject, SlottableObject):
         :return: Void status
         :rtype: str
         """
-        return super(Transaction, self).get_slot_value('trans-read-only')
+        return super().get_slot_value('trans-read-only')
 
     @voided.setter
     def voided(self, value: str) -> None:
-        super(Transaction, self).set_slot_value('trans-read-only', value, 'string')
+        super().set_slot_value('trans-read-only', value, 'string')
 
     @property
     def void_time(self) -> str:
@@ -116,11 +120,11 @@ class Transaction(GuidObject, SlottableObject):
         :return: Time that the transaction was voided
         :rtype: str
         """
-        return super(Transaction, self).get_slot_value('void-time')
+        return super().get_slot_value('void-time')
 
     @void_time.setter
     def void_time(self, value: str) -> None:
-        super(Transaction, self).set_slot_value('void-time', value, 'string')
+        super().set_slot_value('void-time', value, 'string')
 
     @property
     def void_reason(self) -> str:
@@ -130,11 +134,11 @@ class Transaction(GuidObject, SlottableObject):
         :return: Reason that the transaction was voided
         :rtype: str
         """
-        return super(Transaction, self).get_slot_value('void-reason')
+        return super().get_slot_value('void-reason')
 
     @void_reason.setter
     def void_reason(self, value: str) -> None:
-        super(Transaction, self).set_slot_value('void-reason', value, 'string')
+        super().set_slot_value('void-reason', value, 'string')
 
     @property
     def associated_uri(self) -> str:
@@ -144,18 +148,18 @@ class Transaction(GuidObject, SlottableObject):
         :return: URI associated with the transaction
         :rtype: str
         """
-        return super(Transaction, self).get_slot_value('assoc_uri')
+        return super().get_slot_value('assoc_uri')
 
     @associated_uri.setter
     def associated_uri(self, value: str) -> None:
-        super(Transaction, self).set_slot_value('assoc_uri', value, 'string')
+        super().set_slot_value('assoc_uri', value, 'string')
 
 
 class Split(GuidObject):
     """Represents a split in GnuCash."""
 
     def __init__(self, account: Optional[Account], amount: Optional[Decimal], reconciled_state: str = 'n'):
-        super(Split, self).__init__()
+        super().__init__()
         self.reconciled_state: str = reconciled_state
         self.amount: Optional[Decimal] = amount
         self.account: Optional[Account] = account
@@ -347,7 +351,7 @@ class ScheduledTransaction(GuidObject):
     """Class that represents a scheduled transaction in Gnucash."""
 
     def __init__(self) -> None:
-        super(ScheduledTransaction, self).__init__()
+        super().__init__()
         self.name: Optional[str] = None
         self.enabled: Optional[bool] = False
         self.auto_create: Optional[bool] = False
@@ -371,7 +375,7 @@ class SimpleTransaction(Transaction):
     """Class used to simplify creating and manipulating Transactions that only have 2 splits."""
 
     def __init__(self) -> None:
-        super(SimpleTransaction, self).__init__()
+        super().__init__()
         self.from_split: Split = Split(None, None)
         self.to_split: Split = Split(None, None)
         self.splits: List[Split] = [self.from_split, self.to_split]
@@ -432,8 +436,10 @@ class SimpleTransaction(Transaction):
         simple.memo = other.memo
 
         if len(simple.splits) > 2:
-            raise Exception('SimpleTransactions can only be created from transactions with 2 splits: ' +
-                            f'{other} has {len(simple.splits)} splits - {", ".join([str(x) for x in other.splits])}')
+            raise TransactionException(
+                'SimpleTransactions can only be created from transactions with 2 splits: ' +
+                f'{other} has {len(simple.splits)} splits - {", ".join([str(x) for x in other.splits])}'
+            )
 
         first_split = simple.splits[0]
         second_split = simple.splits[1] if len(simple.splits) > 1 else first_split

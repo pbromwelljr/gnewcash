@@ -26,7 +26,7 @@ class Account(GuidObject, SlottableObject):
     """Represents an account in GnuCash."""
 
     def __init__(self) -> None:
-        super(Account, self).__init__()
+        super().__init__()
         self.name: str = ''
         self.type: Optional[str] = None
         self.commodity_scu: Optional[str] = None
@@ -147,11 +147,11 @@ class Account(GuidObject, SlottableObject):
         :return: Account color as a string
         :rtype: str
         """
-        return super(Account, self).get_slot_value('color')
+        return super().get_slot_value('color')
 
     @color.setter
     def color(self, value: str) -> None:
-        super(Account, self).set_slot_value('color', value, 'string')
+        super().set_slot_value('color', value, 'string')
 
     @property
     def notes(self) -> str:
@@ -161,11 +161,11 @@ class Account(GuidObject, SlottableObject):
         :return: User-defined notes
         :rtype: str
         """
-        return super(Account, self).get_slot_value('notes')
+        return super().get_slot_value('notes')
 
     @notes.setter
     def notes(self, value: str) -> None:
-        super(Account, self).set_slot_value('notes', value, 'string')
+        super().set_slot_value('notes', value, 'string')
 
     @property
     def hidden(self) -> bool:
@@ -175,11 +175,11 @@ class Account(GuidObject, SlottableObject):
         :return: True if account is marked hidden, otherwise False.
         :rtype: bool
         """
-        return super(Account, self).get_slot_value('hidden') == 'true'
+        return super().get_slot_value('hidden') == 'true'
 
     @hidden.setter
     def hidden(self, value: bool) -> None:
-        super(Account, self).set_slot_value_bool('hidden', value, 'string')
+        super().set_slot_value_bool('hidden', value, 'string')
 
     @property
     def placeholder(self) -> bool:
@@ -189,11 +189,11 @@ class Account(GuidObject, SlottableObject):
         :return: True if the account is a placeholder, otherwise False
         :rtype: bool
         """
-        return super(Account, self).get_slot_value('placeholder') == 'true'
+        return super().get_slot_value('placeholder') == 'true'
 
     @placeholder.setter
     def placeholder(self, value: bool) -> None:
-        super(Account, self).set_slot_value_bool('placeholder', value, 'string')
+        super().set_slot_value_bool('placeholder', value, 'string')
 
     def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
         """
@@ -216,7 +216,7 @@ class BankAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.BANK."""
 
     def __init__(self) -> None:
-        super(BankAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.BANK
 
 
@@ -224,7 +224,7 @@ class IncomeAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.INCOME."""
 
     def __init__(self) -> None:
-        super(IncomeAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.INCOME
 
 
@@ -232,7 +232,7 @@ class AssetAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.ASSET."""
 
     def __init__(self) -> None:
-        super(AssetAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.ASSET
 
 
@@ -240,7 +240,7 @@ class CreditAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.CREDIT."""
 
     def __init__(self) -> None:
-        super(CreditAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.CREDIT
 
 
@@ -248,7 +248,7 @@ class ExpenseAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.EXPENSE."""
 
     def __init__(self) -> None:
-        super(ExpenseAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.EXPENSE
 
 
@@ -256,7 +256,7 @@ class EquityAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.EQUITY."""
 
     def __init__(self) -> None:
-        super(EquityAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.EQUITY
 
 
@@ -264,7 +264,7 @@ class LiabilityAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.LIABILITY."""
 
     def __init__(self) -> None:
-        super(LiabilityAccount, self).__init__()
+        super().__init__()
         self.type = AccountType.LIABILITY
 
 
@@ -550,7 +550,7 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
         :return: Minimum starting date.
         :rtype: datetime.datetime
         """
-        return min([x.starting_date for x in self.subaccounts])
+        return min(x.starting_date for x in self.subaccounts)
 
     @property
     def interest_percentage(self) -> Decimal:
@@ -560,7 +560,7 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
         :return: Sum of interest percentages.
         :rtype: decimal.Decimal
         """
-        return Decimal(sum([x.interest_percentage for x in self.subaccounts]))
+        return Decimal(sum(x.interest_percentage for x in self.subaccounts))
 
     @property
     def payment_amount(self) -> Decimal:
@@ -570,7 +570,7 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
         :return: Sum of the payment amounts.
         :rtype: decimal.Decimal
         """
-        return Decimal(sum([x.payment_amount for x in self.subaccounts]))
+        return Decimal(sum(x.payment_amount for x in self.subaccounts))
 
     @property
     def starting_balance(self) -> Decimal:
@@ -580,7 +580,7 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
         :return: Sum of the starting balances.
         :rtype: decimal.Decimal
         """
-        return Decimal(sum([x.starting_balance for x in self.subaccounts]))
+        return Decimal(sum(x.starting_balance for x in self.subaccounts))
 
     def get_info_at_date(self, date: datetime) -> LoanStatus:
         """

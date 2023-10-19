@@ -883,7 +883,8 @@ WHERE guid  = ?
         """
         # Note: To update the GnuCash schema, connect to an existing GnuCash SQLite file and run ".schema".
         # Make sure to remove sqlite_sequence from the schema statements
-        with open(os.path.join(os.path.dirname(__file__), 'sqlite_schema.sql')) as schema_file:
+        sqlite_schema_sql_path = pathlib.Path(__file__).parent / 'sqlite_schema.sql'
+        with sqlite_schema_sql_path.open(mode='r') as schema_file:
             for line in schema_file.readlines():
                 sqlite_cursor.execute(line)
 

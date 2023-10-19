@@ -22,7 +22,7 @@ class SlottableObject(object):
     """Class used to consolidate storing and retrieving slot values."""
 
     def __init__(self) -> None:
-        super(SlottableObject, self).__init__()
+        super().__init__()
         self.slots: List[Slot] = []
 
     def get_slot_value(self, key: str) -> Any:

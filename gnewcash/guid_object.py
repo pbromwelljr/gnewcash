@@ -15,7 +15,7 @@ class GuidObject:
     used_guids: Set[str] = set()
 
     def __init__(self) -> None:
-        super(GuidObject, self).__init__()
+        super().__init__()
         self.guid: str = self.get_guid()
 
     def __str__(self) -> str:
