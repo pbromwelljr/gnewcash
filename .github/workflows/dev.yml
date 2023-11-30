@@ -39,6 +39,7 @@ jobs:
   publish-test-pypi:
     needs: build
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[pypi]')
     steps:
       - uses: actions/checkout@master
       - name: Setup Python
