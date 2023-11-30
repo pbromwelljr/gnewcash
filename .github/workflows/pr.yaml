@@ -1,0 +1,35 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  lint-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macOS-latest
+          - ubuntu-latest
+          - windows-latest
+        python-version: ['3.9.x', '3.10.x', '3.11.x', '3.12.x', '3.13.x']
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{matrix.python-version}}
+          architecture: x64
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Run code linters
+        run: |
+          poetry run flake8 gnewcash
+          poetry run pylint gnewcash
+          poetry run mypy gnewcash
+      - name: Run unit tests
+        run: |
+          poetry run pytest --cov=gnewcash tests/
