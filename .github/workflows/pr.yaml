@@ -8,18 +8,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - macOS-latest
-          - ubuntu-latest
-          - windows-latest
-        python-version: ['3.9.x', '3.10.x', '3.11.x', '3.12.x']
-    runs-on: ${{matrix.os}}
+        version:
+          - {os: macOS-latest, python: '3.11.x'}
+          - {os: macOS-latest, python: '3.12.x'}
+          - {os: ubuntu-latest, python: '3.9.x'}
+          - {os: ubuntu-latest, python: '3.10.x'}
+          - {os: ubuntu-latest, python: '3.11.x'}
+          - {os: ubuntu-latest, python: '3.12.x'}
+          - {os: windows-latest, python: '3.9.x'}
+          - {os: windows-latest, python: '3.10.x'}
+          - {os: windows-latest, python: '3.11.x'}
+          - {os: windows-latest, python: '3.12.x'}
+    runs-on: ${{matrix.version.os}}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{matrix.python-version}}
+          python-version: ${{matrix.version.python}}
           architecture: x64
       - name: Install Poetry
         run: pip install poetry
