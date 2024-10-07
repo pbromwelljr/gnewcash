@@ -55,6 +55,14 @@ jobs:
       - name: Install Poetry
         run: |
           pip install poetry
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Generate stubs
+        run: |
+          stubgen -p gnewcash
+          mv out/gnewcash/* gnewcash/
+          rm -rf out/
       - name: Publish to Test PyPI
         run: |
           poetry build
