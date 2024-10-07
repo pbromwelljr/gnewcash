@@ -154,6 +154,96 @@ class Transaction(GuidObject, SlottableObject):
     def associated_uri(self, value: str) -> None:
         super().set_slot_value('assoc_uri', value, 'string')
 
+    @property
+    def from_splits(self) -> List['Split']:
+        """
+        Retrieves the "from" splits in the transaction.
+
+        :return: Splits with a negative amount.
+        :rtype: list[Split]
+        """
+        return list(filter(lambda x: x.amount < Decimal(0), self.splits))
+
+    @property
+    def to_splits(self) -> List['Split']:
+        """
+        Retrieves the "to" splits in the transaction.
+
+        :return: Splits with a positive amount.
+        :rtype: list[Split]
+        """
+        return list(filter(lambda x: x.amount > Decimal(0), self.splits))
+
+    @property
+    def split_accounts(self) -> List[Account]:
+        """
+        Retrieves the accounts involved in the splits.
+
+        :return: Accounts involved in splits.
+        :rtype: list[Account]
+        """
+        return list(map(lambda x: x.account, self.splits))
+
+    @property
+    def split_account_names(self) -> List[str]:
+        """
+        Retrieves the names of the accounts involved in the splits.
+
+        :return: Names of the accounts involved in the splits.
+        :rtype: list[str]
+        """
+        return list(map(lambda x: x.account.name, self.splits))
+
+    @property
+    def from_split_accounts(self) -> List[Account]:
+        """
+        Retrieves the accounts that are associated with the "from" splits.
+
+        :return: Accounts associated with splits that have a negative amount.
+        :rtype: list[Account]
+        """
+        return list(map(lambda x: x.account, self.from_splits))
+
+    @property
+    def from_split_account_names(self) -> List[str]:
+        """
+        Retrieves the names of accounts that are associated with the "from" splits.
+
+        :return: Names of accounts associated with splits that have a negative amount.
+        :rtype: list[Account]
+        """
+        return list(map(lambda x: x.account.name, self.from_splits))
+
+    @property
+    def to_split_accounts(self) -> List[Account]:
+        """
+        Retrieves the accounts that are associated with the "to" splits.
+
+        :return: Accounts associated with splits that have a positive amount.
+        :rtype: list[Account]
+        """
+        return list(map(lambda x: x.account, self.to_splits))
+
+    @property
+    def to_split_account_names(self) -> List[str]:
+        """
+        Retrieves the names of accounts that are associated with the "to" splits.
+
+        :return: Names of accounts associated with splits that have a positive amount.
+        :rtype: list[str]
+        """
+        return list(map(lambda x: x.account.name, self.to_splits))
+
+    @property
+    def splits_total(self) -> Decimal:
+        """
+        Retrieves the sum of all positive split amounts.
+
+        :return: Sum of all positive split amounts.
+        :rtype: decimal.Decimal
+        """
+        return sum(map(lambda x: x.amount, self.to_splits), start=Decimal(0))
+
 
 class Split(GuidObject):
     """Represents a split in GnuCash."""
