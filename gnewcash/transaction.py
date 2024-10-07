@@ -162,7 +162,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Splits with a negative amount.
         :rtype: list[Split]
         """
-        return list(filter(lambda x: x.amount < Decimal(0), self.splits))
+        return [x for x in self.splits if x.amount is not None and x.amount < Decimal(0)]
 
     @property
     def to_splits(self) -> List['Split']:
@@ -172,7 +172,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Splits with a positive amount.
         :rtype: list[Split]
         """
-        return list(filter(lambda x: x.amount > Decimal(0), self.splits))
+        return [x for x in self.splits if x.amount is not None and x.amount > Decimal(0)]
 
     @property
     def split_accounts(self) -> List[Account]:
@@ -182,7 +182,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Accounts involved in splits.
         :rtype: list[Account]
         """
-        return list(map(lambda x: x.account, self.splits))
+        return [x.account for x in self.splits if x.account is not None]
 
     @property
     def split_account_names(self) -> List[str]:
@@ -192,7 +192,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Names of the accounts involved in the splits.
         :rtype: list[str]
         """
-        return list(map(lambda x: x.account.name, self.splits))
+        return [x.account.name for x in self.splits if x.account is not None]
 
     @property
     def from_split_accounts(self) -> List[Account]:
@@ -202,7 +202,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Accounts associated with splits that have a negative amount.
         :rtype: list[Account]
         """
-        return list(map(lambda x: x.account, self.from_splits))
+        return [x.account for x in self.from_splits if x.account is not None]
 
     @property
     def from_split_account_names(self) -> List[str]:
@@ -212,7 +212,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Names of accounts associated with splits that have a negative amount.
         :rtype: list[Account]
         """
-        return list(map(lambda x: x.account.name, self.from_splits))
+        return [x.account.name for x in self.from_splits if x.account is not None]
 
     @property
     def to_split_accounts(self) -> List[Account]:
@@ -222,7 +222,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Accounts associated with splits that have a positive amount.
         :rtype: list[Account]
         """
-        return list(map(lambda x: x.account, self.to_splits))
+        return [x.account for x in self.to_splits if x.account is not None]
 
     @property
     def to_split_account_names(self) -> List[str]:
@@ -232,7 +232,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Names of accounts associated with splits that have a positive amount.
         :rtype: list[str]
         """
-        return list(map(lambda x: x.account.name, self.to_splits))
+        return [x.account.name for x in self.to_splits if x.account is not None]
 
     @property
     def splits_total(self) -> Decimal:
@@ -242,7 +242,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Sum of all positive split amounts.
         :rtype: decimal.Decimal
         """
-        return sum(map(lambda x: x.amount, self.to_splits), start=Decimal(0))
+        return sum([x.amount for x in self.to_splits if x.amount is not None], start=Decimal(0))
 
 
 class Split(GuidObject):
@@ -372,7 +372,7 @@ class TransactionManager:
         minimum_balance: Optional[Decimal] = None
         minimum_balance_date: Optional[datetime] = None
         iterator_date: datetime = date
-        end_date: Optional[datetime] = max(map(lambda x: x.date_posted, self.transactions))
+        end_date: Optional[datetime] = max([x.date_posted for x in self.transactions if x.date_posted is not None])
         if end_date is None:
             return None, None
         while iterator_date < end_date:
@@ -541,11 +541,12 @@ class SimpleTransaction(Transaction):
                           'Assuming first split is "from" split, assuming second is "to" split.')
             simple.from_split = first_split
             simple.to_split = second_split
-        elif first_split_amount > second_split_amount:
-            simple.to_split = first_split
-            simple.from_split = second_split
-        elif first_split_amount < second_split_amount:
-            simple.to_split = second_split
-            simple.from_split = first_split
+        elif first_split_amount is not None and second_split_amount is not None:
+            if first_split_amount > second_split_amount:
+                simple.to_split = first_split
+                simple.from_split = second_split
+            elif first_split_amount < second_split_amount:
+                simple.to_split = second_split
+                simple.from_split = first_split
 
         return simple
