@@ -242,7 +242,7 @@ class Transaction(GuidObject, SlottableObject):
         :return: Sum of all positive split amounts.
         :rtype: decimal.Decimal
         """
-        return sum([x.amount for x in self.to_splits if x.amount is not None], start=Decimal(0))
+        return sum((x.amount for x in self.to_splits if x.amount is not None), start=Decimal(0))
 
 
 class Split(GuidObject):
@@ -372,7 +372,7 @@ class TransactionManager:
         minimum_balance: Optional[Decimal] = None
         minimum_balance_date: Optional[datetime] = None
         iterator_date: datetime = date
-        end_date: Optional[datetime] = max([x.date_posted for x in self.transactions if x.date_posted is not None])
+        end_date: Optional[datetime] = max(x.date_posted for x in self.transactions if x.date_posted is not None)
         if end_date is None:
             return None, None
         while iterator_date < end_date:

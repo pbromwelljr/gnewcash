@@ -51,7 +51,11 @@ class Account(GuidObject, SlottableObject):
     def __hash__(self) -> int:
         return hash(self.guid)
 
-    def as_dict(self, account_hierarchy: Optional[Dict[str, 'Account']] = None, path_to_self: str = '/') -> Dict[str, 'Account']:
+    def as_dict(
+        self,
+        account_hierarchy: Optional[Dict[str, 'Account']] = None,
+        path_to_self: str = '/'
+    ) -> Dict[str, 'Account']:
         """
         Retrieves the current account hierarchy as a dictionary.
 
