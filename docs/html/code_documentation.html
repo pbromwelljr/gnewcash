@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Documentation &mdash; gnewcash 1.0alpha documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=9974cacb"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Account" href="account.html" />
+    <link rel="prev" title="Using GNewCash" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gnewcash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gnewcash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Code Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/code_documentation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="account.html">Account</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="account.html#standard-accounts">Standard Accounts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.Account"><code class="docutils literal notranslate"><span class="pre">Account</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.AccountType"><code class="docutils literal notranslate"><span class="pre">AccountType</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="account.html#shortcut-accounts">Shortcut Accounts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.AssetAccount"><code class="docutils literal notranslate"><span class="pre">AssetAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.BankAccount"><code class="docutils literal notranslate"><span class="pre">BankAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.CreditAccount"><code class="docutils literal notranslate"><span class="pre">CreditAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.EquityAccount"><code class="docutils literal notranslate"><span class="pre">EquityAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.ExpenseAccount"><code class="docutils literal notranslate"><span class="pre">ExpenseAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.IncomeAccount"><code class="docutils literal notranslate"><span class="pre">IncomeAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.LiabilityAccount"><code class="docutils literal notranslate"><span class="pre">LiabilityAccount</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="account.html#special-accounts">Special Accounts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.InterestAccountBase"><code class="docutils literal notranslate"><span class="pre">InterestAccountBase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.InterestAccount"><code class="docutils literal notranslate"><span class="pre">InterestAccount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.InterestAccountWithSubaccounts"><code class="docutils literal notranslate"><span class="pre">InterestAccountWithSubaccounts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.LoanStatus"><code class="docutils literal notranslate"><span class="pre">LoanStatus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="account.html#account.LoanExtraPayment"><code class="docutils literal notranslate"><span class="pre">LoanExtraPayment</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="commodity.html">Commodity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html#commodity.Commodity"><code class="docutils literal notranslate"><span class="pre">Commodity</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html#module-file_formats.gnucash_xml">XML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_xml.XMLFileFormat"><code class="docutils literal notranslate"><span class="pre">XMLFileFormat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_xml.GZipXMLFileFormat"><code class="docutils literal notranslate"><span class="pre">GZipXMLFileFormat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader"><code class="docutils literal notranslate"><span class="pre">GnuCashXMLReader</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLWriter"><code class="docutils literal notranslate"><span class="pre">GnuCashXMLWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html#module-file_formats.gnucash_sqlite">SQLite</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_sqlite.SqliteFileFormat"><code class="docutils literal notranslate"><span class="pre">SqliteFileFormat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader"><code class="docutils literal notranslate"><span class="pre">GnuCashSQLiteReader</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter"><code class="docutils literal notranslate"><span class="pre">GnuCashSQLiteWriter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="file_formats.html#file_formats.gnucash_sqlite.DBAction"><code class="docutils literal notranslate"><span class="pre">DBAction</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gnucash_file.html">GnuCash File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile"><code class="docutils literal notranslate"><span class="pre">GnuCashFile</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile.build_file"><code class="docutils literal notranslate"><span class="pre">GnuCashFile.build_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile.read_file"><code class="docutils literal notranslate"><span class="pre">GnuCashFile.read_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile.simplify_transactions"><code class="docutils literal notranslate"><span class="pre">GnuCashFile.simplify_transactions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.GnuCashFile.strip_transaction_timezones"><code class="docutils literal notranslate"><span class="pre">GnuCashFile.strip_transaction_timezones()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book"><code class="docutils literal notranslate"><span class="pre">Book</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.get_account"><code class="docutils literal notranslate"><span class="pre">Book.get_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.get_account_balance"><code class="docutils literal notranslate"><span class="pre">Book.get_account_balance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.get_all_accounts"><code class="docutils literal notranslate"><span class="pre">Book.get_all_accounts()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html#gnucash_file.Budget"><code class="docutils literal notranslate"><span class="pre">Budget</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guid_object.html">GUID Object</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guid_object.html#guid_object.GuidObject"><code class="docutils literal notranslate"><span class="pre">GuidObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guid_object.html#guid_object.GuidObject.get_guid"><code class="docutils literal notranslate"><span class="pre">GuidObject.get_guid()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="slot.html">Slot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slot.html#slot.Slot"><code class="docutils literal notranslate"><span class="pre">Slot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html#slot.SlottableObject"><code class="docutils literal notranslate"><span class="pre">SlottableObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="slot.html#slot.SlottableObject.get_slot_value"><code class="docutils literal notranslate"><span class="pre">SlottableObject.get_slot_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slot.html#slot.SlottableObject.set_slot_value"><code class="docutils literal notranslate"><span class="pre">SlottableObject.set_slot_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="slot.html#slot.SlottableObject.set_slot_value_bool"><code class="docutils literal notranslate"><span class="pre">SlottableObject.set_slot_value_bool()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transaction.html">Transaction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.Transaction"><code class="docutils literal notranslate"><span class="pre">Transaction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.associated_uri"><code class="docutils literal notranslate"><span class="pre">Transaction.associated_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.cleared"><code class="docutils literal notranslate"><span class="pre">Transaction.cleared</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.from_split_account_names"><code class="docutils literal notranslate"><span class="pre">Transaction.from_split_account_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.from_split_accounts"><code class="docutils literal notranslate"><span class="pre">Transaction.from_split_accounts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.from_splits"><code class="docutils literal notranslate"><span class="pre">Transaction.from_splits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.mark_transaction_cleared"><code class="docutils literal notranslate"><span class="pre">Transaction.mark_transaction_cleared()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.notes"><code class="docutils literal notranslate"><span class="pre">Transaction.notes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.reversed_by"><code class="docutils literal notranslate"><span class="pre">Transaction.reversed_by</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.split_account_names"><code class="docutils literal notranslate"><span class="pre">Transaction.split_account_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.split_accounts"><code class="docutils literal notranslate"><span class="pre">Transaction.split_accounts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.splits_total"><code class="docutils literal notranslate"><span class="pre">Transaction.splits_total</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.to_split_account_names"><code class="docutils literal notranslate"><span class="pre">Transaction.to_split_account_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.to_split_accounts"><code class="docutils literal notranslate"><span class="pre">Transaction.to_split_accounts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.to_splits"><code class="docutils literal notranslate"><span class="pre">Transaction.to_splits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.void_reason"><code class="docutils literal notranslate"><span class="pre">Transaction.void_reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.void_time"><code class="docutils literal notranslate"><span class="pre">Transaction.void_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.Transaction.voided"><code class="docutils literal notranslate"><span class="pre">Transaction.voided</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.Split"><code class="docutils literal notranslate"><span class="pre">Split</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.TransactionManager"><code class="docutils literal notranslate"><span class="pre">TransactionManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.add"><code class="docutils literal notranslate"><span class="pre">TransactionManager.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.delete"><code class="docutils literal notranslate"><span class="pre">TransactionManager.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_account_ending_balance"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_account_ending_balance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_account_starting_balance"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_account_starting_balance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_balance_at_date"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_balance_at_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_balance_at_transaction"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_balance_at_transaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_cleared_balance"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_cleared_balance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_transactions"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_transactions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.minimum_balance_past_date"><code class="docutils literal notranslate"><span class="pre">TransactionManager.minimum_balance_past_date()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.ScheduledTransaction"><code class="docutils literal notranslate"><span class="pre">ScheduledTransaction</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.SimpleTransaction"><code class="docutils literal notranslate"><span class="pre">SimpleTransaction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.SimpleTransaction.amount"><code class="docutils literal notranslate"><span class="pre">SimpleTransaction.amount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.SimpleTransaction.from_account"><code class="docutils literal notranslate"><span class="pre">SimpleTransaction.from_account</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.SimpleTransaction.from_transaction"><code class="docutils literal notranslate"><span class="pre">SimpleTransaction.from_transaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.SimpleTransaction.to_account"><code class="docutils literal notranslate"><span class="pre">SimpleTransaction.to_account</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.SortingMethod"><code class="docutils literal notranslate"><span class="pre">SortingMethod</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.SortingMethod.compare"><code class="docutils literal notranslate"><span class="pre">SortingMethod.compare()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.InvalidSortFieldException"><code class="docutils literal notranslate"><span class="pre">InvalidSortFieldException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.StandardSort"><code class="docutils literal notranslate"><span class="pre">StandardSort</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.StandardSort.compare"><code class="docutils literal notranslate"><span class="pre">StandardSort.compare()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.AmountSort"><code class="docutils literal notranslate"><span class="pre">AmountSort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.DateSort"><code class="docutils literal notranslate"><span class="pre">DateSort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.DateOfEntrySort"><code class="docutils literal notranslate"><span class="pre">DateOfEntrySort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.DescriptionSort"><code class="docutils literal notranslate"><span class="pre">DescriptionSort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.MemoSort"><code class="docutils literal notranslate"><span class="pre">MemoSort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.NumberActionSort"><code class="docutils literal notranslate"><span class="pre">NumberActionSort</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.TransactionNumberSort"><code class="docutils literal notranslate"><span class="pre">TransactionNumberSort</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.delete_log_files"><code class="docutils literal notranslate"><span class="pre">delete_log_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.safe_iso_date_formatting"><code class="docutils literal notranslate"><span class="pre">safe_iso_date_formatting()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.safe_iso_date_parsing"><code class="docutils literal notranslate"><span class="pre">safe_iso_date_parsing()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Using GNewCash" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="account.html" class="btn btn-neutral float-right" title="Account" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, Paul Bromwell Jr..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
