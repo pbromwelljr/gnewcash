@@ -70,7 +70,7 @@ jobs:
           cd sphinx
           poetry run make clean
           poetry run make html
-          cp -rf _build/html ../docs
+          cp -rf _build/html/* ../docs
       - name: Commit updated documentation
         run: |
           git config --global user.name 'Paul Bromwell Jr'
