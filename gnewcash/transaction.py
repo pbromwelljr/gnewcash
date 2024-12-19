@@ -5,10 +5,11 @@ Module containing classes that read, manipulate, and write transactions.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
+import enum
 import warnings
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Generator, Iterator, List, Optional, Tuple
+from typing import Generator, Iterator, List, Optional, Tuple, Any
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -297,10 +298,16 @@ class Split(GuidObject):
 class TransactionManager:
     """Class used to add/remove transactions, maintaining a chronological order based on transaction posted date."""
 
-    def __init__(self) -> None:
-        self.transactions: List[Transaction] = []
-        self.disable_sort: bool = False
+    def __init__(
+            self,
+            transactions: Optional[List[Transaction]] = None,
+            disable_sort: bool = False,
+            sort_method: Optional['SortingMethod'] = None,
+    ) -> None:
+        self.transactions: List[Transaction] = transactions or []
+        self.disable_sort: bool = disable_sort
         self.deleted_transaction_guids: List[str] = []
+        self.sort_method: SortingMethod = sort_method or StandardSort()
 
     def add(self, new_transaction: Transaction) -> None:
         """
@@ -309,17 +316,12 @@ class TransactionManager:
         :param new_transaction: Transaction to add
         :type new_transaction: Transaction
         """
-        if new_transaction.date_posted is None or self.disable_sort:
+        if self.disable_sort:
             self.transactions.append(new_transaction)
-        elif not self.disable_sort:
-            # Inserting transactions in order
+        else:
             for index, transaction in enumerate(self.transactions):
-                if not transaction.date_posted:
-                    continue
-                if transaction.date_posted > new_transaction.date_posted:
-                    self.transactions.insert(index, new_transaction)
-                    break
-                if transaction.date_posted == new_transaction.date_posted:
+                compare_result = self.sort_method.compare(transaction, new_transaction)
+                if compare_result in (SortingResult.FIRST_GREATER, SortingResult.EQUAL):
                     self.transactions.insert(index, new_transaction)
                     break
             else:
@@ -617,3 +619,201 @@ class SimpleTransaction(Transaction):
                 simple.from_split = first_split
 
         return simple
+
+
+class SortingResult(enum.Enum):
+    """Enumeration class that determines the result of the sort."""
+
+    FIRST_GREATER = 1
+    SECOND_GREATER = -1
+    EQUAL = 0
+
+
+class SortingMethod:
+    """Base class for derivative sorting method classes."""
+
+    def __init__(self, reverse: bool = False):
+        self.reverse = reverse
+
+    def compare(self, transaction1: Transaction, transaction2: Transaction) -> SortingResult:
+        """
+        Compares one transaction with another and returns which one is greater, or if they're equal.
+
+        :param transaction1: First transaction in comparison.
+        :type transaction1: Transaction
+        :param transaction2: Second transaction in comparison.
+        :type transaction2: Transaction
+        :return: Enum result that contains if the first transaction is greater, second transaction is greater, or equal.
+        :rtype: SortingResult
+        """
+        raise NotImplementedError
+
+    def _reverse_sort_result(self, sorting_result: SortingResult) -> SortingResult:
+        if not self.reverse:
+            return sorting_result
+
+        if sorting_result == SortingResult.FIRST_GREATER:
+            return SortingResult.SECOND_GREATER
+        if sorting_result == SortingResult.SECOND_GREATER:
+            return SortingResult.FIRST_GREATER
+        return SortingResult.EQUAL
+
+    @classmethod
+    def _get_compare_result(cls, first_value: Any, second_value: Any) -> SortingResult:
+        if first_value is not None and (second_value is None or first_value > second_value):
+            return SortingResult.FIRST_GREATER
+        if second_value is not None and (first_value is None or first_value < second_value):
+            return SortingResult.SECOND_GREATER
+        return SortingResult.EQUAL
+
+
+class StandardSort(SortingMethod):
+    """Sort logic for GnuCash's standard sort."""
+
+    def compare(self, transaction1: Transaction, transaction2: Transaction) -> SortingResult:
+        """
+        Compares one transaction with another and returns which one is greater, or if they're equal.
+
+        :param transaction1: First transaction in comparison.
+        :type transaction1: Transaction
+        :param transaction2: Second transaction in comparison.
+        :type transaction2: Transaction
+        :return: Enum result that contains if the first transaction is greater, second transaction is greater, or equal.
+        :rtype: SortingResult
+        """
+        result: SortingResult = SortingResult.EQUAL
+
+        transaction_attrs = ('date_posted', 'date_entered', 'description', 'guid')
+        for transaction_attr in transaction_attrs:
+            transaction1_value = getattr(transaction1, transaction_attr)
+            transaction2_value = getattr(transaction2, transaction_attr)
+            result = self._get_compare_result(transaction1_value, transaction2_value)
+            if result != SortingResult.EQUAL:
+                break
+
+        if result != SortingResult.EQUAL:
+            return self._reverse_sort_result(result)
+
+        split_attrs = ('memo', 'action', 'reconciled_state', 'amount', 'value_num', 'reconcile_date', 'guid')
+        for split_attr in split_attrs:
+            split1_value = getattr(transaction1.splits[0], split_attr)
+            split2_value = getattr(transaction2.splits[0], split_attr)
+            result = self._get_compare_result(split1_value, split2_value)
+            if result != SortingResult.EQUAL:
+                break
+
+        return self._reverse_sort_result(result)
+
+
+class InvalidSortFieldException(Exception):
+    """Custom exception class for when the sort field isn't set."""
+
+
+class SortBySingleTransactionFieldMethod(SortingMethod):
+    """Abstract class for sorting methods that operate on a single transaction field."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field: Optional[str] = None
+
+    def compare(self, transaction1: Transaction, transaction2: Transaction) -> SortingResult:
+        """
+        Compares one transaction with another and returns which one is greater, or if they're equal.
+
+        :param transaction1: First transaction in comparison.
+        :type transaction1: Transaction
+        :param transaction2: Second transaction in comparison.
+        :type transaction2: Transaction
+        :return: Enum result that contains if the first transaction is greater, second transaction is greater, or equal.
+        :rtype: SortingResult
+        """
+        if self.sort_field is None:
+            raise InvalidSortFieldException('Sort field not set.')
+
+        transaction1_value = getattr(transaction1, self.sort_field)
+        transaction2_value = getattr(transaction2, self.sort_field)
+        result = self._get_compare_result(transaction1_value, transaction2_value)
+        return self._reverse_sort_result(result)
+
+
+class SortBySingleSplitFieldMethod(SortingMethod):
+    """Abstract class for sorting methods that operate on a single split field."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field: Optional[str] = None
+
+    def compare(self, transaction1: Transaction, transaction2: Transaction) -> SortingResult:
+        """
+        Compares one transaction with another and returns which one is greater, or if they're equal.
+
+        :param transaction1: First transaction in comparison.
+        :type transaction1: Transaction
+        :param transaction2: Second transaction in comparison.
+        :type transaction2: Transaction
+        :return: Enum result that contains if the first transaction is greater, second transaction is greater, or equal.
+        :rtype: SortingResult
+        """
+        if self.sort_field is None:
+            raise InvalidSortFieldException('Sort field not set.')
+
+        split1_value = getattr(transaction1.splits[0], self.sort_field)
+        split2_value = getattr(transaction2.splits[0], self.sort_field)
+        result = self._get_compare_result(split1_value, split2_value)
+        return self._reverse_sort_result(result)
+
+
+class DateSort(SortBySingleTransactionFieldMethod):
+    """Sort logic for GnuCash's date sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'date_posted'
+
+
+class DateOfEntrySort(SortBySingleTransactionFieldMethod):
+    """Sort logic for GnuCash's date of entry sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'date_entered'
+
+
+class TransactionNumberSort(SortBySingleTransactionFieldMethod):
+    """Sort logic for GnuCash's transaction number sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'guid'
+
+
+class DescriptionSort(SortBySingleTransactionFieldMethod):
+    """Sort logic for GnuCash's description sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'description'
+
+
+class AmountSort(SortBySingleSplitFieldMethod):
+    """Sort logic for GnuCash's split amount sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'amount'
+
+
+class NumberActionSort(SortBySingleSplitFieldMethod):
+    """Sort logic for GnuCash's number/action sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'action'
+
+
+class MemoSort(SortBySingleSplitFieldMethod):
+    """Sort logic for GnuCash's memo sort."""
+
+    def __init__(self, reverse: bool = False) -> None:
+        super().__init__(reverse)
+        self.sort_field = 'memo'

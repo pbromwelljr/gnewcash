@@ -15,7 +15,9 @@ from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.transaction import ScheduledTransaction, SimpleTransaction, Split, Transaction, TransactionManager
+from gnewcash.transaction import (
+    ScheduledTransaction, SimpleTransaction, SortingMethod, Split, Transaction, TransactionManager
+)
 
 
 class GnuCashFile:
@@ -38,7 +40,13 @@ class GnuCashFile:
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file: str, file_format: Any, sort_transactions: bool = True) -> 'GnuCashFile':
+    def read_file(
+            cls,
+            source_file: str,
+            file_format: Any,
+            sort_transactions: bool = True,
+            sort_method: Optional[SortingMethod] = None,
+    ) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -48,6 +56,8 @@ class GnuCashFile:
         :type sort_transactions: bool
         :param file_format: File format of the file being uploaded.
         :type file_format: BaseFileFormat subclass
+        :param sort_method: SortingMethod class instance that determines the sort order for the transactions.
+        :type sort_method: SortingMethod
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
@@ -58,7 +68,7 @@ class GnuCashFile:
             logger.warning('Could not find %s', source_file)
             return built_file
 
-        return file_format.load(source_file=source_file, sort_transactions=sort_transactions)
+        return file_format.load(source_file=source_file, sort_transactions=sort_transactions, sort_method=sort_method)
 
     def build_file(self, target_file: str, file_format: Any, prettify_xml: bool = False) -> None:
         """
@@ -103,12 +113,13 @@ class Book(GuidObject, SlottableObject):
             scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
             budgets: Optional[List['Budget']] = None,
             guid: Optional[str] = None,
+            sort_method: Optional[SortingMethod] = None,
     ) -> None:
         GuidObject.__init__(self, guid)
         SlottableObject.__init__(self, slots)
 
         self.root_account: Optional[Account] = root_account
-        self.transactions: TransactionManager = transactions or TransactionManager()
+        self.transactions: TransactionManager = transactions or TransactionManager(sort_method=sort_method)
         self.commodities: List[Commodity] = commodities or []
         self.template_root_account: Optional[Account] = template_root_account
         self.template_transactions: List[Transaction] = template_transactions or []

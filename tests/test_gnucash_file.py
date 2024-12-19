@@ -6,6 +6,7 @@ from xml.etree import ElementTree
 
 import gnewcash.file_formats as gff
 import gnewcash.gnucash_file as gcf
+import gnewcash.transaction as trn
 
 
 def test_read_write():
@@ -188,3 +189,131 @@ def get_sqlite_table_data(conn: sqlite3.Connection, table_name: str):
         row_data = dict(zip(column_names, row))
         rows.append(row_data)
     return rows
+
+
+def test_read_sort_standard():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.StandardSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].date_posted <= transactions[1].date_posted
+
+
+def test_read_sort_standard_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.StandardSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].date_posted >= transactions[1].date_posted
+
+
+def test_read_sort_date():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.DateSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].date_posted <= transactions[1].date_posted
+
+
+def test_read_sort_date_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.DateSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].date_posted >= transactions[1].date_posted
+
+
+
+def test_read_sort_date_of_entry():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.DateOfEntrySort())
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].date_entered <= transactions[1].date_entered
+
+
+def test_read_sort_date_of_entry_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.DateOfEntrySort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].date_entered >= transactions[1].date_entered
+
+
+def test_read_sort_transaction_number():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.TransactionNumberSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].guid <= transactions[1].guid
+
+
+def test_read_sort_transaction_number_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.TransactionNumberSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].guid >= transactions[1].guid
+
+
+def test_read_sort_description():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.DescriptionSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].description <= transactions[1].description
+
+
+def test_read_sort_description_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.DescriptionSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].description >= transactions[1].description
+
+
+def test_read_sort_amount():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.AmountSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].splits[0].amount <= transactions[1].splits[0].amount
+
+
+def test_read_sort_amount_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.AmountSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert transactions[0].splits[0].amount >= transactions[1].splits[0].amount
+
+
+def test_read_sort_number_action():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.NumberActionSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert (transactions[0].splits[0].action or '') <= (transactions[1].splits[0].action or '')
+
+
+def test_read_sort_number_action_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.NumberActionSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert (transactions[0].splits[0].action or '') >= (transactions[1].splits[0].action or '')
+
+def test_read_sort_memo():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.MemoSort())
+    transactions = test_file.books[0].transactions.transactions
+    assert (transactions[0].splits[0].memo or '') <= (transactions[1].splits[0].memo or '')
+
+
+def test_read_sort_memo_reversed():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash',
+                                          gff.XMLFileFormat,
+                                          sort_method=trn.MemoSort(reverse=True))
+    transactions = test_file.books[0].transactions.transactions
+    assert (transactions[0].splits[0].memo or '') >= (transactions[1].splits[0].memo or '')

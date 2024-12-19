@@ -18,7 +18,7 @@ from gnewcash.commodity import Commodity
 from gnewcash.file_formats.base import BaseFileFormat, BaseFileReader, BaseFileWriter
 from gnewcash.gnucash_file import Book, Budget, GnuCashFile
 from gnewcash.slot import Slot
-from gnewcash.transaction import ScheduledTransaction, Split, Transaction, TransactionManager
+from gnewcash.transaction import ScheduledTransaction, SortingMethod, Split, Transaction, TransactionManager
 
 SQLITE_SLOT_TYPE_MAPPING = {
     1: 'integer',
@@ -73,14 +73,22 @@ class GnuCashSQLiteReader(BaseFileReader):
     LOGGER = logging.getLogger()
 
     @classmethod
-    def load(cls, *args: Any, source_file: str = '', sort_transactions: bool = True, **kwargs: Any) -> GnuCashFile:
+    def load(cls,
+             *args: Any,
+             source_file: str = '',
+             sort_transactions: bool = True,
+             sort_method: Optional[SortingMethod] = None,
+             **kwargs: Any
+             ) -> GnuCashFile:
         """
         Loads a GnuCash SQLite file from disk to memory.
 
         :param source_file: File to load from disk
         :type source_file: str
-        :param sort_transactions: Should transactions be sorted by date posted
+        :param sort_transactions: Should transactions be sorted
         :type sort_transactions: bool
+        :param sort_method: SortMethod class instance that determines which sort method to use
+        :type sort_method: SortingMethod
         :return: GnuCashFile object
         :rtype: GnuCashFile
         """
@@ -94,13 +102,18 @@ class GnuCashSQLiteReader(BaseFileReader):
 
         sqlite_connection = sqlite3.connect(source_file)
         cursor = sqlite_connection.cursor()
-        built_file.books = cls.create_books_from_sqlite(cursor, sort_transactions)
+        built_file.books = cls.create_books_from_sqlite(cursor, sort_transactions, sort_method)
         cursor.close()
         sqlite_connection.close()
         return built_file
 
     @classmethod
-    def create_books_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor, sort_transactions: bool) -> List[Book]:
+    def create_books_from_sqlite(
+            cls,
+            sqlite_cursor: sqlite3.Cursor,
+            sort_transactions: bool,
+            sort_method: Optional[SortingMethod] = None,
+    ) -> List[Book]:
         """
         Creates Book objects from the GnuCash SQLite database.
 
@@ -108,6 +121,8 @@ class GnuCashSQLiteReader(BaseFileReader):
         :type sqlite_cursor: sqlite3.Cursor
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from SQLite
         :type sort_transactions: bool
+        :param sort_method: SortingMethod instance indicating which method in which we should sort the transactions.
+        :type sort_method: SortingMethod
         :return: Book objects from SQLite
         :rtype: list[Book]
         """
@@ -120,10 +135,10 @@ class GnuCashSQLiteReader(BaseFileReader):
                 template_root_account=cls.create_account_from_sqlite(sqlite_cursor, book['root_template_guid']),
                 slots=cls.create_slots_from_sqlite(sqlite_cursor, book['guid']),
                 commodities=cls.create_commodities_from_sqlite(sqlite_cursor),
+                sort_method=sort_method,
             )
 
-            transaction_manager = TransactionManager()
-            transaction_manager.disable_sort = not sort_transactions
+            transaction_manager = TransactionManager(disable_sort=not sort_transactions, sort_method=sort_method)
             template_transactions = []
             template_account_guids: Tuple[str, ...] = tuple()
             if new_book.template_root_account is not None:
