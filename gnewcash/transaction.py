@@ -425,16 +425,18 @@ class TransactionManager:
         :rtype: decimal.Decimal
         """
         balance: Decimal = Decimal(0)
-        applicable_transactions: List[Transaction] = []
         for transaction in self.transactions:
             transaction_accounts = list(map(lambda y: y.account, transaction.splits))
+            is_applicable: bool = False
             if date is not None and account in transaction_accounts and transaction.date_posted is not None and \
                     transaction.date_posted <= date:
-                applicable_transactions.append(transaction)
+                is_applicable = True
             elif date is None and account in transaction_accounts:
-                applicable_transactions.append(transaction)
+                is_applicable = True
 
-        for transaction in applicable_transactions:
+            if not is_applicable:
+                continue
+
             if date is None or (transaction.date_posted is not None and transaction.date_posted <= date):
                 applicable_split: Split = next(filter(lambda x: x.account == account, transaction.splits))
                 amount: Decimal = applicable_split.amount or Decimal(0)
