@@ -8,7 +8,7 @@ def read(file_name):
 
 setup(
     name='gnewcash',
-    version='1.0.2',
+    version='PLACEHOLDER',
     description='Python Library for reading, interacting with, and writing GnuCash files',
     author='Paul Bromwell Jr.',
     author_email='pbromwelljr@gmail.com',

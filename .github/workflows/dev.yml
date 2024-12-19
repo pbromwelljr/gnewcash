@@ -69,7 +69,7 @@ jobs:
         run: |
           version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
           echo "Using version ${version_num}"
-          sed -i "s/version='[^']+'/version='${version_num}'/g" setup.py
+          sed -i "s/version='PLACEHOLDER'/version='${version_num}'/" setup.py
           cat setup.py
 #      - name: Publish to Test PyPI
 #        run: |
