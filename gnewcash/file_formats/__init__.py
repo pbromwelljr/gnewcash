@@ -6,5 +6,5 @@ Module containing classes to indicate different file formats and their required 
 .. moduleauthor: Paul Bromwell Jr.
 """
 from .base import *
-from .sqlite import *
-from .xml import *
+from .gnucash_sqlite import *
+from .gnucash_xml import *
