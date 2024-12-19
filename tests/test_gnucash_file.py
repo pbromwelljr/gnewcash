@@ -317,3 +317,10 @@ def test_read_sort_memo_reversed():
                                           sort_method=trn.MemoSort(reverse=True))
     transactions = test_file.books[0].transactions.transactions
     assert (transactions[0].splits[0].memo or '') >= (transactions[1].splits[0].memo or '')
+
+
+def test_get_all_accounts():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
+    current_book = test_file.books[0]
+    all_accounts = list(current_book.get_all_accounts())
+    assert len(all_accounts) == 19

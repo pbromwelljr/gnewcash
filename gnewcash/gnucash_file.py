@@ -9,7 +9,7 @@ import os.path
 from datetime import datetime
 from decimal import Decimal
 from logging import getLogger
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Generator
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -168,6 +168,15 @@ class Book(GuidObject, SlottableObject):
             split: Split = next(filter(lambda x: x.account == account, transaction.splits))
             account_balance += split.amount or Decimal(0)
         return account_balance
+
+    def get_all_accounts(self) -> Generator[Account, None, None]:
+        yield from self.__yield_account_recursive(self.root_account)
+
+    @classmethod
+    def __yield_account_recursive(cls, current_account: Account) -> Generator[Account, None, None]:
+        yield current_account
+        for child_account in current_account.children:
+            yield from cls.__yield_account_recursive(child_account)
 
     def __str__(self) -> str:
         return f'{len(self.transactions)} transactions'
