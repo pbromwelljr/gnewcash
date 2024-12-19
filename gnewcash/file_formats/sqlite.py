@@ -125,7 +125,9 @@ class GnuCashSQLiteReader(BaseFileReader):
             transaction_manager = TransactionManager()
             transaction_manager.disable_sort = not sort_transactions
             template_transactions = []
-            template_account_guids = tuple(new_book.template_root_account.get_account_guids())
+            template_account_guids: Tuple[str, ...] = tuple()
+            if new_book.template_root_account is not None:
+                template_account_guids = tuple(new_book.template_root_account.get_account_guids())
 
             for transaction in cls.create_transactions_from_sqlite(sqlite_cursor, new_book.root_account,
                                                                    new_book.template_root_account):
@@ -256,18 +258,22 @@ class GnuCashSQLiteReader(BaseFileReader):
                 space,
                 guid=commodity['guid'],
                 get_quotes=commodity['quote_flag'] == 1,
-                quote_source = commodity['quote_source'],
-                quote_tz = commodity['quote_tz'],
-                name = commodity['fullname'],
-                xcode = commodity['cusip'],
-                fraction = commodity['fraction'],
+                quote_source=commodity['quote_source'],
+                quote_tz=commodity['quote_tz'],
+                name=commodity['fullname'],
+                xcode=commodity['cusip'],
+                fraction=commodity['fraction'],
             )
             new_commodities.append(new_commodity)
         return new_commodities
 
     @classmethod
-    def create_transactions_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor, root_account: Account,
-                                        template_root_account: Account) -> List[Transaction]:
+    def create_transactions_from_sqlite(
+            cls,
+            sqlite_cursor: sqlite3.Cursor,
+            root_account: Optional[Account],
+            template_root_account: Optional[Account],
+    ) -> List[Transaction]:
         """
         Creates Transaction objects from the GnuCash SQLite database.
 
@@ -302,7 +308,7 @@ class GnuCashSQLiteReader(BaseFileReader):
     def create_scheduled_transactions_from_sqlite(
             cls,
             sqlite_cursor: sqlite3.Cursor,
-            template_root_account: Account,
+            template_root_account: Optional[Account],
     ) -> List[ScheduledTransaction]:
         """
         Creates ScheduledTransaction objects from the GnuCash SQLite database.
@@ -331,8 +337,10 @@ class GnuCashSQLiteReader(BaseFileReader):
                 advance_create_days=scheduled_transaction['adv_creation'],
                 advance_remind_days=scheduled_transaction['adv_notify'],
                 instance_count=scheduled_transaction['instance_count'],
-                template_account=template_root_account.get_subaccount_by_id(scheduled_transaction['template_act_guid']),
             )
+            if template_root_account is not None:
+                new_scheduled_transaction.template_account = template_root_account.get_subaccount_by_id(
+                    scheduled_transaction['template_act_guid'])
             recurrence_info = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
                                                         (new_scheduled_transaction.guid,))[0]
 
@@ -359,10 +367,10 @@ class GnuCashSQLiteReader(BaseFileReader):
         new_budgets = []
         for budget in budget_data:
             new_budget = Budget(
-                guid = budget['guid'],
-                name = budget['name'],
-                description = budget['description'],
-                period_count = budget['num_periods'],
+                guid=budget['guid'],
+                name=budget['name'],
+                description=budget['description'],
+                period_count=budget['num_periods'],
             )
 
             recurrence_data = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
@@ -382,8 +390,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             cls,
             sqlite_cursor: sqlite3.Cursor,
             transaction_guid: str,
-            root_account: Account,
-            template_root_account: Account
+            root_account: Optional[Account],
+            template_root_account: Optional[Account]
     ) -> List[Split]:
         """
         Creates Split objects from the GnuCash SQLite database.
@@ -402,13 +410,17 @@ class GnuCashSQLiteReader(BaseFileReader):
         split_data = cls.get_sqlite_table_data(sqlite_cursor, 'splits', 'tx_guid = ?', (transaction_guid,))
         new_splits = []
         for split in split_data:
-            account_object = root_account.get_subaccount_by_id(split['account_guid']) or \
-                template_root_account.get_subaccount_by_id(split['account_guid'])
+            account_object: Optional[Account] = None
+            if root_account is not None:
+                account_object = root_account.get_subaccount_by_id(split['account_guid'])
+            if account_object is None and template_root_account is not None:
+                account_object = template_root_account.get_subaccount_by_id(split['account_guid'])
+
             new_split = Split(
                 account_object,
                 split['value_num'] / split['value_denom'],
                 split['reconcile_state'],
-                guid = split['guid'],
+                guid=split['guid'],
                 memo=split['memo'],
                 action=split['action'],
                 reconcile_date=(

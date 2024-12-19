@@ -15,7 +15,7 @@ from typing import Dict, List, Optional, Pattern, Tuple, Union
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import SlottableObject, Slot
+from gnewcash.slot import Slot, SlottableObject
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])

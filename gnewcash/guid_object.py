@@ -6,7 +6,7 @@ Module containing classes that manage GUID objects.
 .. moduleauthor: Paul Bromwell Jr.
 """
 import uuid
-from typing import Set, Optional
+from typing import Optional, Set
 
 
 class GuidObject:

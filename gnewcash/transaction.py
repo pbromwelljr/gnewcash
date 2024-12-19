@@ -8,13 +8,13 @@ Module containing classes that read, manipulate, and write transactions.
 import warnings
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Iterator, List, Optional, Tuple, Generator
+from typing import Generator, Iterator, List, Optional, Tuple
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import SlottableObject, Slot
+from gnewcash.slot import Slot, SlottableObject
 
 
 class TransactionException(Exception):
