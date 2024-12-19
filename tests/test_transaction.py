@@ -25,22 +25,22 @@ def test_add_transaction_chronological():
     transaction_manager = book.transactions
     transaction_manager.disable_sort = False
 
-    new_transaction = trn.Transaction()
-    new_transaction.date_posted = datetime(2019, 7, 28, tzinfo=pytz.timezone('US/Eastern'))
-    new_transaction.date_entered = datetime.now(tz=pytz.timezone('US/Eastern'))
-    new_transaction.description = 'Unit Test Transaction'
-
+    new_transaction = trn.Transaction(
+        date_posted=datetime(2019, 7, 28, tzinfo=pytz.timezone('US/Eastern')),
+        date_entered=datetime.now(tz=pytz.timezone('US/Eastern')),
+        description='Unit Test Transaction',
+    )
     transaction_manager.add(new_transaction)
 
     assert transaction_manager[0] != new_transaction
     assert transaction_manager[-1] != new_transaction
 
     # Adding one that should be at the end
-    end_transaction = trn.Transaction()
-    end_transaction.date_posted = datetime(2038, 1, 1, tzinfo=pytz.timezone('US/Eastern'))
-    end_transaction.date_entered = datetime.now(tz=pytz.timezone('US/Eastern'))
-    end_transaction.description = 'Unit Test Transaction'
-
+    end_transaction = trn.Transaction(
+        date_posted=datetime(2038, 1, 1, tzinfo=pytz.timezone('US/Eastern')),
+        date_entered=datetime.now(tz=pytz.timezone('US/Eastern')),
+        description='Unit Test Transaction',
+    )
     transaction_manager.add(end_transaction)
 
     assert transaction_manager[-1] == end_transaction
@@ -259,18 +259,20 @@ def test_transaction_associated_uri():
 
 
 def test_create_transaction():
-    test_from_account = acc.BankAccount()
-    test_from_account.name = 'Checking Account'
+    test_from_account = acc.BankAccount(
+        name='Checking Account'
+    )
+    test_to_account = acc.ExpenseAccount(
+        name='Video Games'
+    )
 
-    test_to_account = acc.ExpenseAccount()
-    test_to_account.name = 'Video Games'
-
-    test_transaction = trn.SimpleTransaction()
-    test_transaction.from_account = test_from_account
-    test_transaction.to_account = test_to_account
-    test_transaction.amount = Decimal('60.00')
-    test_transaction.date_entered = datetime.now()
-    test_transaction.date_posted = datetime.now()
+    test_transaction = trn.SimpleTransaction(
+        from_account=test_from_account,
+        to_account=test_to_account,
+        amount=Decimal('60.00'),
+        date_entered=datetime.now(),
+        date_posted=datetime.now(),
+    )
 
     assert test_transaction.from_account == test_from_account
     assert test_transaction.to_account == test_to_account

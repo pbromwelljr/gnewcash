@@ -511,6 +511,9 @@ class SimpleTransaction(Transaction):
 
     def __init__(
             self,
+            from_account: Optional[Account] = None,
+            to_account: Optional[Account] = None,
+            amount: Optional[Decimal] = None,
             currency: Optional[Commodity] = None,
             date_posted: Optional[datetime] = None,
             date_entered: Optional[datetime] = None,
@@ -527,6 +530,12 @@ class SimpleTransaction(Transaction):
         self.from_split: Split = Split(None, None)
         self.to_split: Split = Split(None, None)
         self.splits: List[Split] = [self.from_split, self.to_split]
+        if from_account is not None:
+            self.from_account = from_account
+        if to_account is not None:
+            self.to_account = to_account
+        if amount is not None:
+            self.amount = amount
 
     @property
     def from_account(self) -> Optional[Account]:

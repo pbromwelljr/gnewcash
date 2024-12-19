@@ -114,14 +114,13 @@ class GnuCashSQLiteReader(BaseFileReader):
         new_books = []
         books = cls.get_sqlite_table_data(sqlite_cursor, 'books')
         for book in books:
-            new_book = Book()
-            new_book.guid = book['guid']
-            new_book.root_account = cls.create_account_from_sqlite(sqlite_cursor, book['root_account_guid'])
-            new_book.template_root_account = cls.create_account_from_sqlite(sqlite_cursor, book['root_template_guid'])
-
-            new_book.slots = cls.create_slots_from_sqlite(sqlite_cursor, book['guid'])
-
-            new_book.commodities = cls.create_commodities_from_sqlite(sqlite_cursor)
+            new_book = Book(
+                guid=book['guid'],
+                root_account=cls.create_account_from_sqlite(sqlite_cursor, book['root_account_guid']),
+                template_root_account=cls.create_account_from_sqlite(sqlite_cursor, book['root_template_guid']),
+                slots=cls.create_slots_from_sqlite(sqlite_cursor, book['guid']),
+                commodities=cls.create_commodities_from_sqlite(sqlite_cursor),
+            )
 
             transaction_manager = TransactionManager()
             transaction_manager.disable_sort = not sort_transactions
@@ -164,12 +163,15 @@ class GnuCashSQLiteReader(BaseFileReader):
         if not account_data_items:
             raise RuntimeError(f'Could not find account {account_id} in the SQLite database')
         account_data = account_data_items[0]
-        new_account = Account()
-        new_account.guid = account_data['guid']
-        new_account.name = account_data['name']
-        new_account.type = account_data['account_type']
-        new_account.code = account_data['code']
-        new_account.description = account_data['description']
+        new_account = Account(
+            guid=account_data['guid'],
+            name=account_data['name'],
+            account_type=account_data['account_type'],
+            code=account_data['code'],
+            description=account_data['description'],
+            commodity_scu=account_data['commodity_scu'],
+            non_std_scu=account_data['non_std_scu'],
+        )
         if account_data['hidden'] is not None and account_data['hidden'] == 1:
             new_account.hidden = True
         if account_data['placeholder'] is not None and account_data['placeholder'] == 1:
@@ -178,8 +180,6 @@ class GnuCashSQLiteReader(BaseFileReader):
 
         if account_data['commodity_guid'] is not None:
             new_account.commodity = cls.create_commodity_from_sqlite(sqlite_cursor, account_data['commodity_guid'])
-        new_account.commodity_scu = account_data['commodity_scu']
-        new_account.non_std_scu = account_data['non_std_scu']
 
         for subaccount in cls.get_sqlite_table_data(sqlite_cursor, 'accounts', 'parent_guid = ?', (account_id,)):
             new_account.children.append(cls.create_account_from_sqlite(sqlite_cursor, subaccount['guid']))
@@ -251,14 +251,17 @@ class GnuCashSQLiteReader(BaseFileReader):
             commodity_id = commodity['mnemonic']
             space = commodity['namespace']
 
-            new_commodity = Commodity(commodity_id, space)
-            new_commodity.guid = commodity['guid']
-            new_commodity.get_quotes = commodity['quote_flag'] == 1
-            new_commodity.quote_source = commodity['quote_source']
-            new_commodity.quote_tz = commodity['quote_tz']
-            new_commodity.name = commodity['fullname']
-            new_commodity.xcode = commodity['cusip']
-            new_commodity.fraction = commodity['fraction']
+            new_commodity = Commodity(
+                commodity_id,
+                space,
+                guid=commodity['guid'],
+                get_quotes=commodity['quote_flag'] == 1,
+                quote_source = commodity['quote_source'],
+                quote_tz = commodity['quote_tz'],
+                name = commodity['fullname'],
+                xcode = commodity['cusip'],
+                fraction = commodity['fraction'],
+            )
             new_commodities.append(new_commodity)
         return new_commodities
 
@@ -280,17 +283,18 @@ class GnuCashSQLiteReader(BaseFileReader):
         transaction_data = cls.get_sqlite_table_data(sqlite_cursor, 'transactions')
         new_transactions: List[Transaction] = []
         for transaction in transaction_data:
-            new_transaction = Transaction()
-            new_transaction.guid = transaction['guid']
-            new_transaction.memo = transaction['num']
-            new_transaction.date_posted = datetime.strptime(transaction['post_date'], '%Y-%m-%d %H:%M:%S')
-            new_transaction.date_entered = datetime.strptime(transaction['enter_date'], '%Y-%m-%d %H:%M:%S')
-            new_transaction.description = transaction['description']
-            new_transaction.currency = cls.create_commodity_from_sqlite(sqlite_cursor,
-                                                                        commodity_guid=transaction['currency_guid'])
-            new_transaction.slots = cls.create_slots_from_sqlite(sqlite_cursor, transaction['guid'])
-            new_transaction.splits = cls.create_splits_from_sqlite(sqlite_cursor, transaction['guid'], root_account,
-                                                                   template_root_account)
+            new_transaction = Transaction(
+                guid=transaction['guid'],
+                memo=transaction['num'],
+                date_posted=datetime.strptime(transaction['post_date'], '%Y-%m-%d %H:%M:%S'),
+                date_entered=datetime.strptime(transaction['enter_date'], '%Y-%m-%d %H:%M:%S'),
+                description=transaction['description'],
+                currency=cls.create_commodity_from_sqlite(sqlite_cursor,
+                                                          commodity_guid=transaction['currency_guid']),
+                slots=cls.create_slots_from_sqlite(sqlite_cursor, transaction['guid']),
+                splits=cls.create_splits_from_sqlite(sqlite_cursor, transaction['guid'], root_account,
+                                                     template_root_account),
+            )
             new_transactions.append(new_transaction)
         return new_transactions
 
@@ -313,23 +317,22 @@ class GnuCashSQLiteReader(BaseFileReader):
         scheduled_transactions = cls.get_sqlite_table_data(sqlite_cursor, 'schedxactions')
         new_scheduled_transactions = []
         for scheduled_transaction in scheduled_transactions:
-            new_scheduled_transaction = ScheduledTransaction()
-            new_scheduled_transaction.guid = scheduled_transaction['guid']
-            new_scheduled_transaction.name = scheduled_transaction['name']
-            new_scheduled_transaction.enabled = scheduled_transaction['enabled'] == 1
-            new_scheduled_transaction.start_date = datetime.strptime(scheduled_transaction['start_date'], '%Y%m%d')
-            new_scheduled_transaction.end_date = datetime.strptime(scheduled_transaction['end_date'], '%Y%m%d')
-            new_scheduled_transaction.last_date = datetime.strptime(scheduled_transaction['last_occur'], '%Y%m%d')
-            new_scheduled_transaction.num_occur = scheduled_transaction['num_occur']
-            new_scheduled_transaction.rem_occur = scheduled_transaction['rem_occur']
-            new_scheduled_transaction.auto_create = scheduled_transaction['auto_create'] == 1
-            new_scheduled_transaction.auto_create_notify = scheduled_transaction['auto_notify'] == 1
-            new_scheduled_transaction.advance_create_days = scheduled_transaction['adv_creation']
-            new_scheduled_transaction.advance_remind_days = scheduled_transaction['adv_notify']
-            new_scheduled_transaction.instance_count = scheduled_transaction['instance_count']
-            new_scheduled_transaction.template_account = template_root_account.get_subaccount_by_id(
-                scheduled_transaction['template_act_guid'])
-
+            new_scheduled_transaction = ScheduledTransaction(
+                guid=scheduled_transaction['guid'],
+                name=scheduled_transaction['name'],
+                enabled=scheduled_transaction['enabled'] == 1,
+                start_date=datetime.strptime(scheduled_transaction['start_date'], '%Y%m%d'),
+                end_date=datetime.strptime(scheduled_transaction['end_date'], '%Y%m%d'),
+                last_date=datetime.strptime(scheduled_transaction['last_occur'], '%Y%m%d'),
+                num_occur=scheduled_transaction['num_occur'],
+                rem_occur=scheduled_transaction['rem_occur'],
+                auto_create=scheduled_transaction['auto_create'] == 1,
+                auto_create_notify=scheduled_transaction['auto_notify'] == 1,
+                advance_create_days=scheduled_transaction['adv_creation'],
+                advance_remind_days=scheduled_transaction['adv_notify'],
+                instance_count=scheduled_transaction['instance_count'],
+                template_account=template_root_account.get_subaccount_by_id(scheduled_transaction['template_act_guid']),
+            )
             recurrence_info = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
                                                         (new_scheduled_transaction.guid,))[0]
 
@@ -355,11 +358,12 @@ class GnuCashSQLiteReader(BaseFileReader):
         budget_data = cls.get_sqlite_table_data(sqlite_cursor, 'budgets')
         new_budgets = []
         for budget in budget_data:
-            new_budget = Budget()
-            new_budget.guid = budget['guid']
-            new_budget.name = budget['name']
-            new_budget.description = budget['description']
-            new_budget.period_count = budget['num_periods']
+            new_budget = Budget(
+                guid = budget['guid'],
+                name = budget['name'],
+                description = budget['description'],
+                period_count = budget['num_periods'],
+            )
 
             recurrence_data = cls.get_sqlite_table_data(sqlite_cursor, 'recurrences', 'obj_guid = ?',
                                                         (new_budget.guid,))[0]
@@ -400,16 +404,21 @@ class GnuCashSQLiteReader(BaseFileReader):
         for split in split_data:
             account_object = root_account.get_subaccount_by_id(split['account_guid']) or \
                 template_root_account.get_subaccount_by_id(split['account_guid'])
-            new_split = Split(account_object, split['value_num'] / split['value_denom'], split['reconcile_state'])
-            new_split.guid = split['guid']
-            new_split.memo = split['memo']
-            new_split.action = split['action']
-            new_split.reconcile_date = datetime.strptime(split['reconcile_date'], '%Y-%m-%d %H:%M:%S') \
-                if split['reconcile_date'] else None
-            new_split.quantity_num = split['quantity_num']
-            new_split.quantity_denominator = split['quantity_denom']
-            new_split.lot_guid = split['lot_guid']
-
+            new_split = Split(
+                account_object,
+                split['value_num'] / split['value_denom'],
+                split['reconcile_state'],
+                guid = split['guid'],
+                memo=split['memo'],
+                action=split['action'],
+                reconcile_date=(
+                    datetime.strptime(split['reconcile_date'], '%Y-%m-%d %H:%M:%S')
+                    if split['reconcile_date'] else None
+                ),
+                quantity_num=split['quantity_num'],
+                quantity_denominator=split['quantity_denom'],
+                lot_guid=split['lot_guid'],
+            )
             new_splits.append(new_split)
         return new_splits
 
