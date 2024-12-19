@@ -2,6 +2,8 @@ name: Dev
 
 on:
   push:
+#    tags:
+#      - b*
     branches:
       - develop
 jobs:
@@ -64,8 +66,14 @@ jobs:
           stubgen -p gnewcash
           mv out/gnewcash/* gnewcash/
           rm -rf out/
-      - name: Publish to Test PyPI
+      - name: Replace setup.py version
         run: |
-          poetry build
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
-          poetry publish --repository testpypi --username ${{secrets.PYPI_USERNAME}} --password ${{secrets.PYPI_PASSWORD}}
+          version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
+          echo "Using version ${version_num}"
+          sed -i "s/version='[^']+'/version='${version_num}'/g" setup.py
+          cat setup.py
+#      - name: Publish to Test PyPI
+#        run: |
+#          poetry build
+#          poetry config repositories.testpypi https://test.pypi.org/legacy/
+#          poetry publish --repository testpypi --username ${{secrets.PYPI_USERNAME}} --password ${{secrets.PYPI_PASSWORD}}
