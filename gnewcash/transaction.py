@@ -447,7 +447,7 @@ class TransactionManager:
 
     def get_balance_at_transaction(self, account: Account, transaction: Transaction) -> Decimal:
         """
-        Retrieves the account balance for the current account at a certain transaction.
+        Retrieves the account balance for the specified account at a certain transaction.
 
         :param account: Account to get the balance of
         :type account: Account
@@ -465,6 +465,22 @@ class TransactionManager:
             if iter_transaction.guid == transaction.guid:
                 break
         return abs(balance)
+
+    def get_cleared_balance(self, account: Account) -> Decimal:
+        """
+        Retrieves the current cleared balance for the specified account.
+        :param account: Account to get the cleared balance of.
+        :type account: Account
+        :return: Current cleared balance for the account
+        :rtype: decimal.Decimal
+        """
+        cleared_balance = Decimal(0)
+        for transaction in self.transactions:
+            for split in transaction.splits:
+                if (split.reconciled_state or '').lower() != 'c' or split.account != account:
+                    continue
+                cleared_balance += split.amount
+        return cleared_balance
 
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:
