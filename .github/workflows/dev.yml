@@ -65,6 +65,19 @@ jobs:
           poetry run stubgen -p gnewcash
           cp -r out/gnewcash/* gnewcash/
           rm -rf out/
+      - name: Make sphinx documentation
+        run: |
+          cd sphinx
+          poetry run make clean
+          poetry run make html
+          cp -rf _build/html ../docs
+      - name: Commit updated documentation
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add _build/
+          git commit -m "Sphinx documentation update"
+          git push
       - name: Replace setup.py version
         run: |
           version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
