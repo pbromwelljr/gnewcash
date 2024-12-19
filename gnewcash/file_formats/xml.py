@@ -361,7 +361,7 @@ class GnuCashXMLReader(BaseFileReader):
                                                  currency_space_node.text)
 
         slots: Optional[ElementTree.Element] = transaction_node.find('trn:slots', XML_NAMESPACES)
-        if slots:
+        if slots is not None:
             for slot in slots.findall('slot', XML_NAMESPACES):
                 transaction.slots.append(cls.create_slot_from_xml(slot))
 
@@ -514,7 +514,7 @@ class GnuCashXMLReader(BaseFileReader):
                     new_obj.recurrence_start = datetime.strptime(gdate_node.text, '%Y-%m-%d')
 
         slots: Optional[ElementTree.Element] = budget_node.find('bgt:slots', XML_NAMESPACES)
-        if slots:
+        if slots is not None:
             for slot in slots.findall('slot', XML_NAMESPACES):
                 new_obj.slots.append(cls.create_slot_from_xml(slot))
 
