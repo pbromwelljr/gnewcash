@@ -1,5 +1,5 @@
 """
-Catch-all ,odule containing methods that might be helpful to GNewCash users.
+Catch-all module containing methods that might be helpful to GNewCash users.
 
 .. module:: account
    :synopsis:

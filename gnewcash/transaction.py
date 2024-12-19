@@ -14,7 +14,7 @@ from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import SlottableObject
+from gnewcash.slot import SlottableObject, Slot
 
 
 class TransactionException(Exception):
@@ -24,14 +24,25 @@ class TransactionException(Exception):
 class Transaction(GuidObject, SlottableObject):
     """Represents a transaction in GnuCash."""
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.currency: Optional[Commodity] = None
-        self.date_posted: Optional[datetime] = None
-        self.date_entered: Optional[datetime] = None
-        self.description: str = ''
-        self.splits: List[Split] = []
-        self.memo: Optional[str] = None
+    def __init__(
+            self,
+            guid: Optional[str] = None,
+            slots: Optional[List[Slot]] = None,
+            currency: Optional[Commodity] = None,
+            date_posted: Optional[datetime] = None,
+            date_entered: Optional[datetime] = None,
+            description: str = '',
+            splits: Optional[List['Split']] = None,
+            memo: Optional[str] = None,
+    ) -> None:
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
+        self.currency: Optional[Commodity] = currency
+        self.date_posted: Optional[datetime] = date_posted
+        self.date_entered: Optional[datetime] = date_entered
+        self.description: str = description
+        self.splits: List[Split] = splits or []
+        self.memo: Optional[str] = memo
 
     def __str__(self) -> str:
         if self.date_posted:
@@ -248,19 +259,33 @@ class Transaction(GuidObject, SlottableObject):
 class Split(GuidObject):
     """Represents a split in GnuCash."""
 
-    def __init__(self, account: Optional[Account], amount: Optional[Decimal], reconciled_state: str = 'n'):
-        super().__init__()
+    def __init__(
+            self,
+            account: Optional[Account],
+            amount: Optional[Decimal],
+            reconciled_state: str = 'n',
+            guid: Optional[str] = None,
+            action: Optional[str] = None,
+            memo: Optional[str] = None,
+            quantity_denominator: str = '100',
+            reconcile_date: Optional[datetime] = None,
+            quantity_num: Optional[int] = None,
+            lot_guid: Optional[str] = None,
+            value_num: Optional[int] = None,
+            value_denom: Optional[int] = None,
+    ):
+        super().__init__(guid)
         self.reconciled_state: str = reconciled_state
         self.amount: Optional[Decimal] = amount
         self.account: Optional[Account] = account
-        self.action: Optional[str] = None
-        self.memo: Optional[str] = None
-        self.quantity_denominator: str = '100'
-        self.reconcile_date: Optional[datetime] = None
-        self.quantity_num: Optional[int] = None
-        self.lot_guid: Optional[str] = None
-        self.value_num: Optional[int] = None
-        self.value_denom: Optional[int] = None
+        self.action: Optional[str] = action
+        self.memo: Optional[str] = memo
+        self.quantity_denominator: str = quantity_denominator
+        self.reconcile_date: Optional[datetime] = reconcile_date
+        self.quantity_num: Optional[int] = quantity_num
+        self.lot_guid: Optional[str] = lot_guid
+        self.value_num: Optional[int] = value_num
+        self.value_denom: Optional[int] = value_denom
 
     def __str__(self) -> str:
         return f'{self.account} - {self.amount}'
@@ -440,32 +465,65 @@ class TransactionManager:
 class ScheduledTransaction(GuidObject):
     """Class that represents a scheduled transaction in Gnucash."""
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.name: Optional[str] = None
-        self.enabled: Optional[bool] = False
-        self.auto_create: Optional[bool] = False
-        self.auto_create_notify: Optional[bool] = False
-        self.advance_create_days: Optional[int] = -1
-        self.advance_remind_days: Optional[int] = -1
-        self.instance_count: Optional[int] = 0
-        self.start_date: Optional[datetime] = None
-        self.last_date: Optional[datetime] = None
-        self.end_date: Optional[datetime] = None
-        self.template_account: Optional[Account] = None
-        self.recurrence_multiplier: Optional[int] = 0
-        self.recurrence_period: Optional[str] = None
-        self.recurrence_start: Optional[datetime] = None
-        self.num_occur: Optional[int] = None
-        self.rem_occur: Optional[int] = None
-        self.recurrence_weekend_adjust: Optional[str] = None
+    def __init__(
+            self,
+            guid: Optional[str] = None,
+            name: Optional[str] = None,
+            enabled: Optional[bool] = False,
+            auto_create: Optional[bool] = False,
+            auto_create_notify: Optional[bool] = False,
+            advance_create_days: Optional[int] = -1,
+            advance_remind_days: Optional[int] = -1,
+            instance_count: Optional[int] = 0,
+            start_date: Optional[datetime] = None,
+            last_date: Optional[datetime] = None,
+            end_date: Optional[datetime] = None,
+            template_account: Optional[Account] = None,
+            recurrence_multiplier: Optional[int] = 0,
+            recurrence_period: Optional[str] = None,
+            recurrence_start: Optional[datetime] = None,
+            num_occur: Optional[int] = None,
+            rem_occur: Optional[int] = None,
+            recurrence_weekend_adjust: Optional[str] = None,
+    ) -> None:
+        super().__init__(guid)
+        self.name: Optional[str] = name
+        self.enabled: Optional[bool] = enabled
+        self.auto_create: Optional[bool] = auto_create
+        self.auto_create_notify: Optional[bool] = auto_create_notify
+        self.advance_create_days: Optional[int] = advance_create_days
+        self.advance_remind_days: Optional[int] = advance_remind_days
+        self.instance_count: Optional[int] = instance_count
+        self.start_date: Optional[datetime] = start_date
+        self.last_date: Optional[datetime] = last_date
+        self.end_date: Optional[datetime] = end_date
+        self.template_account: Optional[Account] = template_account
+        self.recurrence_multiplier: Optional[int] = recurrence_multiplier
+        self.recurrence_period: Optional[str] = recurrence_period
+        self.recurrence_start: Optional[datetime] = recurrence_start
+        self.num_occur: Optional[int] = num_occur
+        self.rem_occur: Optional[int] = rem_occur
+        self.recurrence_weekend_adjust: Optional[str] = recurrence_weekend_adjust
 
 
 class SimpleTransaction(Transaction):
     """Class used to simplify creating and manipulating Transactions that only have 2 splits."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            currency: Optional[Commodity] = None,
+            date_posted: Optional[datetime] = None,
+            date_entered: Optional[datetime] = None,
+            description: str = '',
+            memo: Optional[str] = None,
+    ) -> None:
+        super().__init__(
+            currency=currency,
+            date_posted=date_posted,
+            date_entered=date_entered,
+            description=description,
+            memo=memo,
+        )
         self.from_split: Split = Split(None, None)
         self.to_split: Split = Split(None, None)
         self.splits: List[Split] = [self.from_split, self.to_split]

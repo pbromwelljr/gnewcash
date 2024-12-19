@@ -92,17 +92,24 @@ class GnuCashFile:
 class Book(GuidObject, SlottableObject):
     """Represents a Book in GnuCash."""
 
-    def __init__(self, root_account: Optional[Account] = None, transactions: Optional[TransactionManager] = None,
-                 commodities: Optional[List[Commodity]] = None, slots: Optional[List[Slot]] = None,
-                 template_root_account: Optional[Account] = None,
-                 template_transactions: Optional[List[Transaction]] = None,
-                 scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
-                 budgets: Optional[List['Budget']] = None) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            root_account: Optional[Account] = None,
+            transactions: Optional[TransactionManager] = None,
+            commodities: Optional[List[Commodity]] = None,
+            slots: Optional[List[Slot]] = None,
+            template_root_account: Optional[Account] = None,
+            template_transactions: Optional[List[Transaction]] = None,
+            scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
+            budgets: Optional[List['Budget']] = None,
+            guid: Optional[str] = None,
+    ) -> None:
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
+
         self.root_account: Optional[Account] = root_account
         self.transactions: TransactionManager = transactions or TransactionManager()
         self.commodities: List[Commodity] = commodities or []
-        self.slots: List[Slot] = slots or []
         self.template_root_account: Optional[Account] = template_root_account
         self.template_transactions: List[Transaction] = template_transactions or []
         self.scheduled_transactions: List[ScheduledTransaction] = scheduled_transactions or []
@@ -161,11 +168,23 @@ class Book(GuidObject, SlottableObject):
 class Budget(GuidObject, SlottableObject):
     """Class object representing a Budget in GnuCash."""
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.name: Optional[str] = None
-        self.description: Optional[str] = None
-        self.period_count: Optional[int] = None
-        self.recurrence_multiplier: Optional[int] = None
-        self.recurrence_period_type: Optional[str] = None
-        self.recurrence_start: Optional[datetime] = None
+    def __init__(
+            self,
+            guid: Optional[str] = None,
+            slots: Optional[List[Slot]] = None,
+            name: Optional[str] = None,
+            description: Optional[str] = None,
+            period_count: Optional[int] = None,
+            recurrence_multiplier: Optional[int] = None,
+            recurrence_period_type: Optional[str] = None,
+            recurrence_start: Optional[datetime] = None,
+    ) -> None:
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
+
+        self.name: Optional[str] = name
+        self.description: Optional[str] = description
+        self.period_count: Optional[int] = period_count
+        self.recurrence_multiplier: Optional[int] = recurrence_multiplier
+        self.recurrence_period_type: Optional[str] = recurrence_period_type
+        self.recurrence_start: Optional[datetime] = recurrence_start

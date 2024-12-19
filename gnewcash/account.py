@@ -15,8 +15,7 @@ from typing import Dict, List, Optional, Pattern, Tuple, Union
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
-from gnewcash.slot import SlottableObject
-
+from gnewcash.slot import SlottableObject, Slot
 
 LoanStatus = namedtuple('LoanStatus', ['iterator_balance', 'iterator_date', 'interest', 'amount_to_capital'])
 LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amount'])
@@ -25,17 +24,31 @@ LoanExtraPayment = namedtuple('LoanExtraPayment', ['payment_date', 'payment_amou
 class Account(GuidObject, SlottableObject):
     """Represents an account in GnuCash."""
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.name: str = ''
-        self.type: Optional[str] = None
-        self.commodity_scu: Optional[str] = None
+    def __init__(
+            self,
+            guid: Optional[str] = None,
+            slots: Optional[List[Slot]] = None,
+            name: str = '',
+            account_type: Optional[str] = None,
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
+
+        self.name: str = name
+        self.type: Optional[str] = account_type
+        self.description: Optional[str] = description
         self.__parent: Optional['Account'] = None
-        self.children: List['Account'] = []
-        self.commodity: Optional[Commodity] = None
-        self.code: Optional[str] = None
-        self.description: Optional[str] = None
-        self.non_std_scu: Optional[int] = None
+        self.children: List['Account'] = children or []
+        self.code: Optional[str] = code
+        self.commodity: Optional[Commodity] = commodity
+        self.commodity_scu: Optional[str] = commodity_scu
+        self.non_std_scu: Optional[int] = non_std_scu
 
     def __str__(self) -> str:
         return f'{self.name} - {self.type}'
@@ -219,56 +232,175 @@ class Account(GuidObject, SlottableObject):
 class BankAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.BANK."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.BANK
 
 
 class IncomeAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.INCOME."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.INCOME
 
 
 class AssetAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.ASSET."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.ASSET
 
 
 class CreditAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.CREDIT."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.CREDIT
 
 
 class ExpenseAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.EXPENSE."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.EXPENSE
 
 
 class EquityAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.EQUITY."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.EQUITY
 
 
 class LiabilityAccount(Account):
     """Shortcut class to create an account with the type set to AccountType.LIABILITY."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+            self,
+            name: str = '',
+            description: Optional[str] = None,
+            children: Optional[List['Account']] = None,
+            code: Optional[str] = None,
+            commodity: Optional[Commodity] = None,
+            commodity_scu: Optional[str] = None,
+            non_std_scu: Optional[int] = None,
+    ) -> None:
+        super().__init__(
+            name=name,
+            description=description,
+            children=children,
+            code=code,
+            commodity=commodity,
+            commodity_scu=commodity_scu,
+            non_std_scu=non_std_scu
+        )
         self.type = AccountType.LIABILITY
 
 
