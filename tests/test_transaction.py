@@ -282,3 +282,16 @@ def test_create_transaction():
     assert test_transaction.splits[0].amount == Decimal('-60.00')
     assert test_transaction.splits[1].account == test_to_account
     assert test_transaction.splits[1].amount == Decimal('60.00')
+
+
+def test_get_balance_at_transaction():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
+
+    checking_account = test_file.books[0].get_account('Assets', 'Current Assets', 'Checking Account')
+    transaction_manager = test_file.books[0].transactions
+    ending_balance = transaction_manager.get_account_ending_balance(checking_account)
+    balance_at_last_transaction = transaction_manager.get_balance_at_transaction(
+        checking_account,
+        transaction_manager.transactions[-1]
+    )
+    assert ending_balance == balance_at_last_transaction
