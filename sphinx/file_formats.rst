@@ -4,7 +4,7 @@ File Formats
 XML
 ---
 
-.. module:: file_formats.xml
+.. module:: file_formats.gnucash_xml
 
 .. autoclass:: XMLFileFormat
    :members:
@@ -23,7 +23,7 @@ XML
 SQLite
 ------
 
-.. module:: file_formats.sqlite
+.. module:: file_formats.gnucash_sqlite
 
 .. autoclass:: SqliteFileFormat
    :members:
