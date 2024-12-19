@@ -9,7 +9,7 @@ import enum
 import warnings
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Generator, Iterator, List, Optional, Tuple, Any
+from typing import Any, Generator, Iterator, List, Optional, Tuple
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -172,7 +172,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the "from" splits in the transaction.
 
         :return: Splits with a negative amount.
-        :rtype: list[Split]
+        :rtype: collections.Iterable[Split]
         """
         return (x for x in self.splits if x.amount is not None and x.amount < Decimal(0))
 
@@ -182,7 +182,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the "to" splits in the transaction.
 
         :return: Splits with a positive amount.
-        :rtype: list[Split]
+        :rtype: collections.Iterable[Split]
         """
         return (x for x in self.splits if x.amount is not None and x.amount > Decimal(0))
 
@@ -192,7 +192,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the accounts involved in the splits.
 
         :return: Accounts involved in splits.
-        :rtype: list[Account]
+        :rtype: collections.Iterable[Account]
         """
         return (x.account for x in self.splits if x.account is not None)
 
@@ -202,7 +202,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the names of the accounts involved in the splits.
 
         :return: Names of the accounts involved in the splits.
-        :rtype: list[str]
+        :rtype: collections.Iterable[str]
         """
         return (x.account.name for x in self.splits if x.account is not None)
 
@@ -212,7 +212,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the accounts that are associated with the "from" splits.
 
         :return: Accounts associated with splits that have a negative amount.
-        :rtype: list[Account]
+        :rtype: collections.Iterable[Account]
         """
         return (x.account for x in self.from_splits if x.account is not None)
 
@@ -222,7 +222,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the names of accounts that are associated with the "from" splits.
 
         :return: Names of accounts associated with splits that have a negative amount.
-        :rtype: list[Account]
+        :rtype: collections.Iterable[Account]
         """
         return (x.account.name for x in self.from_splits if x.account is not None)
 
@@ -232,7 +232,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the accounts that are associated with the "to" splits.
 
         :return: Accounts associated with splits that have a positive amount.
-        :rtype: list[Account]
+        :rtype: collections.Iterable[Account]
         """
         return (x.account for x in self.to_splits if x.account is not None)
 
@@ -242,7 +242,7 @@ class Transaction(GuidObject, SlottableObject):
         Retrieves the names of accounts that are associated with the "to" splits.
 
         :return: Names of accounts associated with splits that have a positive amount.
-        :rtype: list[str]
+        :rtype: collections.Iterable[str]
         """
         return (x.account.name for x in self.to_splits if x.account is not None)
 
@@ -459,7 +459,7 @@ class TransactionManager:
         balance = Decimal(0)
         for iter_transaction in self.transactions:
             for split in iter_transaction.splits:
-                if split.account != account:
+                if split.account != account or split.amount is None:
                     continue
                 balance += split.amount
             if iter_transaction.guid == transaction.guid:
@@ -469,6 +469,7 @@ class TransactionManager:
     def get_cleared_balance(self, account: Account) -> Decimal:
         """
         Retrieves the current cleared balance for the specified account.
+
         :param account: Account to get the cleared balance of.
         :type account: Account
         :return: Current cleared balance for the account
@@ -477,7 +478,7 @@ class TransactionManager:
         cleared_balance = Decimal(0)
         for transaction in self.transactions:
             for split in transaction.splits:
-                if (split.reconciled_state or '').lower() != 'c' or split.account != account:
+                if (split.reconciled_state or '').lower() != 'c' or split.account != account or split.amount is None:
                     continue
                 cleared_balance += split.amount
         return cleared_balance
