@@ -8,7 +8,7 @@ Module containing classes that read, manipulate, and write transactions.
 import warnings
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Iterator, List, Optional, Tuple
+from typing import Iterator, List, Optional, Tuple, Generator
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -155,84 +155,84 @@ class Transaction(GuidObject, SlottableObject):
         super().set_slot_value('assoc_uri', value, 'string')
 
     @property
-    def from_splits(self) -> List['Split']:
+    def from_splits(self) -> Generator['Split', None, None]:
         """
         Retrieves the "from" splits in the transaction.
 
         :return: Splits with a negative amount.
         :rtype: list[Split]
         """
-        return [x for x in self.splits if x.amount is not None and x.amount < Decimal(0)]
+        return (x for x in self.splits if x.amount is not None and x.amount < Decimal(0))
 
     @property
-    def to_splits(self) -> List['Split']:
+    def to_splits(self) -> Generator['Split', None, None]:
         """
         Retrieves the "to" splits in the transaction.
 
         :return: Splits with a positive amount.
         :rtype: list[Split]
         """
-        return [x for x in self.splits if x.amount is not None and x.amount > Decimal(0)]
+        return (x for x in self.splits if x.amount is not None and x.amount > Decimal(0))
 
     @property
-    def split_accounts(self) -> List[Account]:
+    def split_accounts(self) -> Generator[Account, None, None]:
         """
         Retrieves the accounts involved in the splits.
 
         :return: Accounts involved in splits.
         :rtype: list[Account]
         """
-        return [x.account for x in self.splits if x.account is not None]
+        return (x.account for x in self.splits if x.account is not None)
 
     @property
-    def split_account_names(self) -> List[str]:
+    def split_account_names(self) -> Generator[str, None, None]:
         """
         Retrieves the names of the accounts involved in the splits.
 
         :return: Names of the accounts involved in the splits.
         :rtype: list[str]
         """
-        return [x.account.name for x in self.splits if x.account is not None]
+        return (x.account.name for x in self.splits if x.account is not None)
 
     @property
-    def from_split_accounts(self) -> List[Account]:
+    def from_split_accounts(self) -> Generator[Account, None, None]:
         """
         Retrieves the accounts that are associated with the "from" splits.
 
         :return: Accounts associated with splits that have a negative amount.
         :rtype: list[Account]
         """
-        return [x.account for x in self.from_splits if x.account is not None]
+        return (x.account for x in self.from_splits if x.account is not None)
 
     @property
-    def from_split_account_names(self) -> List[str]:
+    def from_split_account_names(self) -> Generator[str, None, None]:
         """
         Retrieves the names of accounts that are associated with the "from" splits.
 
         :return: Names of accounts associated with splits that have a negative amount.
         :rtype: list[Account]
         """
-        return [x.account.name for x in self.from_splits if x.account is not None]
+        return (x.account.name for x in self.from_splits if x.account is not None)
 
     @property
-    def to_split_accounts(self) -> List[Account]:
+    def to_split_accounts(self) -> Generator[Account, None, None]:
         """
         Retrieves the accounts that are associated with the "to" splits.
 
         :return: Accounts associated with splits that have a positive amount.
         :rtype: list[Account]
         """
-        return [x.account for x in self.to_splits if x.account is not None]
+        return (x.account for x in self.to_splits if x.account is not None)
 
     @property
-    def to_split_account_names(self) -> List[str]:
+    def to_split_account_names(self) -> Generator[str, None, None]:
         """
         Retrieves the names of accounts that are associated with the "to" splits.
 
         :return: Names of accounts associated with splits that have a positive amount.
         :rtype: list[str]
         """
-        return [x.account.name for x in self.to_splits if x.account is not None]
+        return (x.account.name for x in self.to_splits if x.account is not None)
 
     @property
     def splits_total(self) -> Decimal:
