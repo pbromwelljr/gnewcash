@@ -77,6 +77,42 @@
 <h1>Versions<a class="headerlink" href="#versions" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><dl class="simple">
+<dt>1.2.0 (December 20, 2024)</dt><dd><ul>
+<li><p><strong>BREAKING CHANGE</strong>: Changed supported Python versions to 3.9+.</p></li>
+<li><p><a class="reference external" href="https://github.com/pbromwelljr/gnewcash/issues/22">#22</a>: Add <a class="reference external" href="transaction.html#transaction.TransactionManager.get_cleared_balance">get_cleared_balance</a> to <a class="reference external" href="transaction.html#transaction.TransactionManager">TransactionManager</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/pbromwelljr/gnewcash/issues/23">#23</a>: Add <a class="reference external" href="gnucash_file.html#gnucash_file.Book.get_all_accounts">get_all_accounts</a> to <a class="reference external" href="gnucash_file.html#gnucash_file.Book">Book</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/pbromwelljr/gnewcash/issues/30">#30</a>: Improved constructors of most objects to accept values instead of relying on users to set properties individually.</p></li>
+<li><p><a class="reference external" href="https://github.com/pbromwelljr/gnewcash/issues/31">#31</a>: Allow for various <a class="reference external" href="transaction.html#transaction.SortingMethod">sorting methods</a> when loading GnuCash documents and adding transactions.</p></li>
+<li><dl class="simple">
+<dt>Added properties to the <a class="reference external" href="transaction.html#transaction.Transaction">Transaction</a> class.</dt><dd><ul>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.from_splits">from_splits</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.from_split_accounts">from_split_accounts</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.from_split_account_names">from_split_account_names</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.to_splits">to_splits</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.to_split_accounts">to_split_accounts</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.to_split_account_names">to_split_account_names</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.split_accounts">split_accounts</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.split_account_names">split_account_names</a></p></li>
+<li><p><a class="reference external" href="transaction.html#transaction.Transaction.splits_total">splits_total</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Added methods to the <a class="reference external" href="transaction.html#transaction.TransactionManager">TransactionManager</a> class.</dt><dd><ul>
+<li><p><a class="reference external" href="transaction.html#transaction.TransactionManager.get_balance_at_transaction">get_balance_at_transaction</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Fixed a bug when loading transactions via <a class="reference external" href="transaction.html#transaction.SimpleTransaction">SimpleTransaction</a>.</p></li>
+<li><p>Fixed a bug when parsing slot XML data.</p></li>
+<li><p>Performance improvement on <a class="reference external" href="transaction.html#transaction.TransactionManager">TransactionManager</a>’s <a class="reference external" href="transaction.html#transaction.TransactionManager.get_balance_at_date">get_balance_at_date</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>1.1.1 (July 24, 2020)</dt><dd><ul>
 <li><p>Bugfixes</p></li>
 </ul>
