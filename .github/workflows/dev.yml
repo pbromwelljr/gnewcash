@@ -67,8 +67,8 @@ jobs:
         run: |
           version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
           echo "Using version ${version_num}"
-          sed -i "s/version='PLACEHOLDER'/version='${version_num}'/" setup.py
-          sed -i 's/version = "PLACEHOLDER"/version="'"${version_num}"'"/' pyproject.toml
+          sed -i "s/version='0.0.0'/version='${version_num}'/" setup.py
+          sed -i 's/version = "0.0.0"/version="'"${version_num}"'"/' pyproject.toml
           echo "--------------------------------------------------------------------------------"
           echo "SETUP.PY"
           cat setup.py

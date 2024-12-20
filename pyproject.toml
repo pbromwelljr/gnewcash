@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gnewcash"
-version = "PLACEHOLDER"
+version = "0.0.0"
 description = "Python Library for reading, interacting with, and writing GnuCash files"
 authors = ["Paul Bromwell Jr. <pbromwelljr@gmail.com>"]
 license = "MIT"
