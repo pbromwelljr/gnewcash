@@ -11,19 +11,27 @@ from typing import Any, List, Optional, Union
 class Slot:
     """Represents a slot in GnuCash."""
 
-    def __init__(self, key: str, value: Any, slot_type: str) -> None:
+    def __init__(
+            self,
+            key: str,
+            value: Any,
+            slot_type: str
+    ) -> None:
         self.key: str = key
         self.value: Any = value
         self.type: str = slot_type
         self.sqlite_id: Optional[int] = None
 
 
-class SlottableObject(object):
+class SlottableObject:
     """Class used to consolidate storing and retrieving slot values."""
 
-    def __init__(self) -> None:
-        super(SlottableObject, self).__init__()
-        self.slots: List[Slot] = []
+    def __init__(
+            self,
+            slots: Optional[List[Slot]] = None
+    ) -> None:
+        super().__init__()
+        self.slots: List[Slot] = slots or []
 
     def get_slot_value(self, key: str) -> Any:
         """
@@ -79,9 +87,7 @@ class SlottableObject(object):
             value = True
         elif isinstance(value, str) and value.lower() == 'false':
             value = False
-        elif isinstance(value, bool):
-            value = value
-        else:
+        elif not isinstance(value, bool):
             raise ValueError('"bool" slot values must be "true", "false", True, or False.')
 
         value = 'true' if value else 'false'

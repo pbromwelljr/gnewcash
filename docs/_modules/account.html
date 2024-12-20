@@ -1,84 +1,45 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>account &mdash; gnewcash 1.0alpha documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9974cacb"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home"> gnewcash
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            gnewcash
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Using GNewCash</a></li>
@@ -86,66 +47,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../versions.html">Versions</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">gnewcash</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="index.html">Module code</a> &raquo;</li>
-        
-      <li>account</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">account</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for account</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Module containing classes that read, manipulate, and write accounts.</span>
@@ -156,154 +81,73 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">ROUND_UP</span>
-<span class="kn">from</span> <span class="nn">xml.etree</span> <span class="k">import</span> <span class="n">ElementTree</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Pattern</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">ROUND_UP</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="k">import</span> <span class="n">Commodity</span>
-<span class="kn">from</span> <span class="nn">gnewcash.enums</span> <span class="k">import</span> <span class="n">AccountType</span>
-<span class="kn">from</span> <span class="nn">gnewcash.file_formats</span> <span class="k">import</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="k">import</span> <span class="n">GuidObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
-
+<span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="kn">import</span> <span class="n">Commodity</span>
+<span class="kn">from</span> <span class="nn">gnewcash.enums</span> <span class="kn">import</span> <span class="n">AccountType</span>
+<span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="kn">import</span> <span class="n">GuidObject</span>
+<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="kn">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 
 <span class="n">LoanStatus</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;LoanStatus&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;iterator_balance&#39;</span><span class="p">,</span> <span class="s1">&#39;iterator_date&#39;</span><span class="p">,</span> <span class="s1">&#39;interest&#39;</span><span class="p">,</span> <span class="s1">&#39;amount_to_capital&#39;</span><span class="p">])</span>
 <span class="n">LoanExtraPayment</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;LoanExtraPayment&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;payment_date&#39;</span><span class="p">,</span> <span class="s1">&#39;payment_amount&#39;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="Account"><a class="viewcode-back" href="../account.html#account.Account">[docs]</a><span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">,</span> <span class="n">GnuCashXMLObject</span><span class="p">,</span> <span class="n">GnuCashSQLiteObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Represents an account in GnuCash.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Account">
+<a class="viewcode-back" href="../account.html#account.Account">[docs]</a>
+<span class="k">class</span> <span class="nc">Account</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents an account in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">account_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">GuidObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guid</span><span class="p">)</span>
+        <span class="n">SlottableObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slots</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodity_scu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">non_std_scu</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">Account</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">as_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.</span>
-
-<span class="sd">        :return: Current account and children as XML</span>
-<span class="sd">        :rtype: list[xml.etree.ElementTree.Element]</span>
-<span class="sd">        :raises: ValueError if no commodity found.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">node_and_children</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">account_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;gnc:account&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="s1">&#39;2.0.0&#39;</span><span class="p">})</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:id&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guid</span>
-        <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:type&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity</span><span class="p">:</span>
-            <span class="n">account_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commodity</span><span class="o">.</span><span class="n">as_short_xml</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">parent_commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_commodity</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">parent_commodity</span><span class="p">:</span>
-                <span class="n">account_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent_commodity</span><span class="o">.</span><span class="n">as_short_xml</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">:</span>
-            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:commodity-scu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">commodity_scu</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
-            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:code&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
-            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-            <span class="n">slots_node</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:slots&#39;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-                <span class="n">slots_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">as_xml</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ElementTree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">account_node</span><span class="p">,</span> <span class="s1">&#39;act:parent&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;guid&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">guid</span>
-        <span class="n">node_and_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">account_node</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-                <span class="n">node_and_children</span> <span class="o">+=</span> <span class="n">child</span><span class="o">.</span><span class="n">as_xml</span>
-
-        <span class="k">return</span> <span class="n">node_and_children</span>
-
-<div class="viewcode-block" id="Account.from_xml"><a class="viewcode-back" href="../account.html#account.Account.from_xml">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_xml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">account_node</span><span class="p">:</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-                 <span class="n">account_objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Account&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates an Account object from the GnuCash XML.</span>
-
-<span class="sd">        :param account_node: XML node for the account</span>
-<span class="sd">        :type account_node: ElementTree.Element</span>
-<span class="sd">        :param namespaces: XML namespaces for GnuCash elements</span>
-<span class="sd">        :type namespaces: dict[str, str]</span>
-<span class="sd">        :param account_objects: Account objects already created from XML (used for assigning parent account)</span>
-<span class="sd">        :type account_objects: list[Account]</span>
-<span class="sd">        :return: Account object from XML</span>
-<span class="sd">        :rtype: Account</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">account_object</span><span class="p">:</span> <span class="s1">&#39;Account&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="n">account_guid_node</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">account_guid_node</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">account_guid_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Account guid node is missing or empty&#39;</span><span class="p">)</span>
-        <span class="n">account_object</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">account_guid_node</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">account_name_node</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:name&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">account_name_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account_name_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">account_name_node</span><span class="o">.</span><span class="n">text</span>
-        <span class="n">account_type_node</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:type&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">account_type_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account_type_node</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">account_type_node</span><span class="o">.</span><span class="n">text</span>
-
-        <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:commodity&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">commodity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">commodity</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;cmdty:id&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">commodity</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:commodity-scu&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">commodity_scu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="n">commodity_scu</span><span class="o">.</span><span class="n">text</span>
-
-        <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:slots&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;slot&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">):</span>
-                <span class="n">account_object</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="o">.</span><span class="n">from_xml</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">))</span>
-
-        <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:code&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">text</span>
-
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:description&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">text</span>
-
-        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">Element</span><span class="p">]</span> <span class="o">=</span> <span class="n">account_node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;act:parent&#39;</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">account_object</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">account_objects</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">parent</span><span class="o">.</span><span class="n">text</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">account_object</span></div>
-
-<div class="viewcode-block" id="Account.as_dict"><a class="viewcode-back" href="../account.html#account.Account.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_hierarchy</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Account&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">path_to_self</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Account&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Account.as_dict">
+<a class="viewcode-back" href="../account.html#account.Account.as_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">account_hierarchy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path_to_self</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Account&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the current account hierarchy as a dictionary.</span>
 
 <span class="sd">        :param account_hierarchy: Existing account hierarchy. If None is provided, assumes a new dictionary.</span>
@@ -314,7 +158,7 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">account_hierarchy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">account_hierarchy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="n">account_hierarchy</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">account_hierarchy</span><span class="p">[</span><span class="n">path_to_self</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">path_to_self</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
@@ -323,9 +167,10 @@
                 <span class="n">account_hierarchy</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(</span><span class="n">account_hierarchy</span><span class="p">,</span> <span class="n">path_to_self</span> <span class="o">+</span> <span class="n">child</span><span class="o">.</span><span class="n">dict_entry_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">account_hierarchy</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dict_entry_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the dictionary entry based on account name.</span>
 
 <span class="sd">        Only alpha-numeric and underscore characters allowed. Spaces and slashes (/) are converted to underscores.</span>
@@ -341,8 +186,10 @@
         <span class="n">dict_entry_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">non_alphanumeric_underscore</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dict_entry_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dict_entry_name</span>
 
-<div class="viewcode-block" id="Account.get_parent_commodity"><a class="viewcode-back" href="../account.html#account.Account.get_parent_commodity">[docs]</a>    <span class="k">def</span> <span class="nf">get_parent_commodity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Account.get_parent_commodity">
+<a class="viewcode-back" href="../account.html#account.Account.get_parent_commodity">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_parent_commodity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the commodity for the account.</span>
 
 <span class="sd">        If none is provided, it will look at it&#39;s parent (and ancestors recursively) to find it.</span>
@@ -356,8 +203,11 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_parent_commodity</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Account.get_subaccount_by_id"><a class="viewcode-back" href="../account.html#account.Account.get_subaccount_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_subaccount_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subaccount_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Account.get_subaccount_by_id">
+<a class="viewcode-back" href="../account.html#account.Account.get_subaccount_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_subaccount_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subaccount_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds a subaccount by its guid field.</span>
 
 <span class="sd">        :param subaccount_id: Subaccount guid to find</span>
@@ -373,9 +223,10 @@
                 <span class="k">return</span> <span class="n">subaccount_result</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parent account of the current account.</span>
 
 <span class="sd">        :return: Account&#39;s parent</span>
@@ -392,102 +243,64 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Account color.</span>
 
 <span class="sd">        :return: Account color as a string</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">)</span>
 
     <span class="nd">@color</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        User defined notes for the account.</span>
 
 <span class="sd">        :return: User-defined notes</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">)</span>
 
     <span class="nd">@notes</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_slot_value</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hidden flag for the account.</span>
 
 <span class="sd">        :return: True if account is marked hidden, otherwise False.</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;hidden&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;hidden&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span>
 
     <span class="nd">@hidden</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value_bool</span><span class="p">(</span><span class="s1">&#39;hidden&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_slot_value_bool</span><span class="p">(</span><span class="s1">&#39;hidden&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Placeholder flag for the account.</span>
 
 <span class="sd">        :return: True if the account is a placeholder, otherwise False</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_slot_value</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span>
 
     <span class="nd">@placeholder</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Account</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_slot_value_bool</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_slot_value_bool</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Account.from_sqlite"><a class="viewcode-back" href="../account.html#account.Account.from_sqlite">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">account_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates an Account object from the GnuCash SQLite database.</span>
-
-<span class="sd">        :param sqlite_cursor: Open cursor to the GnuCash SQLite database.</span>
-<span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
-<span class="sd">        :param account_id: ID of the account to load from the SQLite database</span>
-<span class="sd">        :type account_id: str</span>
-<span class="sd">        :return: Account object from SQLite</span>
-<span class="sd">        :rtype: Account</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">account_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;accounts&#39;</span><span class="p">,</span> <span class="s1">&#39;guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">account_id</span><span class="p">,))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">account_data</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not find account </span><span class="si">{}</span><span class="s1"> in the SQLite database&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">account_id</span><span class="p">))</span>
-        <span class="n">account_data</span><span class="p">,</span> <span class="o">=</span> <span class="n">account_data</span>
-        <span class="n">new_account</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">guid</span> <span class="o">=</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;account_type&#39;</span><span class="p">]</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;hidden&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;hidden&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">new_account</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;placeholder&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;placeholder&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">new_account</span><span class="o">.</span><span class="n">placeholder</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">Slot</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">])</span>
-
-        <span class="n">new_account</span><span class="o">.</span><span class="n">commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">commodity_guid</span><span class="o">=</span><span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;commodity_guid&#39;</span><span class="p">])</span>
-        <span class="n">new_account</span><span class="o">.</span><span class="n">commodity_scu</span> <span class="o">=</span> <span class="n">account_data</span><span class="p">[</span><span class="s1">&#39;commodity_scu&#39;</span><span class="p">]</span>
-        <span class="c1"># TODO: non_std_scu</span>
-
-        <span class="k">for</span> <span class="n">subaccount</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;accounts&#39;</span><span class="p">,</span> <span class="s1">&#39;parent_guid = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">account_id</span><span class="p">,)):</span>
-            <span class="n">new_account</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="n">subaccount</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">]))</span>
-
-        <span class="k">return</span> <span class="n">new_account</span></div>
-
-<div class="viewcode-block" id="Account.to_sqlite"><a class="viewcode-back" href="../account.html#account.Account.to_sqlite">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sqlite_handle</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Account.get_account_guids"><a class="viewcode-back" href="../account.html#account.Account.get_account_guids">[docs]</a>    <span class="k">def</span> <span class="nf">get_account_guids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_guids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Account.get_account_guids">
+<a class="viewcode-back" href="../account.html#account.Account.get_account_guids">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_account_guids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_guids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets a flat list of account GUIDs under the current account.</span>
 
 <span class="sd">        :param account_guids: Running list of account GUIDs (should be None on first call)</span>
@@ -500,98 +313,241 @@
         <span class="n">account_guids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">sub_account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="n">account_guids</span> <span class="o">=</span> <span class="n">sub_account</span><span class="o">.</span><span class="n">get_account_guids</span><span class="p">(</span><span class="n">account_guids</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">account_guids</span></div></div>
+        <span class="k">return</span> <span class="n">account_guids</span></div>
+</div>
 
 
-<span class="n">GnuCashSQLiteObject</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Account</span><span class="p">)</span>
 
+<div class="viewcode-block" id="BankAccount">
+<a class="viewcode-back" href="../account.html#account.BankAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">BankAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.BANK.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BankAccount"><a class="viewcode-back" href="../account.html#account.BankAccount">[docs]</a><span class="k">class</span> <span class="nc">BankAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.BANK.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">BankAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">BANK</span></div>
 
 
-<div class="viewcode-block" id="IncomeAccount"><a class="viewcode-back" href="../account.html#account.IncomeAccount">[docs]</a><span class="k">class</span> <span class="nc">IncomeAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.INCOME.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">IncomeAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="IncomeAccount">
+<a class="viewcode-back" href="../account.html#account.IncomeAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">IncomeAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.INCOME.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">INCOME</span></div>
 
 
-<div class="viewcode-block" id="AssetAccount"><a class="viewcode-back" href="../account.html#account.AssetAccount">[docs]</a><span class="k">class</span> <span class="nc">AssetAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.ASSET.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">AssetAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="AssetAccount">
+<a class="viewcode-back" href="../account.html#account.AssetAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">AssetAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.ASSET.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">ASSET</span></div>
 
 
-<div class="viewcode-block" id="CreditAccount"><a class="viewcode-back" href="../account.html#account.CreditAccount">[docs]</a><span class="k">class</span> <span class="nc">CreditAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.CREDIT.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CreditAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="CreditAccount">
+<a class="viewcode-back" href="../account.html#account.CreditAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">CreditAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.CREDIT.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span></div>
 
 
-<div class="viewcode-block" id="ExpenseAccount"><a class="viewcode-back" href="../account.html#account.ExpenseAccount">[docs]</a><span class="k">class</span> <span class="nc">ExpenseAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.EXPENSE.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ExpenseAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="ExpenseAccount">
+<a class="viewcode-back" href="../account.html#account.ExpenseAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">ExpenseAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.EXPENSE.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">EXPENSE</span></div>
 
 
-<div class="viewcode-block" id="EquityAccount"><a class="viewcode-back" href="../account.html#account.EquityAccount">[docs]</a><span class="k">class</span> <span class="nc">EquityAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.EQUITY.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EquityAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="EquityAccount">
+<a class="viewcode-back" href="../account.html#account.EquityAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">EquityAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.EQUITY.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">EQUITY</span></div>
 
 
-<div class="viewcode-block" id="LiabilityAccount"><a class="viewcode-back" href="../account.html#account.LiabilityAccount">[docs]</a><span class="k">class</span> <span class="nc">LiabilityAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.LIABILITY.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">LiabilityAccount</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="LiabilityAccount">
+<a class="viewcode-back" href="../account.html#account.LiabilityAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">LiabilityAccount</span><span class="p">(</span><span class="n">Account</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shortcut class to create an account with the type set to AccountType.LIABILITY.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Account&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+            <span class="n">commodity</span><span class="o">=</span><span class="n">commodity</span><span class="p">,</span>
+            <span class="n">commodity_scu</span><span class="o">=</span><span class="n">commodity_scu</span><span class="p">,</span>
+            <span class="n">non_std_scu</span><span class="o">=</span><span class="n">non_std_scu</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">LIABILITY</span></div>
 
 
-<div class="viewcode-block" id="InterestAccountBase"><a class="viewcode-back" href="../account.html#account.InterestAccountBase">[docs]</a><span class="k">class</span> <span class="nc">InterestAccountBase</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Abstract class defining the API for Interest accounts.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InterestAccountBase">
+<a class="viewcode-back" href="../account.html#account.InterestAccountBase">[docs]</a>
+<span class="k">class</span> <span class="nc">InterestAccountBase</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract class defining the API for Interest accounts.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">starting_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Abstract method for retrieving the starting date for the account.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract method for retrieving the starting date for the account.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">interest_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Abstract method for retrieving the interest percentage for the account.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract method for retrieving the interest percentage for the account.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">payment_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Abstract method for retrieving the payment amount for the account.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract method for retrieving the payment amount for the account.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Abstract method for retrieving the starting balance for the account.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Abstract method for retrieving the starting balance for the account.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<div class="viewcode-block" id="InterestAccountBase.get_info_at_date"><a class="viewcode-back" href="../account.html#account.InterestAccountBase.get_info_at_date">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="InterestAccountBase.get_info_at_date">
+<a class="viewcode-back" href="../account.html#account.InterestAccountBase.get_info_at_date">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_info_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LoanStatus</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Abstract method for retrieving the loan info at a specified date for the account.</span>
 
 <span class="sd">        :param date: datetime object indicating the date you want the loan status of</span>
@@ -599,25 +555,34 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="InterestAccountBase.get_all_payments"><a class="viewcode-back" href="../account.html#account.InterestAccountBase.get_all_payments">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+
+<div class="viewcode-block" id="InterestAccountBase.get_all_payments">
+<a class="viewcode-back" href="../account.html#account.InterestAccountBase.get_all_payments">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_all_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_additional_payments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Abstract method for retrieving all payments for the loan plan.</span>
 
 <span class="sd">        :param skip_additional_payments: Skips additional payments if True.</span>
 <span class="sd">        :type skip_additional_payments: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</div>
 
 
-<div class="viewcode-block" id="InterestAccount"><a class="viewcode-back" href="../account.html#account.InterestAccount">[docs]</a><span class="k">class</span> <span class="nc">InterestAccount</span><span class="p">(</span><span class="n">InterestAccountBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class used to calculate interest balances.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="InterestAccount.__init__"><a class="viewcode-back" href="../account.html#account.InterestAccount.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_balance</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">starting_date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">interest_percentage</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+<div class="viewcode-block" id="InterestAccount">
+<a class="viewcode-back" href="../account.html#account.InterestAccount">[docs]</a>
+<span class="k">class</span> <span class="nc">InterestAccount</span><span class="p">(</span><span class="n">InterestAccountBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to calculate interest balances.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InterestAccount.__init__">
+<a class="viewcode-back" href="../account.html#account.InterestAccount.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_balance</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">starting_date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">interest_percentage</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
                  <span class="n">payment_amount</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
                  <span class="n">additional_payments</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">LoanExtraPayment</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">skip_payment_dates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">interest_start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Class initializer.</span>
 
 <span class="sd">        :param starting_balance: Starting balance for the interest account.</span>
@@ -647,15 +612,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__payment_amount</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">payment_amount</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interest_start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">interest_start_date</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1"> - </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payment_amount</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">starting_balance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interest_percentage</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">payment_amount</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">starting_balance</span><span class="si">}</span><span class="s1"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interest_percentage</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">starting_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the starting date for the account.</span>
 
 <span class="sd">        :return: Current InterestAccount&#39;s starting date.</span>
@@ -669,7 +635,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">interest_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the interest percentage for the account.</span>
 
 <span class="sd">        :return: Current InterestAccount object&#39;s percentage.</span>
@@ -683,7 +649,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">payment_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the payment amount for the account.</span>
 
 <span class="sd">        :return: Current InterestAccount object&#39;s payment amount.</span>
@@ -697,7 +663,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the starting balance for the account.</span>
 
 <span class="sd">        :return: Current InterestAccount object&#39;s starting balance.</span>
@@ -709,8 +675,10 @@
     <span class="k">def</span> <span class="nf">starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_starting_balance</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__starting_balance</span> <span class="o">=</span> <span class="n">new_starting_balance</span>
 
-<div class="viewcode-block" id="InterestAccount.get_info_at_date"><a class="viewcode-back" href="../account.html#account.InterestAccount.get_info_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LoanStatus</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="InterestAccount.get_info_at_date">
+<a class="viewcode-back" href="../account.html#account.InterestAccount.get_info_at_date">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_info_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LoanStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the loan info at a specified date for the current account.</span>
 
 <span class="sd">        :param date: datetime object indicating the date you want the loan status of</span>
@@ -766,8 +734,11 @@
 
         <span class="k">return</span> <span class="n">LoanStatus</span><span class="p">(</span><span class="n">iterator_balance</span><span class="p">,</span> <span class="n">iterator_date</span><span class="p">,</span> <span class="n">interest</span><span class="p">,</span> <span class="n">amount_to_capital</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="InterestAccount.get_all_payments"><a class="viewcode-back" href="../account.html#account.InterestAccount.get_all_payments">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_additional_payments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InterestAccount.get_all_payments">
+<a class="viewcode-back" href="../account.html#account.InterestAccount.get_all_payments">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_additional_payments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a list of tuples that show all payments for the loan plan.</span>
 
 <span class="sd">        :param skip_additional_payments: Skips additional payments if True.</span>
@@ -778,7 +749,7 @@
         <span class="n">iterator_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">starting_date</span>
         <span class="n">iterator_balance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">starting_balance</span>
         <span class="n">interest_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interest_percentage</span>
-        <span class="n">payments</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">payments</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">interest_rate</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">interest_rate</span> <span class="o">/=</span> <span class="mi">100</span>
         <span class="k">while</span> <span class="n">iterator_balance</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -797,24 +768,33 @@
             <span class="k">if</span> <span class="n">iterator_date</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_payment_dates</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">interest_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">iterator_balance</span><span class="p">)</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;.01&#39;</span><span class="p">),</span> <span class="n">rounding</span><span class="o">=</span><span class="n">ROUND_UP</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">interest_start_date</span> <span class="ow">or</span> <span class="n">iterator_date</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">interest_start_date</span><span class="p">:</span>
+                <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">interest_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">iterator_balance</span><span class="p">)</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;.01&#39;</span><span class="p">),</span> <span class="n">rounding</span><span class="o">=</span><span class="n">ROUND_UP</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">interest</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">amount_to_capital</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">payment_amount</span> <span class="o">-</span> <span class="n">interest</span>
             <span class="n">payments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iterator_date</span><span class="p">,</span> <span class="n">iterator_balance</span><span class="p">,</span> <span class="n">amount_to_capital</span><span class="p">))</span>
             <span class="n">new_balance</span> <span class="o">=</span> <span class="n">iterator_balance</span> <span class="o">-</span> <span class="n">amount_to_capital</span>
             <span class="n">iterator_balance</span> <span class="o">=</span> <span class="n">new_balance</span>
-        <span class="k">return</span> <span class="n">payments</span></div></div>
+        <span class="k">return</span> <span class="n">payments</span></div>
+</div>
+
 
 
 <span class="n">InterestAccountBase</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">InterestAccount</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="InterestAccountWithSubaccounts"><a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts">[docs]</a><span class="k">class</span> <span class="nc">InterestAccountWithSubaccounts</span><span class="p">(</span><span class="n">InterestAccountBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class used to calculate interest balances based off of balances of subaccounts.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="InterestAccountWithSubaccounts">
+<a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts">[docs]</a>
+<span class="k">class</span> <span class="nc">InterestAccountWithSubaccounts</span><span class="p">(</span><span class="n">InterestAccountBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to calculate interest balances based off of balances of subaccounts.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="InterestAccountWithSubaccounts.__init__"><a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subaccounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">InterestAccount</span><span class="p">],</span>
+<div class="viewcode-block" id="InterestAccountWithSubaccounts.__init__">
+<a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subaccounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">InterestAccount</span><span class="p">],</span>
                  <span class="n">additional_payments</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Decimal</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">skip_payment_dates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Class initializer.</span>
 
 <span class="sd">        :param subaccounts: List of InterestAccount objects that are subaccounts of this InterestAccount</span>
@@ -833,48 +813,51 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">skip_payment_dates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="n">skip_payment_dates</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">InterestAccount</span><span class="p">]</span> <span class="o">=</span> <span class="n">subaccounts</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">starting_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the minimum starting date of the subaccounts.</span>
 
 <span class="sd">        :return: Minimum starting date.</span>
 <span class="sd">        :rtype: datetime.datetime</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">starting_date</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">starting_date</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">interest_percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the sum of the subaccounts&#39; interest percentage.</span>
 
 <span class="sd">        :return: Sum of interest percentages.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">interest_percentage</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">interest_percentage</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">payment_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the sum of the subaccounts&#39; payment amount.</span>
 
 <span class="sd">        :return: Sum of the payment amounts.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">payment_amount</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">payment_amount</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">starting_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the sum of the subaccounts&#39; starting balance.</span>
 
 <span class="sd">        :return: Sum of the starting balances.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">starting_balance</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">starting_balance</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subaccounts</span><span class="p">))</span>
 
-<div class="viewcode-block" id="InterestAccountWithSubaccounts.get_info_at_date"><a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts.get_info_at_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_info_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LoanStatus</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="InterestAccountWithSubaccounts.get_info_at_date">
+<a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts.get_info_at_date">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_info_at_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LoanStatus</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the loan info at a specified date for all subaccounts.</span>
 
 <span class="sd">        :param date: datetime object indicating the date you want the loan status of</span>
@@ -894,8 +877,11 @@
             <span class="n">amount_to_capital</span> <span class="o">+=</span> <span class="n">account_status</span><span class="o">.</span><span class="n">amount_to_capital</span>
         <span class="k">return</span> <span class="n">LoanStatus</span><span class="p">(</span><span class="n">iterator_balance</span><span class="p">,</span> <span class="n">iterator_date</span><span class="p">,</span> <span class="n">interest</span><span class="p">,</span> <span class="n">amount_to_capital</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="InterestAccountWithSubaccounts.get_all_payments"><a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts.get_all_payments">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_additional_payments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InterestAccountWithSubaccounts.get_all_payments">
+<a class="viewcode-back" href="../account.html#account.InterestAccountWithSubaccounts.get_all_payments">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_additional_payments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a list of tuples that show all payments for the loan plan.</span>
 
 <span class="sd">        :param skip_additional_payments: Skips additional payments if True.</span>
@@ -911,49 +897,39 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">payment1</span><span class="p">,</span> <span class="n">payment2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">all_payments</span><span class="p">,</span> <span class="n">subaccount_payments</span><span class="p">)):</span>
                     <span class="n">all_payments</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">payment1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">payment1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">payment2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">payment1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">payment2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">all_payments</span></div></div>
+        <span class="k">return</span> <span class="n">all_payments</span></div>
+</div>
+
 
 
 <span class="n">InterestAccountBase</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">InterestAccountWithSubaccounts</span><span class="p">)</span>
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2018, Paul Bromwell Jr.
-
-    </p>
+    <p>&#169; Copyright 2018, Paul Bromwell Jr..</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

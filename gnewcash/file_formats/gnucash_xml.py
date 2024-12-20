@@ -19,7 +19,7 @@ from gnewcash.commodity import Commodity
 from gnewcash.file_formats.base import BaseFileFormat, BaseFileReader, BaseFileWriter
 from gnewcash.gnucash_file import Book, Budget, GnuCashFile
 from gnewcash.slot import Slot
-from gnewcash.transaction import ScheduledTransaction, Split, Transaction, TransactionManager
+from gnewcash.transaction import ScheduledTransaction, SortingMethod, Split, Transaction, TransactionManager
 from gnewcash.utils import safe_iso_date_formatting, safe_iso_date_parsing
 
 XML_NAMESPACES: Dict[str, str] = {
@@ -61,7 +61,14 @@ class GnuCashXMLReader(BaseFileReader):
     LOGGER = logging.getLogger()
 
     @classmethod
-    def load(cls, *args: Any, source_file: str = '', sort_transactions: bool = True, **kwargs: Any) -> GnuCashFile:
+    def load(
+            cls,
+            *args: Any,
+            source_file: str = '',
+            sort_transactions: bool = True,
+            sort_method: Optional[SortingMethod] = None,
+            **kwargs: Any
+    ) -> GnuCashFile:
         """
         Loads a GnuCash XML file from disk to memory.
 
@@ -69,6 +76,8 @@ class GnuCashXMLReader(BaseFileReader):
         :type source_file: str
         :param sort_transactions: Should transactions be sorted by date posted
         :type sort_transactions: bool
+        :param sort_method: SortMethod class instance that determines the sort order for the transactions
+        :type sort_method: SortingMethod
         :return: GnuCashFile object
         :rtype: GnuCashFile
         """
@@ -84,7 +93,9 @@ class GnuCashXMLReader(BaseFileReader):
 
         books: List[ElementTree.Element] = root.findall('gnc:book', XML_NAMESPACES)
         for book in books:
-            new_book: Book = cls.create_book_from_xml(book, sort_transactions=sort_transactions)
+            new_book: Book = cls.create_book_from_xml(book,
+                                                      sort_transactions=sort_transactions,
+                                                      sort_method=sort_method)
             built_file.books.append(new_book)
         return built_file
 
@@ -101,7 +112,12 @@ class GnuCashXMLReader(BaseFileReader):
         return ElementTree.parse(source=str(source_path)).getroot()
 
     @classmethod
-    def create_book_from_xml(cls, book_node: ElementTree.Element, sort_transactions: bool = True) -> Book:
+    def create_book_from_xml(
+            cls,
+            book_node: ElementTree.Element,
+            sort_transactions: bool = True,
+            sort_method: Optional[SortingMethod] = None,
+    ) -> Book:
         """
         Creates a Book object from the GnuCash XML.
 
@@ -109,6 +125,8 @@ class GnuCashXMLReader(BaseFileReader):
         :type book_node: ElementTree.Element
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
+        :param sort_method: SortingMethod class instance that determines the sort order for the transactions.
+        :type sort_method: SortingMethod
         :return: Book object from XML
         :rtype: Book
         """
@@ -129,8 +147,8 @@ class GnuCashXMLReader(BaseFileReader):
             new_book.commodities.append(cls.create_commodity_from_xml(commodity))
 
         account_objects: List[Account] = []
-        transaction_manager: TransactionManager = TransactionManager()
-        transaction_manager.disable_sort = not sort_transactions
+        transaction_manager: TransactionManager = TransactionManager(disable_sort=not sort_transactions,
+                                                                     sort_method=sort_method)
 
         for account in accounts:
             account_objects.append(cls.create_account_from_xml(account, account_objects))
@@ -215,7 +233,7 @@ class GnuCashXMLReader(BaseFileReader):
             elif slot_type == 'frame':
                 value = None  # Empty frame element, just leave it
             else:
-                raise NotImplementedError('Slot type {} is not implemented.'.format(slot_type))
+                raise NotImplementedError(f'Slot type {slot_type} is not implemented.')
 
         return Slot(key, value, slot_type)
 
@@ -361,7 +379,7 @@ class GnuCashXMLReader(BaseFileReader):
                                                  currency_space_node.text)
 
         slots: Optional[ElementTree.Element] = transaction_node.find('trn:slots', XML_NAMESPACES)
-        if slots:
+        if slots is not None:
             for slot in slots.findall('slot', XML_NAMESPACES):
                 transaction.slots.append(cls.create_slot_from_xml(slot))
 
@@ -514,7 +532,7 @@ class GnuCashXMLReader(BaseFileReader):
                     new_obj.recurrence_start = datetime.strptime(gdate_node.text, '%Y-%m-%d')
 
         slots: Optional[ElementTree.Element] = budget_node.find('bgt:slots', XML_NAMESPACES)
-        if slots:
+        if slots is not None:
             for slot in slots.findall('slot', XML_NAMESPACES):
                 new_obj.slots.append(cls.create_slot_from_xml(slot))
 
@@ -778,7 +796,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         elif slot.type == 'frame':
             pass  # Empty frame element, just leave it
         else:
-            raise NotImplementedError('Slot type {} is not implemented.'.format(slot.type))
+            raise NotImplementedError(f'Slot type {slot.type} is not implemented.')
 
         return slot_node
 

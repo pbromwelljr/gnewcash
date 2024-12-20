@@ -2,24 +2,31 @@ name: Prod
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - v*
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - macOS-latest
-          - ubuntu-latest
-          - windows-latest
-        python-version: ['3.6.x', '3.7.x']
-    runs-on: ${{matrix.os}}
+        version:
+          - {os: macOS-latest, python: '3.11.x'}
+          - {os: macOS-latest, python: '3.12.x'}
+          - {os: ubuntu-latest, python: '3.9.x'}
+          - {os: ubuntu-latest, python: '3.10.x'}
+          - {os: ubuntu-latest, python: '3.11.x'}
+          - {os: ubuntu-latest, python: '3.12.x'}
+          - {os: windows-latest, python: '3.9.x'}
+          - {os: windows-latest, python: '3.10.x'}
+          - {os: windows-latest, python: '3.11.x'}
+          - {os: windows-latest, python: '3.12.x'}
+    runs-on: ${{matrix.version.os}}
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{matrix.python-version}}
+          python-version: ${{matrix.version.python}}
           architecture: x64
       - name: Install Poetry
         run: |
@@ -39,16 +46,72 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.7.x'
+          python-version: '3.9.x'
           architecture: x64
       - name: Install Poetry
         run: |
           pip install poetry
-      - name: Publish to Test PyPI
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Generate stubs
+        run: |
+          poetry run stubgen -p gnewcash
+          cp -r out/gnewcash/* gnewcash/
+          rm -rf out/
+      - name: Replace setup.py version
+        run: |
+          version_num=$(echo "${{github.ref_name}}" | sed 's/^v//g')
+          echo "Using version ${version_num}"
+          sed -i "s/version='0.0.0'/version='${version_num}'/" setup.py
+          sed -i 's/version = "0.0.0"/version="'"${version_num}"'"/' pyproject.toml
+          echo "--------------------------------------------------------------------------------"
+          echo "SETUP.PY"
+          cat setup.py
+          echo "--------------------------------------------------------------------------------"
+          echo "PYPROJECT.TOML"
+          cat pyproject.toml
+          echo "--------------------------------------------------------------------------------"
+      - name: Publish to PyPI
         run: |
           poetry build
           poetry publish --username ${{secrets.PYPI_USERNAME}} --password ${{secrets.PYPI_PASSWORD}}
+  update-documentation:
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.x'
+      - name: Install Poetry
+        run: |
+          pip install poetry
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Make sphinx documentation
+        run: |
+          cd sphinx
+          poetry run make clean
+          poetry run make html
+          cp -rf _build/html/* ../docs
+      - name: Commit updated documentation
+        run: |
+          git config --global user.name 'Paul Bromwell Jr'
+          git config --global user.email 'pbromwelljr@proton.me'
+          git add docs/
+          
+          # Make sure we only commit if there's something to commit.
+          git diff-index --quiet HEAD 2>/dev/null 1>&2
+          if [[ $? -ne 0 ]]; then
+            git commit -m "Sphinx documentation update"
+            git push
+          fi

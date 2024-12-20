@@ -1,6 +1,28 @@
 Versions
 ********
 
+- 1.2.0 (December 20, 2024)
+    - **BREAKING CHANGE**: Changed supported Python versions to 3.9+.
+    - `#22 <https://github.com/pbromwelljr/gnewcash/issues/22>`__: Add `get_cleared_balance <transaction.html#transaction.TransactionManager.get_cleared_balance>`__ to `TransactionManager <transaction.html#transaction.TransactionManager>`__.
+    - `#23 <https://github.com/pbromwelljr/gnewcash/issues/23>`__: Add `get_all_accounts <gnucash_file.html#gnucash_file.Book.get_all_accounts>`__ to `Book <gnucash_file.html#gnucash_file.Book>`__.
+    - `#30 <https://github.com/pbromwelljr/gnewcash/issues/30>`__: Improved constructors of most objects to accept values instead of relying on users to set properties individually.
+    - `#31 <https://github.com/pbromwelljr/gnewcash/issues/31>`__: Allow for various `sorting methods <transaction.html#transaction.SortingMethod>`__ when loading GnuCash documents and adding transactions.
+    - Added properties to the `Transaction <transaction.html#transaction.Transaction>`__ class.
+        - `from_splits <transaction.html#transaction.Transaction.from_splits>`__
+        - `from_split_accounts <transaction.html#transaction.Transaction.from_split_accounts>`__
+        - `from_split_account_names <transaction.html#transaction.Transaction.from_split_account_names>`__
+        - `to_splits <transaction.html#transaction.Transaction.to_splits>`__
+        - `to_split_accounts <transaction.html#transaction.Transaction.to_split_accounts>`__
+        - `to_split_account_names <transaction.html#transaction.Transaction.to_split_account_names>`__
+        - `split_accounts <transaction.html#transaction.Transaction.split_accounts>`__
+        - `split_account_names <transaction.html#transaction.Transaction.split_account_names>`__
+        - `splits_total <transaction.html#transaction.Transaction.splits_total>`__
+    - Added methods to the `TransactionManager <transaction.html#transaction.TransactionManager>`__ class.
+        - `get_balance_at_transaction <transaction.html#transaction.TransactionManager.get_balance_at_transaction>`__
+    - Fixed a bug when loading transactions via `SimpleTransaction <transaction.html#transaction.SimpleTransaction>`__.
+    - Fixed a bug when parsing slot XML data.
+    - Performance improvement on `TransactionManager <transaction.html#transaction.TransactionManager>`__'s `get_balance_at_date <transaction.html#transaction.TransactionManager.get_balance_at_date>`__.
+
 - 1.1.1 (July 24, 2020)
     - Bugfixes
 - 1.1.0 (May 4, 2020)

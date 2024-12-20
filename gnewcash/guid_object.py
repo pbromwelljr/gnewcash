@@ -5,8 +5,8 @@ Module containing classes that manage GUID objects.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from typing import Set
 import uuid
+from typing import Optional, Set
 
 
 class GuidObject:
@@ -14,9 +14,12 @@ class GuidObject:
 
     used_guids: Set[str] = set()
 
-    def __init__(self) -> None:
-        super(GuidObject, self).__init__()
-        self.guid: str = self.get_guid()
+    def __init__(
+            self,
+            guid: Optional[str] = None
+    ) -> None:
+        super().__init__()
+        self.guid: str = guid or self.get_guid()
 
     def __str__(self) -> str:
         return str(self.guid)

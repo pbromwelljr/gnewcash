@@ -5,18 +5,19 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-
+import os.path
 from datetime import datetime
 from decimal import Decimal
-import os.path
 from logging import getLogger
-from typing import Optional, List, Any
+from typing import Any, Generator, List, Optional
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
-from gnewcash.transaction import Transaction, TransactionManager, ScheduledTransaction, Split, SimpleTransaction
+from gnewcash.transaction import (
+    ScheduledTransaction, SimpleTransaction, SortingMethod, Split, Transaction, TransactionManager
+)
 
 
 class GnuCashFile:
@@ -32,14 +33,20 @@ class GnuCashFile:
         as_string: str = ''
         if self.file_name:
             as_string = self.file_name + ', '
-        as_string += '{} books'.format(len(self.books))
+        as_string += f'{len(self.books)} books'
         return as_string
 
     def __repr__(self) -> str:
         return str(self)
 
     @classmethod
-    def read_file(cls, source_file: str, file_format: Any, sort_transactions: bool = True) -> 'GnuCashFile':
+    def read_file(
+            cls,
+            source_file: str,
+            file_format: Any,
+            sort_transactions: bool = True,
+            sort_method: Optional[SortingMethod] = None,
+    ) -> 'GnuCashFile':
         """
         Reads the specified .gnucash file and loads it into memory.
 
@@ -49,6 +56,8 @@ class GnuCashFile:
         :type sort_transactions: bool
         :param file_format: File format of the file being uploaded.
         :type file_format: BaseFileFormat subclass
+        :param sort_method: SortingMethod class instance that determines the sort order for the transactions.
+        :type sort_method: SortingMethod
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
@@ -59,7 +68,7 @@ class GnuCashFile:
             logger.warning('Could not find %s', source_file)
             return built_file
 
-        return file_format.load(source_file=source_file, sort_transactions=sort_transactions)
+        return file_format.load(source_file=source_file, sort_transactions=sort_transactions, sort_method=sort_method)
 
     def build_file(self, target_file: str, file_format: Any, prettify_xml: bool = False) -> None:
         """
@@ -93,17 +102,25 @@ class GnuCashFile:
 class Book(GuidObject, SlottableObject):
     """Represents a Book in GnuCash."""
 
-    def __init__(self, root_account: Optional[Account] = None, transactions: Optional[TransactionManager] = None,
-                 commodities: Optional[List[Commodity]] = None, slots: Optional[List[Slot]] = None,
-                 template_root_account: Optional[Account] = None,
-                 template_transactions: Optional[List[Transaction]] = None,
-                 scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
-                 budgets: Optional[List['Budget']] = None) -> None:
-        super(Book, self).__init__()
+    def __init__(
+            self,
+            root_account: Optional[Account] = None,
+            transactions: Optional[TransactionManager] = None,
+            commodities: Optional[List[Commodity]] = None,
+            slots: Optional[List[Slot]] = None,
+            template_root_account: Optional[Account] = None,
+            template_transactions: Optional[List[Transaction]] = None,
+            scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
+            budgets: Optional[List['Budget']] = None,
+            guid: Optional[str] = None,
+            sort_method: Optional[SortingMethod] = None,
+    ) -> None:
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
+
         self.root_account: Optional[Account] = root_account
-        self.transactions: TransactionManager = transactions or TransactionManager()
+        self.transactions: TransactionManager = transactions or TransactionManager(sort_method=sort_method)
         self.commodities: List[Commodity] = commodities or []
-        self.slots: List[Slot] = slots or []
         self.template_root_account: Optional[Account] = template_root_account
         self.template_transactions: List[Transaction] = template_transactions or []
         self.scheduled_transactions: List[ScheduledTransaction] = scheduled_transactions or []
@@ -152,8 +169,27 @@ class Book(GuidObject, SlottableObject):
             account_balance += split.amount or Decimal(0)
         return account_balance
 
+    def get_all_accounts(self) -> Generator[Optional[Account], None, None]:
+        """
+        Returns a generator that retrieves all accounts, starting with the root account and going depth-first.
+
+        :return:  A generator to a depth-first list of all accounts.
+        :rtype: collections.Iterable[Account]
+        """
+        yield from self.__yield_account_recursive(self.root_account)
+
+    @classmethod
+    def __yield_account_recursive(
+            cls,
+            current_account: Optional[Account]
+    ) -> Generator[Optional[Account], None, None]:
+        yield current_account
+        if current_account is not None:
+            for child_account in current_account.children:
+                yield from cls.__yield_account_recursive(child_account)
+
     def __str__(self) -> str:
-        return '{} transactions'.format(len(self.transactions))
+        return f'{len(self.transactions)} transactions'
 
     def __repr__(self) -> str:
         return str(self)
@@ -162,11 +198,23 @@ class Book(GuidObject, SlottableObject):
 class Budget(GuidObject, SlottableObject):
     """Class object representing a Budget in GnuCash."""
 
-    def __init__(self) -> None:
-        super(Budget, self).__init__()
-        self.name: Optional[str] = None
-        self.description: Optional[str] = None
-        self.period_count: Optional[int] = None
-        self.recurrence_multiplier: Optional[int] = None
-        self.recurrence_period_type: Optional[str] = None
-        self.recurrence_start: Optional[datetime] = None
+    def __init__(
+            self,
+            guid: Optional[str] = None,
+            slots: Optional[List[Slot]] = None,
+            name: Optional[str] = None,
+            description: Optional[str] = None,
+            period_count: Optional[int] = None,
+            recurrence_multiplier: Optional[int] = None,
+            recurrence_period_type: Optional[str] = None,
+            recurrence_start: Optional[datetime] = None,
+    ) -> None:
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
+
+        self.name: Optional[str] = name
+        self.description: Optional[str] = description
+        self.period_count: Optional[int] = period_count
+        self.recurrence_multiplier: Optional[int] = recurrence_multiplier
+        self.recurrence_period_type: Optional[str] = recurrence_period_type
+        self.recurrence_start: Optional[datetime] = recurrence_start
