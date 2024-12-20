@@ -109,5 +109,10 @@ jobs:
           git config --global user.name 'Paul Bromwell Jr'
           git config --global user.email 'pbromwelljr@proton.me'
           git add docs/
-          git commit -m "Sphinx documentation update"
-          git push
+          
+          # Make sure we only commit if there's something to commit.
+          git diff-index --quiet HEAD 2>/dev/null 1>&2
+          if [[ $? -ne 0 ]]; then
+            git commit -m "Sphinx documentation update"
+            git push
+          fi
