@@ -68,7 +68,14 @@ jobs:
           version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
           echo "Using version ${version_num}"
           sed -i "s/version='PLACEHOLDER'/version='${version_num}'/" setup.py
+          sed -i 's/version = "PLACEHOLDER"/version="'"${version_num}"'"/' pyproject.toml
+          echo "--------------------------------------------------------------------------------"
+          echo "SETUP.PY"
           cat setup.py
+          echo "--------------------------------------------------------------------------------"
+          echo "PYPROJECT.TOML"
+          cat pyproject.toml
+          echo "--------------------------------------------------------------------------------"
       - name: Publish to Test PyPI
         run: |
           poetry build
