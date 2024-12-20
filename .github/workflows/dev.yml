@@ -2,10 +2,8 @@ name: Dev
 
 on:
   push:
-#    tags:
-#      - b*
-    branches:
-      - develop
+    tags:
+      - b*
 jobs:
   build:
     strategy:
@@ -65,6 +63,34 @@ jobs:
           poetry run stubgen -p gnewcash
           cp -r out/gnewcash/* gnewcash/
           rm -rf out/
+      - name: Replace setup.py version
+        run: |
+          version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
+          echo "Using version ${version_num}"
+          sed -i "s/version='PLACEHOLDER'/version='${version_num}'/" setup.py
+          cat setup.py
+      - name: Publish to Test PyPI
+        run: |
+          poetry build
+          poetry config repositories.testpypi https://test.pypi.org/legacy/
+          poetry publish --repository testpypi --username ${{secrets.PYPI_USERNAME}} --password ${{secrets.PYPI_PASSWORD}}
+  update-documentation:
+    needs: publish-test-pypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.x'
+      - name: Install Poetry
+        run: |
+          pip install poetry
+      - name: Install dependencies
+        run: |
+          poetry install
       - name: Make sphinx documentation
         run: |
           cd sphinx
@@ -78,14 +104,3 @@ jobs:
           git add docs/
           git commit -m "Sphinx documentation update"
           git push
-      - name: Replace setup.py version
-        run: |
-          version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
-          echo "Using version ${version_num}"
-          sed -i "s/version='PLACEHOLDER'/version='${version_num}'/" setup.py
-          cat setup.py
-#      - name: Publish to Test PyPI
-#        run: |
-#          poetry build
-#          poetry config repositories.testpypi https://test.pypi.org/legacy/
-#          poetry publish --repository testpypi --username ${{secrets.PYPI_USERNAME}} --password ${{secrets.PYPI_PASSWORD}}
