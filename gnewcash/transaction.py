@@ -64,7 +64,7 @@ class Transaction(GuidObject, SlottableObject):
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Transaction):
-            return NotImplemented
+            raise NotImplementedError
         return self.date_posted == other.date_posted
 
     @property
@@ -494,7 +494,7 @@ class TransactionManager:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, TransactionManager):
-            return NotImplemented
+            raise NotImplementedError
         for my_transaction, other_transaction in zip(self.transactions, other.transactions):
             if my_transaction != other_transaction:
                 return False

@@ -57,8 +57,8 @@ class Account(GuidObject, SlottableObject):
         return str(self)
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(object, Account):
-            return NotImplemented
+        if not isinstance(other, Account):
+            raise NotImplementedError
         return self.guid == getattr(other, 'guid', None)
 
     def __hash__(self) -> int:
