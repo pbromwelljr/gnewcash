@@ -58,11 +58,6 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
-      - name: Generate stubs
-        run: |
-          poetry run stubgen -p gnewcash
-          cp -r out/gnewcash/* gnewcash/
-          rm -rf out/
       - name: Replace setup.py version
         run: |
           version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
