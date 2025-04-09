@@ -64,7 +64,7 @@ class GnuCashXMLReader(BaseFileReader):
     def load(
             cls,
             *args: Any,
-            source_file: str = '',
+            source_file: Optional[pathlib.Path] = None,
             sort_transactions: bool = True,
             sort_method: Optional[SortingMethod] = None,
             **kwargs: Any
@@ -82,14 +82,13 @@ class GnuCashXMLReader(BaseFileReader):
         :rtype: GnuCashFile
         """
         built_file: GnuCashFile = GnuCashFile()
-        built_file.file_name = source_file
+        built_file.file_name = source_file.name
 
-        source_path: pathlib.Path = pathlib.Path(source_file)
-        if not source_path.exists():
+        if not source_file.exists():
             cls.LOGGER.warning('Could not find %s', source_file)
             return built_file
 
-        root: ElementTree.Element = cls.get_xml_root(source_path)
+        root: ElementTree.Element = cls.get_xml_root(source_file)
 
         books: List[ElementTree.Element] = root.findall('gnc:book', XML_NAMESPACES)
         for book in books:

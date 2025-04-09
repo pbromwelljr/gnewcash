@@ -6,10 +6,12 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
 .. moduleauthor: Paul Bromwell Jr.
 """
 import os.path
+import pathlib
 from datetime import datetime
 from decimal import Decimal
 from logging import getLogger
-from typing import Any, Generator, List, Optional
+from os import PathLike
+from typing import Any, Generator, List, Optional, Union
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -42,7 +44,7 @@ class GnuCashFile:
     @classmethod
     def read_file(
             cls,
-            source_file: str,
+            source_file: Union[str, PathLike],
             file_format: Any,
             sort_transactions: bool = True,
             sort_method: Optional[SortingMethod] = None,
@@ -51,24 +53,29 @@ class GnuCashFile:
         Reads the specified .gnucash file and loads it into memory.
 
         :param source_file: Full or relative path to the .gnucash file.
-        :type source_file: str
-        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
-        :type sort_transactions: bool
+        :type source_file: Union[str, PathLike]
         :param file_format: File format of the file being uploaded.
         :type file_format: BaseFileFormat subclass
+        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
+        :type sort_transactions: bool
         :param sort_method: SortingMethod class instance that determines the sort order for the transactions.
         :type sort_method: SortingMethod
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
+        source_file_path: pathlib.Path = pathlib.Path(source_file) if isinstance(source_file, str) else source_file
         logger = getLogger()
         built_file: 'GnuCashFile' = cls()
-        built_file.file_name = source_file
-        if not os.path.exists(source_file):
+        built_file.file_name = source_file_path.name
+        if not source_file_path.exists(follow_symlinks=True):
             logger.warning('Could not find %s', source_file)
             return built_file
 
-        return file_format.load(source_file=source_file, sort_transactions=sort_transactions, sort_method=sort_method)
+        return file_format.load(
+            source_file=source_file_path,
+            sort_transactions=sort_transactions,
+            sort_method=sort_method
+        )
 
     def build_file(self, target_file: str, file_format: Any, prettify_xml: bool = False) -> None:
         """
