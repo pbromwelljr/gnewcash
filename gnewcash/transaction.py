@@ -483,6 +483,52 @@ class TransactionManager:
                 cleared_balance += split.amount
         return cleared_balance
 
+    def create_reversing_transaction(
+            self,
+            transaction: Transaction,
+            reversed_date: Optional[datetime] = None,
+    ) -> Transaction:
+        """
+        Creates a new transaction that reverses another transaction
+        :param transaction: Transaction to be reversed
+        :type transaction: Transaction
+        :param reversed_date: The date that the transaction was reversed (optional, default is transaction's date)
+        :type reversed_date: datetime
+        :return: New transaction that reverses the provided transaction
+        :rtype: Transaction
+        """
+        reversed_splits = []
+        for split in transaction.splits:
+            reversed_splits.append(Split(
+                account=split.account,
+                amount=split.amount * -1,
+                reconciled_state=split.reconciled_state,
+                action=split.action,
+                memo=split.memo,
+                quantity_denominator=split.quantity_denominator,
+                reconcile_date=split.reconcile_date,
+                quantity_num=split.quantity_num,
+                lot_guid=split.lot_guid,
+                value_num=split.value_num,
+                value_denom=split.value_denom
+            ))
+        reversing_transaction = Transaction(
+            slots=transaction.slots,
+            currency=transaction.currency,
+            date_posted=reversed_date or transaction.date_posted,
+            date_entered=transaction.date_entered,
+            description=transaction.description,
+            splits=reversed_splits,
+            memo=transaction.memo
+        )
+        self.add(reversing_transaction)
+        transaction.slots.append(Slot(
+            key='reversed-by',
+            value=reversing_transaction.guid,
+            slot_type='guid'
+        ))
+        return reversing_transaction
+
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:
         if item > len(self):
