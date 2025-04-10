@@ -16,6 +16,7 @@ from typing import Any, Generator, List, Optional, Union
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
+from gnewcash.search import Query
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.transaction import (
     ScheduledTransaction, SimpleTransaction, SortingMethod, Split, Transaction, TransactionManager
@@ -194,6 +195,15 @@ class Book(GuidObject, SlottableObject):
         if current_account is not None:
             for child_account in current_account.children:
                 yield from cls.__yield_account_recursive(child_account)
+
+    def accounts_query(self) -> Query:
+        """
+        Get a new Query object to query accounts.
+
+        :return: New Query object
+        :rtype: Query
+        """
+        return Query(self.get_all_accounts())
 
     def __str__(self) -> str:
         return f'{len(self.transactions)} transactions'

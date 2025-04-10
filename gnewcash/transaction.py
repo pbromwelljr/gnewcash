@@ -16,6 +16,7 @@ from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
 from gnewcash.slot import Slot, SlottableObject
+from search import Query
 
 
 class TransactionException(Exception):
@@ -528,6 +529,15 @@ class TransactionManager:
             slot_type='guid'
         ))
         return reversing_transaction
+
+    def query(self) -> Query:
+        """
+        Gets a new Query object to query transactions.
+
+        :return: New Query object
+        :rtype: Query
+        """
+        return Query(self.transactions)
 
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:
