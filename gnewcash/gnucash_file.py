@@ -168,13 +168,11 @@ class Book(GuidObject, SlottableObject):
         :return: Account balance if applicable transactions found, otherwise 0.
         :rtype: decimal.Decimal or int
         """
-        account_balance: Decimal = Decimal(0)
-        account_transactions: List[Transaction] = list(filter(lambda x: account in [y.account for y in x.splits],
-                                                              self.transactions))
-        for transaction in account_transactions:
-            split: Split = next(filter(lambda x: x.account == account, transaction.splits))
-            account_balance += split.amount or Decimal(0)
-        return account_balance
+        return Decimal(self.transactions.query()
+                                        .select_many(lambda t, i: t.splits)
+                                        .where(lambda s: s.account == account)
+                                        .select(lambda s, i: s.amount)
+                                        .sum_())
 
     def get_all_accounts(self) -> Generator[Optional[Account], None, None]:
         """
