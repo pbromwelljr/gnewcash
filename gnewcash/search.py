@@ -1,13 +1,19 @@
 """Python module to handle searching on objects using a LINQ-like format."""
-from collections import deque
+from collections import defaultdict, deque
+from typing import Any, Callable, Dict, Generator, Iterable, List, Set
 
-from typing import Callable, Any, Optional, List, TypeAlias, Generator, Iterable, Set, Union
+from typing_extensions import TypeAlias
 
 Selector: TypeAlias = Callable[[Any, int], Any]
 Predicate: TypeAlias = Callable[[Any], bool]
+OrderByKey: TypeAlias = Callable[[Any], Any]
+GroupBySelector: TypeAlias = Callable[[Any], Any]
+GroupByResultSelector: TypeAlias = Callable[[Any, 'Query'], Any]
+
 
 class InvalidOperationException(Exception):
     """Exception thrown when an invalid operation was performed."""
+
 
 class QueryAction:
     """Base class for other query actions."""
@@ -30,8 +36,7 @@ class SelectQueryAction(QueryAction):
         for index, element in enumerate(collection):
             selector_result = self.selector(element, index)
             if self.is_select_many and isinstance(selector_result, Iterable):
-                for sub_result in selector_result:
-                    yield sub_result
+                yield from selector_result
             else:
                 yield selector_result
 
@@ -50,6 +55,18 @@ class WhereQueryAction(QueryAction):
             yield element
 
 
+class ConcatQueryAction(QueryAction):
+    """Class for concatenating another collection at the end of the current one."""
+
+    def __init__(self, other: Iterable[Any]) -> None:
+        self.other: Iterable[Any] = other
+
+    def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
+        """Append the other collection to the end of the current one."""
+        yield from collection
+        yield from self.other
+
+
 class DistinctQueryAction(QueryAction):
     """Class for getting distinct values of elements in the collection."""
 
@@ -60,13 +77,14 @@ class DistinctQueryAction(QueryAction):
             if element in seen_values:
                 continue
             seen_values.add(element)
-            yield seen_values
+            yield element
 
 
 class ExceptQueryAction(QueryAction):
     """Class for filtering out elements that are in a specified collection."""
+
     def __init__(self, exclude_values: Iterable[Any]) -> None:
-        self.exclude_values: Set[Any] = set(exclude_values)
+        self.exclude_values: Iterable[Any] = exclude_values
 
     def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
         """Filter out elements in the collection that are in the specified exclude values."""
@@ -78,8 +96,9 @@ class ExceptQueryAction(QueryAction):
 
 class IntersectQueryAction(QueryAction):
     """Class for only including elements that are in a specified collection."""
+
     def __init__(self, intersect_values: Iterable[Any]) -> None:
-        self.intersect_values: Set[Any] = set(intersect_values)
+        self.intersect_values: Iterable[Any] = intersect_values
 
     def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
         """Perform a set intersection on the collection and the specified values."""
@@ -91,8 +110,9 @@ class IntersectQueryAction(QueryAction):
 
 class UnionQueryAction(QueryAction):
     """Class for doing a set union on the collection and specified values."""
+
     def __init__(self, union_values: Iterable[Any]) -> None:
-        self.union_values: Set[Any] = set(union_values)
+        self.union_values: List[Any] = list(union_values)
 
     def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
         """Perform a set union on the collection and the specified values."""
@@ -101,8 +121,19 @@ class UnionQueryAction(QueryAction):
                 self.union_values.remove(element)
             yield element
 
-        for element in self.union_values:
-            yield element
+        yield from self.union_values
+
+
+class OrderByQueryAction(QueryAction):
+    """Class for ordering results by an indicated key."""
+
+    def __init__(self, order_by: OrderByKey, descending: bool) -> None:
+        self.order_by: OrderByKey = order_by
+        self.descending: bool = descending
+
+    def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
+        """Sort the collection by the provided key or function, following subsequent then-by instructions."""
+        yield from sorted(collection, key=self.order_by, reverse=self.descending)
 
 
 class ReverseQueryAction(QueryAction):
@@ -113,12 +144,35 @@ class ReverseQueryAction(QueryAction):
         # Unfortunately. no way to reverse a (potentially) generator without consuming it.
         # So, possible high memory usage here.
         collection_list = list(collection)
-        for element in reversed(collection_list):
-            yield element
+        yield from reversed(collection_list)
+
+
+class GroupByQueryAction(QueryAction):
+    """Class for grouping the collection by a provided key."""
+
+    def __init__(
+            self,
+            key: GroupBySelector,
+            element: GroupBySelector,
+            result: GroupByResultSelector
+    ) -> None:
+        self.key: GroupBySelector = key
+        self.element: GroupBySelector = element
+        self.result: GroupByResultSelector = result
+
+    def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
+        """Groups the collection by the specified key."""
+        group_by_values: Dict[Any, List[Any]] = defaultdict(list)
+        for element in collection:
+            group_by_values[self.key(element)].append(self.element(element))
+
+        for key_value, elements in group_by_values.items():
+            yield self.result(key_value, Query(elements))
 
 
 class SkipQueryAction(QueryAction):
     """Class for skipping a certain number of elements."""
+
     def __init__(self, skip_count: int) -> None:
         self.skip_count: int = skip_count
 
@@ -132,6 +186,7 @@ class SkipQueryAction(QueryAction):
 
 class SkipWhileQueryAction(QueryAction):
     """Class for skipping elements while a provided predicate is true."""
+
     def __init__(self, predicate: Predicate) -> None:
         self.predicate: Predicate = predicate
 
@@ -141,13 +196,14 @@ class SkipWhileQueryAction(QueryAction):
         for element in collection:
             if should_skip_elements and self.predicate(element):
                 continue
-            elif should_skip_elements:
+            if should_skip_elements:
                 should_skip_elements = False
             yield element
 
 
 class TakeQueryAction(QueryAction):
     """Class for taking a certain number of elements."""
+
     def __init__(self, take_count: int) -> None:
         self.take_count: int = take_count
 
@@ -156,11 +212,13 @@ class TakeQueryAction(QueryAction):
         for index, element in enumerate(collection):
             if index < self.take_count:
                 yield element
-            raise StopIteration
+            else:
+                break
 
 
 class TakeWhileQueryAction(QueryAction):
     """Class for taking elements while a provided predicate is true."""
+
     def __init__(self, predicate: Predicate) -> None:
         self.predicate: Predicate = predicate
 
@@ -169,17 +227,20 @@ class TakeWhileQueryAction(QueryAction):
         for element in collection:
             if self.predicate(element):
                 yield element
-            raise StopIteration
+            else:
+                break
 
 
-class Query:
+class Query:  # pylint: disable=too-many-public-methods
     """Class to handle searching on objects using a LINQ-like format."""
 
     def __init__(self, collection: Iterable[Any]) -> None:
         self.collection: Iterable[Any] = collection
         self.actions: List[QueryAction] = []
 
-    # PROJECTION AND RESTRICTION METHODS
+    # ################################################################################
+    #                      PROJECTION AND RESTRICTION METHODS                        #
+    # ################################################################################
 
     def select(self, selector: Selector) -> 'Query':
         """
@@ -195,7 +256,7 @@ class Query:
 
     def select_many(self, selector: Selector) -> 'Query':
         """
-        Performs a map on the elements in the collection based on the provided method, flattening iterables if applicable.
+        Performs a map on the elements in the collection using the provided method, flattening iterables if applicable.
 
         :param selector: Method that takes an element and an index and returns a new element.
         :type selector: Callable[[Any, int], Any]
@@ -217,9 +278,11 @@ class Query:
         self.actions.append(WhereQueryAction(predicate))
         return self
 
-    # SET METHODS
+    # ################################################################################
+    #                                   SET METHODS                                  #
+    # ################################################################################
 
-    def all(self, predicate: Predicate) -> bool:
+    def all_(self, predicate: Predicate) -> bool:
         """
         Determines whether all the elements of a sequence satisfy a condition.
 
@@ -230,7 +293,7 @@ class Query:
         """
         return all(predicate(entry) for entry in self.__evaluate())
 
-    def any(self, predicate: Predicate) -> bool:
+    def any_(self, predicate: Predicate) -> bool:
         """
         Determines whether any of the elements of a sequence satisfy a condition.
 
@@ -254,6 +317,39 @@ class Query:
             if entry == value:
                 return True
         return False
+
+    def concat(self, other: Iterable[Any]) -> 'Query':
+        """
+        Concatenates another iterable to the end of the current result set.
+
+        :param other: Other iterable to include at the end of the current result set.
+        :type other: Iterable[Any]
+        :return: Query object
+        :rtype: Query
+        """
+        self.actions.append(ConcatQueryAction(other))
+        return self
+
+    def default_if_empty(self, default: Any) -> Any:
+        """
+        Returns each element in the collection, using the default if the collection is empty.
+
+        :param default: Default value to use if the collection is empty.
+        :type default: Any
+        :return: Each element in the collection, or the default value.
+        :rtype: Any
+        """
+        is_first_element: bool = True
+        cursor = self.__evaluate()
+        while True:
+            try:
+                next_element = next(cursor)
+            except StopIteration as e:
+                if is_first_element:
+                    yield default
+                return e
+            is_first_element = False
+            yield next_element
 
     def distinct(self) -> 'Query':
         """
@@ -301,6 +397,24 @@ class Query:
         self.actions.append(UnionQueryAction(union_values))
         return self
 
+    # ################################################################################
+    #                                ORDERING METHODS                                #
+    # ################################################################################
+
+    def order_by(self, order_by: OrderByKey, descending: bool = False) -> 'Query':
+        """
+        Sorts the elements by one or more keys.
+
+        :param order_by: Function that should be passed into "sorted"'s key field.
+        :type order_by: Callable[[Any], Any]
+        :param descending: Sort the collection in descending order (default false)
+        :type descending: bool
+        :return: Query object
+        :rtype: Query
+        """
+        self.actions.append(OrderByQueryAction(order_by, descending))
+        return self
+
     def reverse(self) -> 'Query':
         """
         Return the elements in the reverse order.
@@ -311,7 +425,53 @@ class Query:
         self.actions.append(ReverseQueryAction())
         return self
 
-    # AGGREGATE METHODS
+    # ################################################################################
+    #                                GROUPING METHODS                                #
+    # ################################################################################
+
+    def group_by(
+            self,
+            key: GroupBySelector,
+            element: GroupBySelector,
+            result: GroupByResultSelector,
+    ) -> 'Query':
+        """
+        Groups elements by the provided key, and calls the result function for each key and element.
+
+        :param key: Grouping selector
+        :type key: Callable[[Any], Any]
+        :param element: Element selector
+        :type element: Callable[[Any], Any]
+        :param result: Result selector
+        :type result: Callable[[Any, Query], Any]
+        :return: Query object
+        :rtype: Query
+        """
+        self.actions.append(GroupByQueryAction(key, element, result))
+        return self
+
+    # ################################################################################
+    #                               AGGREGATE METHODS                                #
+    # ################################################################################
+
+    def average(self) -> Any:
+        """
+        Calculates the average numeric value of the collection.
+
+        :return: Average value of the collection, or None if the collection is empty.
+        :rtype: Any
+        """
+        sum_: Any = None
+        count: int = 0
+        for i, element in enumerate(self.__evaluate()):
+            if i == 0:
+                sum_ = element
+            else:
+                sum_ += element
+            count += 1
+        if count == 0:
+            return None
+        return sum_ / count
 
     def count(self) -> int:
         """
@@ -322,25 +482,31 @@ class Query:
         """
         return len(list(self.__evaluate()))
 
-    def max(self) -> Any:
+    def max_(self) -> Any:
         """
         Retrieves the maximum value of the elements in the collection.
 
-        :return: Maximum value of the elements in the collection.
+        :return: Maximum value of the elements in the collection. Returns None on empty collection.
         :rtype: Any
         """
-        return max(list(self.__evaluate()))
+        try:
+            return max(list(self.__evaluate()))
+        except ValueError:  # No elements in the collection
+            return None
 
-    def min(self) -> Any:
+    def min_(self) -> Any:
         """
         Retrieves the minimum value of the elements in the collection.
 
         :return: Minimum value of the elements in the collection.
         :rtype: Any
         """
-        return min(list(self.__evaluate()))
+        try:
+            return min(list(self.__evaluate()))
+        except ValueError:  # No elements in the collection
+            return None
 
-    def sum(self) -> int:
+    def sum_(self) -> int:
         """
         Retrieves the sum of the elements in the collection.
 
@@ -349,7 +515,9 @@ class Query:
         """
         return sum(list(self.__evaluate()))
 
-    # PAGING METHODS
+    # ################################################################################
+    #                                  PAGING METHODS                                #
+    # ################################################################################
 
     def element_at(self, index: int, default: Any = None) -> Any:
         """
@@ -382,10 +550,10 @@ class Query:
         """
         try:
             return next(self.__evaluate())
-        except StopIteration:
+        except StopIteration as exc:
             if default is not None:
                 return default
-            raise IndexError
+            raise IndexError from exc
 
     def last(self, default: Any = None) -> Any:
         """
@@ -400,10 +568,10 @@ class Query:
         dd = deque(self.__evaluate(), maxlen=1)
         try:
             return dd.pop()
-        except IndexError:
+        except IndexError as exc:
             if default is not None:
                 return default
-            raise IndexError
+            raise IndexError from exc
 
     def single(self, default: Any = None) -> Any:
         """
@@ -419,10 +587,10 @@ class Query:
         try:
             results = self.__evaluate()
             first_value = next(results)
-        except StopIteration:
+        except StopIteration as exc:
             if default is not None:
                 return default
-            raise IndexError
+            raise IndexError from exc
 
         try:
             next(results)
@@ -487,8 +655,7 @@ class Query:
         for action in self.actions:
             current_iterable = action.perform(current_iterable)
 
-        for element in current_iterable:
-            yield element
+        yield from current_iterable
 
     def to_list(self) -> List[Any]:
         """Gets the current query result as a list."""
