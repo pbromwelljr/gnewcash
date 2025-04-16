@@ -85,7 +85,7 @@
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">sqlite3</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="kn">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="kn">import</span> <span class="n">Commodity</span>
@@ -159,7 +159,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
              <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-             <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+             <span class="n">source_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">sort_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
              <span class="n">sort_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SortingMethod</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
@@ -177,12 +177,14 @@
 <span class="sd">        :rtype: GnuCashFile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">built_file</span><span class="p">:</span> <span class="n">GnuCashFile</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="p">()</span>
-        <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file</span>
-
-        <span class="n">source_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_file</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No file provided to load&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">built_file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">built_file</span>
+
+        <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file</span><span class="o">.</span><span class="n">name</span>
 
         <span class="n">sqlite_connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">sqlite_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
@@ -200,7 +202,7 @@
             <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span>
             <span class="n">sort_transactions</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
             <span class="n">sort_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SortingMethod</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Book</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Book</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Book objects from the GnuCash SQLite database.</span>
 
@@ -227,7 +229,7 @@
 
             <span class="n">transaction_manager</span> <span class="o">=</span> <span class="n">TransactionManager</span><span class="p">(</span><span class="n">disable_sort</span><span class="o">=</span><span class="ow">not</span> <span class="n">sort_transactions</span><span class="p">,</span> <span class="n">sort_method</span><span class="o">=</span><span class="n">sort_method</span><span class="p">)</span>
             <span class="n">template_transactions</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">template_account_guids</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+            <span class="n">template_account_guids</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">template_account_guids</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_book</span><span class="o">.</span><span class="n">template_root_account</span><span class="o">.</span><span class="n">get_account_guids</span><span class="p">())</span>
 
@@ -297,7 +299,7 @@
 <div class="viewcode-block" id="GnuCashSQLiteReader.create_slots_from_sqlite">
 <a class="viewcode-back" href="../../file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.create_slots_from_sqlite">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_slots_from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span> <span class="n">object_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">create_slots_from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span> <span class="n">object_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Slot objects from the GnuCash SQLite database.</span>
 
@@ -349,7 +351,7 @@
 <div class="viewcode-block" id="GnuCashSQLiteReader.create_commodities_from_sqlite">
 <a class="viewcode-back" href="../../file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.create_commodities_from_sqlite">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_commodities_from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">create_commodities_from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Commodity objects for all commodities in the SQLite database.</span>
 
@@ -362,7 +364,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__create_commodity_objects_from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">commodity_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__create_commodity_objects_from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">commodity_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]:</span>
         <span class="n">new_commodities</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">commodity</span> <span class="ow">in</span> <span class="n">commodity_data</span><span class="p">:</span>
             <span class="n">commodity_id</span> <span class="o">=</span> <span class="n">commodity</span><span class="p">[</span><span class="s1">&#39;mnemonic&#39;</span><span class="p">]</span>
@@ -390,7 +392,7 @@
             <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span>
             <span class="n">root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span>
             <span class="n">template_root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Transaction objects from the GnuCash SQLite database.</span>
 
@@ -404,7 +406,7 @@
 <span class="sd">        :rtype: list[Transaction]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">transaction_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_sqlite_table_data</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;transactions&#39;</span><span class="p">)</span>
-        <span class="n">new_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_transactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">transaction_data</span><span class="p">:</span>
             <span class="n">new_transaction</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">(</span>
                 <span class="n">guid</span><span class="o">=</span><span class="n">transaction</span><span class="p">[</span><span class="s1">&#39;guid&#39;</span><span class="p">],</span>
@@ -429,7 +431,7 @@
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span>
             <span class="n">template_root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ScheduledTransaction</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ScheduledTransaction</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates ScheduledTransaction objects from the GnuCash SQLite database.</span>
 
@@ -477,7 +479,7 @@
 <div class="viewcode-block" id="GnuCashSQLiteReader.create_budget_from_sqlite">
 <a class="viewcode-back" href="../../file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.create_budget_from_sqlite">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_budget_from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Budget</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">create_budget_from_sqlite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Budget</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Budget objects from the GnuCash SQLite database.</span>
 
@@ -518,7 +520,7 @@
             <span class="n">transaction_guid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span>
             <span class="n">template_root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Split</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Split</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates Split objects from the GnuCash SQLite database.</span>
 
@@ -569,8 +571,8 @@
             <span class="n">sqlite_cursor</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Cursor</span><span class="p">,</span>
             <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">where_condition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">where_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+            <span class="n">where_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for retrieving data from a SQLite table.</span>
 
@@ -695,7 +697,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span><span class="p">:</span> <span class="n">DBAction</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;budgets&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="n">budget</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    INSERT INTO budgets(guid, name, description, num_periods)</span>
@@ -732,7 +734,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;recurrences&#39;</span><span class="p">,</span> <span class="s1">&#39;obj_guid&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
 
         <span class="n">recurrence_weekend_adjust</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;recurrence_weekend_adjust&#39;</span><span class="p">):</span>
@@ -773,7 +775,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span><span class="p">:</span> <span class="n">DBAction</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;commodities&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="n">commodity</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;INSERT INTO commodities(guid, namespace, mnemonic, fullname, cusip, fraction, quote_flag, &#39;</span> \
                   <span class="s1">&#39;quote_source, quote_tz) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)&#39;</span>
@@ -802,7 +804,7 @@
 <span class="sd">        :type sqlite_cursor: sqlite3.Cursor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="n">update_field_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;guid&#39;</span><span class="p">:</span>
             <span class="n">update_field_name</span> <span class="o">=</span> <span class="s1">&#39;guid_val&#39;</span>
@@ -853,7 +855,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span><span class="p">:</span> <span class="n">DBAction</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;accounts&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">INSERT INTO accounts(guid, name, account_type, commodity_guid, commodity_scu, non_std_scu,</span>
@@ -906,7 +908,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span><span class="p">:</span> <span class="n">DBAction</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;transactions&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    INSERT INTO transactions(guid, currency_guid, num, post_date, enter_date, description)</span>
@@ -941,7 +943,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes a transaction from the SQLite database, as well as all dependent objects.&quot;&quot;&quot;</span>
         <span class="c1"># Delete slots for deleted transaction</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;DELETE FROM slots WHERE obj_guid = ?&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">deleted_transaction_guid</span><span class="p">,)</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">deleted_transaction_guid</span><span class="p">,)</span>
         <span class="n">sqlite_cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">sql_args</span><span class="p">)</span>
 
         <span class="c1"># Delete slots for splits in transaction</span>
@@ -971,7 +973,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span><span class="p">:</span> <span class="n">DBAction</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;splits&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num,</span>
@@ -1032,7 +1034,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">db_action</span><span class="p">:</span> <span class="n">DBAction</span> <span class="o">=</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">get_db_action</span><span class="p">(</span><span class="n">sqlite_cursor</span><span class="p">,</span> <span class="s1">&#39;schedxactions&#39;</span><span class="p">,</span> <span class="s1">&#39;guid&#39;</span><span class="p">,</span> <span class="n">scheduled_transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
         <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">sql_args</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
+        <span class="n">sql_args</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">db_action</span> <span class="o">==</span> <span class="n">DBAction</span><span class="o">.</span><span class="n">INSERT</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;INSERT INTO schedxactions (guid, name, enabled, start_date, end_date, last_occur, num_occur, &#39;</span> \
                   <span class="s1">&#39;rem_occur, auto_create, auto_notify, adv_creation, adv_notify, instance_count, template_act_guid) &#39;</span> \

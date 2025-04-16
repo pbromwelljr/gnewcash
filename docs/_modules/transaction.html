@@ -81,14 +81,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterator</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="kn">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="kn">import</span> <span class="n">Commodity</span>
 <span class="kn">from</span> <span class="nn">gnewcash.enums</span> <span class="kn">import</span> <span class="n">AccountType</span>
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="kn">import</span> <span class="n">GuidObject</span>
+<span class="kn">from</span> <span class="nn">gnewcash.search</span> <span class="kn">import</span> <span class="n">Query</span>
 <span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="kn">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 
 
@@ -104,12 +106,12 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">currency</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">date_posted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">date_entered</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Split&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Split&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">GuidObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guid</span><span class="p">)</span>
@@ -118,7 +120,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_posted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date_entered</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_entered</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">description</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Split</span><span class="p">]</span> <span class="o">=</span> <span class="n">splits</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Split</span><span class="p">]</span> <span class="o">=</span> <span class="n">splits</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">memo</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -140,7 +142,7 @@
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Transaction</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">NotImplemented</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">date_posted</span>
 
     <span class="nd">@property</span>
@@ -385,13 +387,13 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">disable_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">sort_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;SortingMethod&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="n">transactions</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="n">transactions</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_sort</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">disable_sort</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deleted_transaction_guids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deleted_transaction_guids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sort_method</span><span class="p">:</span> <span class="n">SortingMethod</span> <span class="o">=</span> <span class="n">sort_method</span> <span class="ow">or</span> <span class="n">StandardSort</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TransactionManager.add">
@@ -459,15 +461,10 @@
 <span class="sd">        :return: First transaction amount if the account has transactions, otherwise 0.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">account_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span>
-                                                   <span class="k">if</span> <span class="n">account</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y</span><span class="o">.</span><span class="n">account</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">splits</span>
-                                                                  <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]]</span>
-        <span class="n">amount</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">account_transactions</span><span class="p">:</span>
-            <span class="n">first_transaction</span><span class="p">:</span> <span class="n">Transaction</span> <span class="o">=</span> <span class="n">account_transactions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">amount</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
-                                 <span class="n">first_transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span><span class="o">.</span><span class="n">amount</span> <span class="ow">or</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">amount</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span></div>
 
 
 <div class="viewcode-block" id="TransactionManager.get_account_ending_balance">
@@ -487,7 +484,7 @@
 <div class="viewcode-block" id="TransactionManager.minimum_balance_past_date">
 <a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.minimum_balance_past_date">[docs]</a>
     <span class="k">def</span> <span class="nf">minimum_balance_past_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> \
-            <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]]:</span>
+            <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the minimum balance for the account after a certain date, given the list of transactions.</span>
 
@@ -529,26 +526,13 @@
 <span class="sd">        :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">balance</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
-            <span class="n">transaction_accounts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
-            <span class="n">is_applicable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">transaction_accounts</span> <span class="ow">and</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                    <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">:</span>
-                <span class="n">is_applicable</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">transaction_accounts</span><span class="p">:</span>
-                <span class="n">is_applicable</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_applicable</span><span class="p">:</span>
-                <span class="k">continue</span>
-
-            <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">):</span>
-                <span class="n">applicable_split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
-                <span class="n">amount</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">applicable_split</span><span class="o">.</span><span class="n">amount</span> <span class="ow">or</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span><span class="p">:</span>
-                    <span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span>
-        <span class="k">return</span> <span class="n">balance</span></div>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span> <span class="k">else</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">sum_</span><span class="p">()</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TransactionManager.get_balance_at_transaction">
@@ -564,15 +548,13 @@
 <span class="sd">        :return: Account balance at specified transaction or 0, if no applicable transactions were found.</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">balance</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">iter_transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">iter_transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">split</span><span class="o">.</span><span class="n">account</span> <span class="o">!=</span> <span class="n">account</span> <span class="ow">or</span> <span class="n">split</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">balance</span> <span class="o">+=</span> <span class="n">split</span><span class="o">.</span><span class="n">amount</span>
-            <span class="k">if</span> <span class="n">iter_transaction</span><span class="o">.</span><span class="n">guid</span> <span class="o">==</span> <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
-                <span class="k">break</span>
-        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">take_while</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">guid</span> <span class="o">!=</span> <span class="n">transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">sum_</span><span class="p">()</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TransactionManager.get_cleared_balance">
@@ -586,13 +568,74 @@
 <span class="sd">        :return: Current cleared balance for the account</span>
 <span class="sd">        :rtype: decimal.Decimal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cleared_balance</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;c&#39;</span> <span class="ow">or</span> <span class="n">split</span><span class="o">.</span><span class="n">account</span> <span class="o">!=</span> <span class="n">account</span> <span class="ow">or</span> <span class="n">split</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">cleared_balance</span> <span class="o">+=</span> <span class="n">split</span><span class="o">.</span><span class="n">amount</span>
-        <span class="k">return</span> <span class="n">cleared_balance</span></div>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">reconciled_state</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">sum_</span><span class="p">()</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TransactionManager.create_reversing_transaction">
+<a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.create_reversing_transaction">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_reversing_transaction</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">transaction</span><span class="p">:</span> <span class="n">Transaction</span><span class="p">,</span>
+            <span class="n">reversed_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transaction</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new transaction that reverses another transaction.</span>
+
+<span class="sd">        :param transaction: Transaction to be reversed</span>
+<span class="sd">        :type transaction: Transaction</span>
+<span class="sd">        :param reversed_date: The date that the transaction was reversed (optional, default is transaction&#39;s date)</span>
+<span class="sd">        :type reversed_date: datetime</span>
+<span class="sd">        :return: New transaction that reverses the provided transaction</span>
+<span class="sd">        :rtype: Transaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reversed_splits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span>
+            <span class="n">reversed_splits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Split</span><span class="p">(</span>
+                <span class="n">account</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
+                <span class="n">amount</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">amount</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">split</span><span class="o">.</span><span class="n">amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">reconciled_state</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">reconciled_state</span><span class="p">,</span>
+                <span class="n">action</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">action</span><span class="p">,</span>
+                <span class="n">memo</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">memo</span><span class="p">,</span>
+                <span class="n">quantity_denominator</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">quantity_denominator</span><span class="p">,</span>
+                <span class="n">reconcile_date</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">reconcile_date</span><span class="p">,</span>
+                <span class="n">quantity_num</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">quantity_num</span><span class="p">,</span>
+                <span class="n">lot_guid</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">lot_guid</span><span class="p">,</span>
+                <span class="n">value_num</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">value_num</span><span class="p">,</span>
+                <span class="n">value_denom</span><span class="o">=</span><span class="n">split</span><span class="o">.</span><span class="n">value_denom</span>
+            <span class="p">))</span>
+        <span class="n">reversing_transaction</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">(</span>
+            <span class="n">slots</span><span class="o">=</span><span class="n">transaction</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span>
+            <span class="n">currency</span><span class="o">=</span><span class="n">transaction</span><span class="o">.</span><span class="n">currency</span><span class="p">,</span>
+            <span class="n">date_posted</span><span class="o">=</span><span class="n">reversed_date</span> <span class="ow">or</span> <span class="n">transaction</span><span class="o">.</span><span class="n">date_posted</span><span class="p">,</span>
+            <span class="n">date_entered</span><span class="o">=</span><span class="n">transaction</span><span class="o">.</span><span class="n">date_entered</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">transaction</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">splits</span><span class="o">=</span><span class="n">reversed_splits</span><span class="p">,</span>
+            <span class="n">memo</span><span class="o">=</span><span class="n">transaction</span><span class="o">.</span><span class="n">memo</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">reversing_transaction</span><span class="p">)</span>
+        <span class="n">transaction</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="p">(</span>
+            <span class="n">key</span><span class="o">=</span><span class="s1">&#39;reversed-by&#39;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">reversing_transaction</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span>
+            <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;guid&#39;</span>
+        <span class="p">))</span>
+        <span class="k">return</span> <span class="n">reversing_transaction</span></div>
+
+
+<div class="viewcode-block" id="TransactionManager.query">
+<a class="viewcode-back" href="../transaction.html#transaction.TransactionManager.query">[docs]</a>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Query</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a new Query object to query transactions.</span>
+
+<span class="sd">        :return: New Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">)</span></div>
 
 
     <span class="c1"># Making TransactionManager iterable</span>
@@ -606,7 +649,7 @@
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">NotImplemented</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="k">for</span> <span class="n">my_transaction</span><span class="p">,</span> <span class="n">other_transaction</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">my_transaction</span> <span class="o">!=</span> <span class="n">other_transaction</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -689,7 +732,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Split</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">splits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Split</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_split</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_split</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">from_account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">from_account</span> <span class="o">=</span> <span class="n">from_account</span>
         <span class="k">if</span> <span class="n">to_account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

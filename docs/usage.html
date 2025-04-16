@@ -62,6 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#transaction-manager">Transaction Manager</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#searching">Searching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#questions-comments-concerns">Questions/Comments/Concerns?</a></li>
 </ul>
 </li>
@@ -99,15 +100,15 @@
 <h2>GnuCashFile<a class="headerlink" href="#gnucashfile" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="gnucash_file.html">GnuCashFile</a> is responsible for reading data from and writing data to GnuCash files.</p>
 <p>To read a GnuCash file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span>
-<span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">XMLFileFormat</span>
+<span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">XMLFileFormat</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To write a GnuCash file (recommend backing up beforehand if overwriting an existing file):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">Book</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">Book</span><span class="p">,</span> <span class="n">XMLFileFormat</span>
 <span class="n">my_book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">()</span>
 <span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="p">([</span><span class="n">my_book</span><span class="p">])</span>
-<span class="n">my_file</span><span class="o">.</span><span class="n">build_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">)</span>
+<span class="n">my_file</span><span class="o">.</span><span class="n">build_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">XMLFileFormat</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The build_file function accepts two arguments to modify how the file is written: <code class="code docutils literal notranslate"><span class="pre">prettify_xml</span></code> and <code class="code docutils literal notranslate"><span class="pre">use_gzip</span></code>. Both options are turned off by default.</p>
@@ -196,6 +197,7 @@ You can retrieve subaccounts by either accessing the <code class="code docutils 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">checking_account</span> <span class="o">=</span> <span class="n">my_book</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="s1">&#39;Assets&#39;</span><span class="p">,</span> <span class="s1">&#39;Current Assets&#39;</span><span class="p">,</span> <span class="s1">&#39;Checking Account&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>You can also use our <a class="reference external" href="usage.html#searching">LINQ-like searching</a>.</p>
 </section>
 <section id="creating-accounts">
 <h3>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Link to this heading"></a></h3>
@@ -462,6 +464,7 @@ for a given account like so:</p>
 </pre></div>
 </div>
 <p><code class="code docutils literal notranslate"><span class="pre">get_transactions</span></code> returns a generator, so you can iterate over transactions in a memory-efficient way.</p>
+<p>You can also use our <a class="reference external" href="usage.html#searching">LINQ-like searching</a>.</p>
 </section>
 <section id="creating-transactions">
 <h3>Creating Transactions<a class="headerlink" href="#creating-transactions" title="Link to this heading"></a></h3>
@@ -593,6 +596,62 @@ account is at the minimum balance, and the minimum balance itself.</p>
 </li>
 </ul>
 </section>
+</section>
+<section id="searching">
+<h2>Searching<a class="headerlink" href="#searching" title="Link to this heading"></a></h2>
+<p>GNewCash supports a LINQ-like syntax for searching on transactions and accounts from your GnuCash files.
+For more information on LINQ, please see the <a class="reference external" href="https://learn.microsoft.com/en-us/dotnet/api/system.linq.queryable">official Microsoft documentation</a>.</p>
+<p>You can access these query objects using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span>
+<span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">my_file</span><span class="o">.</span><span class="n">books</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>  <span class="c1"># Query transactions</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">my_file</span><span class="o">.</span><span class="n">books</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">accounts_query</span><span class="p">()</span>      <span class="c1"># Query accounts</span>
+</pre></div>
+</div>
+<p>The LINQ-like querying operates on chaining generators together, and are only evaluated when the Query object is iterated over, or one of the following methods are invoked:</p>
+<ul class="simple">
+<li><p>all_</p></li>
+<li><p>any_</p></li>
+<li><p>average</p></li>
+<li><p>contains</p></li>
+<li><p>count</p></li>
+<li><p>default_if_empty</p></li>
+<li><p>element_at</p></li>
+<li><p>first</p></li>
+<li><p>last</p></li>
+<li><p>max_</p></li>
+<li><p>min_</p></li>
+<li><p>single</p></li>
+<li><p>sum_</p></li>
+<li><p>to_list()</p></li>
+</ul>
+<p>With these functions, you can create powerful, memory-efficient queries like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the average checking account withdrawal amount (transactions query)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Checking Account&#39;</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span> <span class="o">&lt;</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+               <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">average</span><span class="p">())</span>
+
+<span class="c1"># Get the maximum expenditure on any credit card in the month of July (transactions query)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">date_posted</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">7</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">CREDIT</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span> <span class="o">&gt;</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+               <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">max_</span><span class="p">())</span>
+
+<span class="c1"># Get a list of all INCOME-type accounts (accounts query)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">INCOME</span><span class="p">)</span>
+               <span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>For more examples, please see:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="_modules/transaction.html#TransactionManager.get_account_starting_balance">TransactionManager.get_account_starting_balance</a></p></li>
+<li><p><a class="reference external" href="_modules/transaction.html#TransactionManager.get_balance_at_date">TransactionManager.get_balance_at_date</a></p></li>
+<li><p><a class="reference external" href="_modules/transaction.html#TransactionManager.get_balance_at_transaction">TransactionManager.get_balance_at_transaction</a></p></li>
+<li><p><a class="reference external" href="_modules/transaction.html#TransactionManager.get_cleared_balance">TransactionManager.get_cleared_balance</a></p></li>
+<li><p><a class="reference external" href="_modules/gnucash_file.html#Book.get_account_balance">Book.get_account_balance</a></p></li>
+</ul>
 </section>
 <section id="questions-comments-concerns">
 <h2>Questions/Comments/Concerns?<a class="headerlink" href="#questions-comments-concerns" title="Link to this heading"></a></h2>

@@ -87,7 +87,9 @@
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -121,6 +123,8 @@
       </ul></li>
       <li><a href="account.html#account.Account">Account (class in account)</a>
 </li>
+      <li><a href="gnucash_file.html#gnucash_file.Book.accounts_query">accounts_query() (gnucash_file.Book method)</a>
+</li>
       <li><a href="account.html#account.AccountType">AccountType (class in account)</a>
 
       <ul>
@@ -128,6 +132,8 @@
 </li>
       </ul></li>
       <li><a href="transaction.html#transaction.TransactionManager.add">add() (transaction.TransactionManager method)</a>
+</li>
+      <li><a href="searching.html#search.Query.all_">all_() (search.Query method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -137,11 +143,15 @@
 </li>
       <li><a href="transaction.html#transaction.AmountSort">AmountSort (class in transaction)</a>
 </li>
+      <li><a href="searching.html#search.Query.any_">any_() (search.Query method)</a>
+</li>
       <li><a href="account.html#account.Account.as_dict">as_dict() (account.Account method)</a>
 </li>
       <li><a href="account.html#account.AssetAccount">AssetAccount (class in account)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.associated_uri">associated_uri (transaction.Transaction property)</a>
+</li>
+      <li><a href="searching.html#search.Query.average">average() (search.Query method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -202,10 +212,18 @@
         <li><a href="transaction.html#transaction.StandardSort.compare">(transaction.StandardSort method)</a>
 </li>
       </ul></li>
-      <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.create_account_from_sqlite">create_account_from_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteReader class method)</a>
+      <li><a href="searching.html#search.Query.concat">concat() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.ConcatQueryAction">ConcatQueryAction (class in search)</a>
+</li>
+      <li><a href="searching.html#search.Query.contains">contains() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.Query.count">count() (search.Query method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.create_account_from_sqlite">create_account_from_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteReader class method)</a>
+</li>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.create_account_from_xml">create_account_from_xml() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.create_book_from_xml">create_book_from_xml() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
@@ -221,6 +239,8 @@
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.create_commodity_from_sqlite">create_commodity_from_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteReader class method)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.create_commodity_from_xml">create_commodity_from_xml() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
+</li>
+      <li><a href="transaction.html#transaction.TransactionManager.create_reversing_transaction">create_reversing_transaction() (transaction.TransactionManager method)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.create_scheduled_transaction_from_xml">create_scheduled_transaction_from_xml() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
 </li>
@@ -254,6 +274,8 @@
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.DBAction">DBAction (class in file_formats.gnucash_sqlite)</a>
 </li>
+      <li><a href="searching.html#search.Query.default_if_empty">default_if_empty() (search.Query method)</a>
+</li>
       <li><a href="transaction.html#transaction.TransactionManager.delete">delete() (transaction.TransactionManager method)</a>
 </li>
       <li><a href="utils.html#utils.delete_log_files">delete_log_files() (in module utils)</a>
@@ -265,6 +287,10 @@
       <li><a href="transaction.html#transaction.DescriptionSort">DescriptionSort (class in transaction)</a>
 </li>
       <li><a href="account.html#account.Account.dict_entry_name">dict_entry_name (account.Account property)</a>
+</li>
+      <li><a href="searching.html#search.Query.distinct">distinct() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.DistinctQueryAction">DistinctQueryAction (class in search)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter.dump">dump() (file_formats.gnucash_sqlite.GnuCashSQLiteWriter class method)</a>
 
@@ -278,6 +304,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query.element_at">element_at() (search.Query method)</a>
+</li>
       <li>
     enums
 
@@ -288,6 +316,10 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.EquityAccount">EquityAccount (class in account)</a>
+</li>
+      <li><a href="searching.html#search.Query.except_">except_() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.ExceptQueryAction">ExceptQueryAction (class in search)</a>
 </li>
       <li><a href="account.html#account.ExpenseAccount">ExpenseAccount (class in account)</a>
 </li>
@@ -311,6 +343,8 @@
         <li><a href="file_formats.html#module-file_formats.gnucash_xml">module</a>
 </li>
       </ul></li>
+      <li><a href="searching.html#search.Query.first">first() (search.Query method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transaction.html#transaction.SimpleTransaction.from_account">from_account (transaction.SimpleTransaction property)</a>
@@ -367,10 +401,10 @@
         <li><a href="account.html#account.InterestAccountWithSubaccounts.get_info_at_date">(account.InterestAccountWithSubaccounts method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.Account.get_parent_commodity">get_parent_commodity() (account.Account method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="slot.html#slot.SlottableObject.get_slot_value">get_slot_value() (slot.SlottableObject method)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.get_sqlite_table_data">get_sqlite_table_data() (file_formats.gnucash_sqlite.GnuCashSQLiteReader class method)</a>
@@ -401,6 +435,10 @@
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader">GnuCashXMLReader (class in file_formats.gnucash_xml)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLWriter">GnuCashXMLWriter (class in file_formats.gnucash_xml)</a>
+</li>
+      <li><a href="searching.html#search.Query.group_by">group_by() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.GroupByQueryAction">GroupByQueryAction (class in search)</a>
 </li>
       <li>
     guid_object
@@ -439,13 +477,19 @@
         <li><a href="account.html#account.InterestAccountWithSubaccounts.interest_percentage">(account.InterestAccountWithSubaccounts property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.InterestAccount">InterestAccount (class in account)</a>
 </li>
       <li><a href="account.html#account.InterestAccountBase">InterestAccountBase (class in account)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.InterestAccountWithSubaccounts">InterestAccountWithSubaccounts (class in account)</a>
+</li>
+      <li><a href="searching.html#search.Query.intersect">intersect() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.IntersectQueryAction">IntersectQueryAction (class in search)</a>
+</li>
+      <li><a href="searching.html#search.InvalidOperationException">InvalidOperationException (class in search)</a>
 </li>
       <li><a href="transaction.html#transaction.InvalidSortFieldException">InvalidSortFieldException (class in transaction)</a>
 </li>
@@ -459,6 +503,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query.last">last() (search.Query method)</a>
+</li>
       <li><a href="account.html#account.LiabilityAccount">LiabilityAccount (class in account)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteReader.load">load() (file_formats.gnucash_sqlite.GnuCashSQLiteReader class method)</a>
@@ -487,7 +533,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transaction.html#transaction.Transaction.mark_transaction_cleared">mark_transaction_cleared() (transaction.Transaction method)</a>
 </li>
+      <li><a href="searching.html#search.Query.max_">max_() (search.Query method)</a>
+</li>
       <li><a href="transaction.html#transaction.MemoSort">MemoSort (class in transaction)</a>
+</li>
+      <li><a href="searching.html#search.Query.min_">min_() (search.Query method)</a>
 </li>
       <li><a href="transaction.html#transaction.TransactionManager.minimum_balance_past_date">minimum_balance_past_date() (transaction.TransactionManager method)</a>
 </li>
@@ -508,6 +558,8 @@
         <li><a href="gnucash_file.html#module-gnucash_file">gnucash_file</a>
 </li>
         <li><a href="guid_object.html#module-guid_object">guid_object</a>
+</li>
+        <li><a href="searching.html#module-search">search</a>
 </li>
         <li><a href="slot.html#module-slot">slot</a>
 </li>
@@ -535,6 +587,18 @@
   </ul></td>
 </tr></table>
 
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query.order_by">order_by() (search.Query method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.OrderByQueryAction">OrderByQueryAction (class in search)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -550,11 +614,57 @@
         <li><a href="account.html#account.LoanExtraPayment.payment_amount">(account.LoanExtraPayment attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.LoanExtraPayment.payment_date">payment_date (account.LoanExtraPayment attribute)</a>
 </li>
+      <li><a href="searching.html#search.ConcatQueryAction.perform">perform() (search.ConcatQueryAction method)</a>
+
+      <ul>
+        <li><a href="searching.html#search.DistinctQueryAction.perform">(search.DistinctQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.ExceptQueryAction.perform">(search.ExceptQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.GroupByQueryAction.perform">(search.GroupByQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.IntersectQueryAction.perform">(search.IntersectQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.OrderByQueryAction.perform">(search.OrderByQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.QueryAction.perform">(search.QueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.ReverseQueryAction.perform">(search.ReverseQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.SelectQueryAction.perform">(search.SelectQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.SkipQueryAction.perform">(search.SkipQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.SkipWhileQueryAction.perform">(search.SkipWhileQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.TakeQueryAction.perform">(search.TakeQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.TakeWhileQueryAction.perform">(search.TakeWhileQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.UnionQueryAction.perform">(search.UnionQueryAction method)</a>
+</li>
+        <li><a href="searching.html#search.WhereQueryAction.perform">(search.WhereQueryAction method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="account.html#account.Account.placeholder">placeholder (account.Account property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query">Query (class in search)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transaction.html#transaction.TransactionManager.query">query() (transaction.TransactionManager method)</a>
+</li>
+      <li><a href="searching.html#search.QueryAction">QueryAction (class in search)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -568,13 +678,19 @@
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.read_xml_child_date">read_xml_child_date() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.read_xml_child_int">read_xml_child_int() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLReader.read_xml_child_text">read_xml_child_text() (file_formats.gnucash_xml.GnuCashXMLReader class method)</a>
 </li>
+      <li><a href="searching.html#search.Query.reset">reset() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.Query.reverse">reverse() (search.Query method)</a>
+</li>
       <li><a href="transaction.html#transaction.Transaction.reversed_by">reversed_by (transaction.Transaction property)</a>
+</li>
+      <li><a href="searching.html#search.ReverseQueryAction">ReverseQueryAction (class in search)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -588,6 +704,19 @@
 </li>
       <li><a href="transaction.html#transaction.ScheduledTransaction">ScheduledTransaction (class in transaction)</a>
 </li>
+      <li>
+    search
+
+      <ul>
+        <li><a href="searching.html#module-search">module</a>
+</li>
+      </ul></li>
+      <li><a href="searching.html#search.Query.select">select() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.Query.select_many">select_many() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.SelectQueryAction">SelectQueryAction (class in search)</a>
+</li>
       <li><a href="slot.html#slot.SlottableObject.set_slot_value">set_slot_value() (slot.SlottableObject method)</a>
 </li>
       <li><a href="slot.html#slot.SlottableObject.set_slot_value_bool">set_slot_value_bool() (slot.SlottableObject method)</a>
@@ -596,6 +725,16 @@
 </li>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.simplify_transactions">simplify_transactions() (gnucash_file.GnuCashFile method)</a>
 </li>
+      <li><a href="searching.html#search.Query.single">single() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.Query.skip">skip() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.Query.skip_while">skip_while() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.SkipQueryAction">SkipQueryAction (class in search)</a>
+</li>
+      <li><a href="searching.html#search.SkipWhileQueryAction">SkipWhileQueryAction (class in search)</a>
+</li>
       <li>
     slot
 
@@ -603,14 +742,14 @@
         <li><a href="slot.html#module-slot">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="slot.html#slot.Slot">Slot (class in slot)</a>
 </li>
       <li><a href="slot.html#slot.SlottableObject">SlottableObject (class in slot)</a>
 </li>
       <li><a href="transaction.html#transaction.SortingMethod">SortingMethod (class in transaction)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transaction.html#transaction.Split">Split (class in transaction)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.split_account_names">split_account_names (transaction.Transaction property)</a>
@@ -641,22 +780,34 @@
       </ul></li>
       <li><a href="gnucash_file.html#gnucash_file.GnuCashFile.strip_transaction_timezones">strip_transaction_timezones() (gnucash_file.GnuCashFile method)</a>
 </li>
+      <li><a href="searching.html#search.Query.sum_">sum_() (search.Query method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query.take">take() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.Query.take_while">take_while() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.TakeQueryAction">TakeQueryAction (class in search)</a>
+</li>
+      <li><a href="searching.html#search.TakeWhileQueryAction">TakeWhileQueryAction (class in search)</a>
+</li>
       <li><a href="transaction.html#transaction.SimpleTransaction.to_account">to_account (transaction.SimpleTransaction property)</a>
+</li>
+      <li><a href="searching.html#search.Query.to_list">to_list() (search.Query method)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.to_split_account_names">to_split_account_names (transaction.Transaction property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transaction.html#transaction.Transaction.to_split_accounts">to_split_accounts (transaction.Transaction property)</a>
 </li>
       <li><a href="transaction.html#transaction.Transaction.to_splits">to_splits (transaction.Transaction property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     transaction
 
@@ -675,6 +826,12 @@
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query.union">union() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.UnionQueryAction">UnionQueryAction (class in search)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     utils
@@ -703,6 +860,10 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="searching.html#search.Query.where">where() (search.Query method)</a>
+</li>
+      <li><a href="searching.html#search.WhereQueryAction">WhereQueryAction (class in search)</a>
+</li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter.write_account_to_sqlite">write_account_to_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteWriter class method)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter.write_book_to_sqlite">write_book_to_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteWriter class method)</a>
@@ -711,14 +872,14 @@
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter.write_commodity_to_sqlite">write_commodity_to_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteWriter class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file_formats.html#file_formats.gnucash_xml.GnuCashXMLWriter.write_file_contents">write_file_contents() (file_formats.gnucash_xml.GnuCashXMLWriter class method)</a>
 
       <ul>
         <li><a href="file_formats.html#file_formats.gnucash_xml.GZipXMLFileFormat.write_file_contents">(file_formats.gnucash_xml.GZipXMLFileFormat class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter.write_recurrence_to_sqlite">write_recurrence_to_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteWriter class method)</a>
 </li>
       <li><a href="file_formats.html#file_formats.gnucash_sqlite.GnuCashSQLiteWriter.write_scheduled_transaction_to_sqlite">write_scheduled_transaction_to_sqlite() (file_formats.gnucash_sqlite.GnuCashSQLiteWriter class method)</a>

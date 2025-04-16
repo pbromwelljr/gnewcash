@@ -10,17 +10,17 @@ To read a GnuCash file:
 
 .. code:: python
 
-    from gnewcash import GnuCashFile
-    my_file = GnuCashFile.read_file('/path/to/my/file.gnucash')
+    from gnewcash import GnuCashFile, XMLFileFormat
+    my_file = GnuCashFile.read_file('/path/to/my/file.gnucash', file_format=XMLFileFormat)
 
 To write a GnuCash file (recommend backing up beforehand if overwriting an existing file):
 
 .. code:: python
 
-    from gnewcash import GnuCashFile, Book
+    from gnewcash import GnuCashFile, Book, XMLFileFormat
     my_book = Book()
     my_file = GnuCashFile([my_book])
-    my_file.build_file('/path/to/my/file.gnucash')
+    my_file.build_file('/path/to/my/file.gnucash', file_format=XMLFileFormat)
 
 The build_file function accepts two arguments to modify how the file is written: :code:`prettify_xml` and :code:`use_gzip`. Both options are turned off by default.
 
@@ -100,6 +100,8 @@ And you want to get the "Checking Account" account, this call will retrieve it f
 .. code:: python
 
     checking_account = my_book.get_account('Assets', 'Current Assets', 'Checking Account')
+
+You can also use our `LINQ-like searching <usage.html#searching>`_.
 
 
 Creating Accounts
@@ -385,6 +387,8 @@ for a given account like so:
 
 :code:`get_transactions` returns a generator, so you can iterate over transactions in a memory-efficient way.
 
+You can also use our `LINQ-like searching <usage.html#searching>`_.
+
 Creating Transactions
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -506,6 +510,71 @@ in the GnuCash file.
 - :code:`minimum_balance_past_date`
     Retrieves the minimum balance past a certain date for the given account. It returns a tuple of the date that the
     account is at the minimum balance, and the minimum balance itself.
+
+
+Searching
+---------
+
+GNewCash supports a LINQ-like syntax for searching on transactions and accounts from your GnuCash files.
+For more information on LINQ, please see the `official Microsoft documentation <https://learn.microsoft.com/en-us/dotnet/api/system.linq.queryable>`_.
+
+You can access these query objects using:
+
+.. code:: python
+
+    from gnewcash import GnuCashFile
+    my_file = GnuCashFile.read_file('/path/to/my/file.gnucash')
+    query = my_file.books[0].transactions.query()  # Query transactions
+    query = my_file.books[0].accounts_query()      # Query accounts
+
+
+The LINQ-like querying operates on chaining generators together, and are only evaluated when the Query object is iterated over, or one of the following methods are invoked:
+
+- all\_
+- any\_
+- average
+- contains
+- count
+- default_if_empty
+- element_at
+- first
+- last
+- max\_
+- min\_
+- single
+- sum\_
+- to_list()
+
+
+With these functions, you can create powerful, memory-efficient queries like:
+
+.. code:: python
+
+    # Get the average checking account withdrawal amount (transactions query)
+    result = (query.select_many(lambda t, i: t.splits)
+                   .where(lambda s: s.account.name == 'Checking Account' and s.amount < Decimal(0))
+                   .select(lambda s, i: s.amount)
+                   .average())
+
+    # Get the maximum expenditure on any credit card in the month of July (transactions query)
+    result = (query.where(lambda t: t.date_posted.month == 7)
+                   .select_many(lambda t, i: t.splits)
+                   .where(lambda s: s.account.type == AccountType.CREDIT and s.amount > Decimal(0))
+                   .select(lambda s, i: s.amount)
+                   .max_())
+
+    # Get a list of all INCOME-type accounts (accounts query)
+    result = (query.where(lambda a: a.type == AccountType.INCOME)
+                   .to_list())
+
+
+For more examples, please see:
+
+- `TransactionManager.get_account_starting_balance <_modules/transaction.html#TransactionManager.get_account_starting_balance>`_
+- `TransactionManager.get_balance_at_date <_modules/transaction.html#TransactionManager.get_balance_at_date>`_
+- `TransactionManager.get_balance_at_transaction <_modules/transaction.html#TransactionManager.get_balance_at_transaction>`_
+- `TransactionManager.get_cleared_balance <_modules/transaction.html#TransactionManager.get_cleared_balance>`_
+- `Book.get_account_balance <_modules/gnucash_file.html#Book.get_account_balance>`_
 
 
 Questions/Comments/Concerns?

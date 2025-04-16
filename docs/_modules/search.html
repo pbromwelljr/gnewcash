@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>search &mdash; gnewcash 1.0alpha documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9974cacb"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gnewcash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using GNewCash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_documentation.html">Code Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../versions.html">Versions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gnewcash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">search</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for search</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Python module to handle searching on objects using a LINQ-like format.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
+
+<span class="n">Selector</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
+<span class="n">Predicate</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
+<span class="n">OrderByKey</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
+<span class="n">GroupBySelector</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
+<span class="n">GroupByResultSelector</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="s1">&#39;Query&#39;</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="InvalidOperationException">
+<a class="viewcode-back" href="../searching.html#search.InvalidOperationException">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidOperationException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception thrown when an invalid operation was performed.&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="QueryAction">
+<a class="viewcode-back" href="../searching.html#search.QueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">QueryAction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for other query actions.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="QueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.QueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the action on the current element in the collection.&quot;&quot;&quot;</span>
+        <span class="c1"># Should be implemented by subclasses.</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SelectQueryAction">
+<a class="viewcode-back" href="../searching.html#search.SelectQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">SelectQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for mapping elements in the collection based on the provided method.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">,</span> <span class="n">is_select_many</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span> <span class="o">=</span> <span class="n">selector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_select_many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">is_select_many</span>
+
+<div class="viewcode-block" id="SelectQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.SelectQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the selector against each element and yield it to the next action.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+            <span class="n">selector_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_select_many</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selector_result</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                <span class="k">yield from</span> <span class="n">selector_result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">selector_result</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WhereQueryAction">
+<a class="viewcode-back" href="../searching.html#search.WhereQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">WhereQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for filtering elements in the collection based on the provided method.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span> <span class="o">=</span> <span class="n">predicate</span>
+
+<div class="viewcode-block" id="WhereQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.WhereQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter the collection by running each element against the predicate.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="n">element</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConcatQueryAction">
+<a class="viewcode-back" href="../searching.html#search.ConcatQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">ConcatQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for concatenating another collection at the end of the current one.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span>
+
+<div class="viewcode-block" id="ConcatQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.ConcatQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append the other collection to the end of the current one.&quot;&quot;&quot;</span>
+        <span class="k">yield from</span> <span class="n">collection</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">other</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DistinctQueryAction">
+<a class="viewcode-back" href="../searching.html#search.DistinctQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">DistinctQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for getting distinct values of elements in the collection.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DistinctQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.DistinctQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter results based on distinct values.&quot;&quot;&quot;</span>
+        <span class="n">seen_values</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">seen_values</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">seen_values</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">element</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ExceptQueryAction">
+<a class="viewcode-back" href="../searching.html#search.ExceptQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">ExceptQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for filtering out elements that are in a specified collection.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">exclude_values</span>
+
+<div class="viewcode-block" id="ExceptQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.ExceptQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter out elements in the collection that are in the specified exclude values.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_values</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="n">element</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IntersectQueryAction">
+<a class="viewcode-back" href="../searching.html#search.IntersectQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">IntersectQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for only including elements that are in a specified collection.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">intersect_values</span>
+
+<div class="viewcode-block" id="IntersectQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.IntersectQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a set intersection on the collection and the specified values.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersect_values</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="n">element</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UnionQueryAction">
+<a class="viewcode-back" href="../searching.html#search.UnionQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">UnionQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for doing a set union on the collection and specified values.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">union_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">union_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">union_values</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UnionQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.UnionQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a set union on the collection and the specified values.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">union_values</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">union_values</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">element</span>
+
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">union_values</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OrderByQueryAction">
+<a class="viewcode-back" href="../searching.html#search.OrderByQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">OrderByQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for ordering results by an indicated key.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span> <span class="o">=</span> <span class="n">order_by</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">descending</span>
+
+<div class="viewcode-block" id="OrderByQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.OrderByQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the collection by the provided key or function, following subsequent then-by instructions.&quot;&quot;&quot;</span>
+        <span class="k">yield from</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order_by</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">descending</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ReverseQueryAction">
+<a class="viewcode-back" href="../searching.html#search.ReverseQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">ReverseQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for reversing the collection.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ReverseQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.ReverseQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverses the collection.&quot;&quot;&quot;</span>
+        <span class="c1"># Unfortunately. no way to reverse a (potentially) generator without consuming it.</span>
+        <span class="c1"># So, possible high memory usage here.</span>
+        <span class="n">collection_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">collection_list</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GroupByQueryAction">
+<a class="viewcode-back" href="../searching.html#search.GroupByQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">GroupByQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for grouping the collection by a provided key.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
+            <span class="n">element</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
+            <span class="n">result</span><span class="p">:</span> <span class="n">GroupByResultSelector</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="n">GroupBySelector</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">:</span> <span class="n">GroupBySelector</span> <span class="o">=</span> <span class="n">element</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> <span class="n">GroupByResultSelector</span> <span class="o">=</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="GroupByQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.GroupByQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Groups the collection by the specified key.&quot;&quot;&quot;</span>
+        <span class="n">group_by_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="n">group_by_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="n">element</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">key_value</span><span class="p">,</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">group_by_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">key_value</span><span class="p">,</span> <span class="n">Query</span><span class="p">(</span><span class="n">elements</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SkipQueryAction">
+<a class="viewcode-back" href="../searching.html#search.SkipQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">SkipQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for skipping a certain number of elements.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">skip_count</span>
+
+<div class="viewcode-block" id="SkipQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.SkipQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Skip a certain number of elements.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_count</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="n">element</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SkipWhileQueryAction">
+<a class="viewcode-back" href="../searching.html#search.SkipWhileQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">SkipWhileQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for skipping elements while a provided predicate is true.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span> <span class="o">=</span> <span class="n">predicate</span>
+
+<div class="viewcode-block" id="SkipWhileQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.SkipWhileQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Skip elements while the provided predicate is true.&quot;&quot;&quot;</span>
+        <span class="n">should_skip_elements</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">should_skip_elements</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">should_skip_elements</span><span class="p">:</span>
+                <span class="n">should_skip_elements</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">yield</span> <span class="n">element</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TakeQueryAction">
+<a class="viewcode-back" href="../searching.html#search.TakeQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">TakeQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for taking a certain number of elements.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">take_count</span>
+
+<div class="viewcode-block" id="TakeQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.TakeQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Take a certain number of elements.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_count</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">element</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TakeWhileQueryAction">
+<a class="viewcode-back" href="../searching.html#search.TakeWhileQueryAction">[docs]</a>
+<span class="k">class</span> <span class="nc">TakeWhileQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for taking elements while a provided predicate is true.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span> <span class="o">=</span> <span class="n">predicate</span>
+
+<div class="viewcode-block" id="TakeWhileQueryAction.perform">
+<a class="viewcode-back" href="../searching.html#search.TakeWhileQueryAction.perform">[docs]</a>
+    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Take elements while the provided predicate is true.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">element</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Query">
+<a class="viewcode-back" href="../searching.html#search.Query">[docs]</a>
+<span class="k">class</span> <span class="nc">Query</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-public-methods</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to handle searching on objects using a LINQ-like format.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">QueryAction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1">#                      PROJECTION AND RESTRICTION METHODS                        #</span>
+    <span class="c1"># ################################################################################</span>
+
+<div class="viewcode-block" id="Query.select">
+<a class="viewcode-back" href="../searching.html#search.Query.select">[docs]</a>
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs a map on the elements in the collection based on the provided method.</span>
+
+<span class="sd">        :param selector: Method that takes an element and an index and returns a new element.</span>
+<span class="sd">        :type selector: Callable[[Any, int], Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SelectQueryAction</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">is_select_many</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.select_many">
+<a class="viewcode-back" href="../searching.html#search.Query.select_many">[docs]</a>
+    <span class="k">def</span> <span class="nf">select_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs a map on the elements in the collection using the provided method, flattening iterables if applicable.</span>
+
+<span class="sd">        :param selector: Method that takes an element and an index and returns a new element.</span>
+<span class="sd">        :type selector: Callable[[Any, int], Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SelectQueryAction</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">is_select_many</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.where">
+<a class="viewcode-back" href="../searching.html#search.Query.where">[docs]</a>
+    <span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filters the collection&#39;s elements based on the provided method.</span>
+
+<span class="sd">        :param predicate: Method that takes an element and returns a boolean (True to include, False to exclude)</span>
+<span class="sd">        :type predicate: Callable[[Any], bool]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WhereQueryAction</span><span class="p">(</span><span class="n">predicate</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1">#                                   SET METHODS                                  #</span>
+    <span class="c1"># ################################################################################</span>
+
+<div class="viewcode-block" id="Query.all_">
+<a class="viewcode-back" href="../searching.html#search.Query.all_">[docs]</a>
+    <span class="k">def</span> <span class="nf">all_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether all the elements of a sequence satisfy a condition.</span>
+
+<span class="sd">        :param predicate: Method that takes an element and returns a boolean.</span>
+<span class="sd">        :type predicate: Callable[[Any], bool]</span>
+<span class="sd">        :return: True if all elements match the predicate, otherwise false.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">predicate</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Query.any_">
+<a class="viewcode-back" href="../searching.html#search.Query.any_">[docs]</a>
+    <span class="k">def</span> <span class="nf">any_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether any of the elements of a sequence satisfy a condition.</span>
+
+<span class="sd">        :param predicate: Method that takes an element and returns a boolean.</span>
+<span class="sd">        :type predicate: Callable[[Any], bool]</span>
+<span class="sd">        :return: True if any elements match the predicate, otherwise false.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">predicate</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Query.contains">
+<a class="viewcode-back" href="../searching.html#search.Query.contains">[docs]</a>
+    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether any of the elements of a sequence match the provided value.</span>
+
+<span class="sd">        :param value: Value to compare against each element in the sequence.</span>
+<span class="sd">        :type value: Any</span>
+<span class="sd">        :return: True if any of the collection&#39;s elements matches the value, otherwise False.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">entry</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Query.concat">
+<a class="viewcode-back" href="../searching.html#search.Query.concat">[docs]</a>
+    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenates another iterable to the end of the current result set.</span>
+
+<span class="sd">        :param other: Other iterable to include at the end of the current result set.</span>
+<span class="sd">        :type other: Iterable[Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConcatQueryAction</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.default_if_empty">
+<a class="viewcode-back" href="../searching.html#search.Query.default_if_empty">[docs]</a>
+    <span class="k">def</span> <span class="nf">default_if_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns each element in the collection, using the default if the collection is empty.</span>
+
+<span class="sd">        :param default: Default value to use if the collection is empty.</span>
+<span class="sd">        :type default: Any</span>
+<span class="sd">        :return: Each element in the collection, or the default value.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_first_element</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">next_element</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_first_element</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">default</span>
+                <span class="k">return</span> <span class="n">e</span>
+            <span class="n">is_first_element</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">yield</span> <span class="n">next_element</span></div>
+
+
+<div class="viewcode-block" id="Query.distinct">
+<a class="viewcode-back" href="../searching.html#search.Query.distinct">[docs]</a>
+    <span class="k">def</span> <span class="nf">distinct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve unique values from the sequence.</span>
+
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DistinctQueryAction</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.except_">
+<a class="viewcode-back" href="../searching.html#search.Query.except_">[docs]</a>
+    <span class="k">def</span> <span class="nf">except_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">except_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exclude values from the result set.</span>
+
+<span class="sd">        :param except_values: Values to exclude from the result set.</span>
+<span class="sd">        :type except_values: Iterable[Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ExceptQueryAction</span><span class="p">(</span><span class="n">except_values</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.intersect">
+<a class="viewcode-back" href="../searching.html#search.Query.intersect">[docs]</a>
+    <span class="k">def</span> <span class="nf">intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Only include values from intersect_values in the result set.</span>
+
+<span class="sd">        :param intersect_values: Values to exclusively include in the result set.</span>
+<span class="sd">        :type intersect_values: Iterable[Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">IntersectQueryAction</span><span class="p">(</span><span class="n">intersect_values</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.union">
+<a class="viewcode-back" href="../searching.html#search.Query.union">[docs]</a>
+    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">union_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a set union on the collection&#39;s elements and the provided values.</span>
+
+<span class="sd">        :param union_values: Values to include along with the collection&#39;s elements.</span>
+<span class="sd">        :type union_values: Iterable[Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UnionQueryAction</span><span class="p">(</span><span class="n">union_values</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1">#                                ORDERING METHODS                                #</span>
+    <span class="c1"># ################################################################################</span>
+
+<div class="viewcode-block" id="Query.order_by">
+<a class="viewcode-back" href="../searching.html#search.Query.order_by">[docs]</a>
+    <span class="k">def</span> <span class="nf">order_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sorts the elements by one or more keys.</span>
+
+<span class="sd">        :param order_by: Function that should be passed into &quot;sorted&quot;&#39;s key field.</span>
+<span class="sd">        :type order_by: Callable[[Any], Any]</span>
+<span class="sd">        :param descending: Sort the collection in descending order (default false)</span>
+<span class="sd">        :type descending: bool</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OrderByQueryAction</span><span class="p">(</span><span class="n">order_by</span><span class="p">,</span> <span class="n">descending</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.reverse">
+<a class="viewcode-back" href="../searching.html#search.Query.reverse">[docs]</a>
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the elements in the reverse order.</span>
+
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReverseQueryAction</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1">#                                GROUPING METHODS                                #</span>
+    <span class="c1"># ################################################################################</span>
+
+<div class="viewcode-block" id="Query.group_by">
+<a class="viewcode-back" href="../searching.html#search.Query.group_by">[docs]</a>
+    <span class="k">def</span> <span class="nf">group_by</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
+            <span class="n">element</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
+            <span class="n">result</span><span class="p">:</span> <span class="n">GroupByResultSelector</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Groups elements by the provided key, and calls the result function for each key and element.</span>
+
+<span class="sd">        :param key: Grouping selector</span>
+<span class="sd">        :type key: Callable[[Any], Any]</span>
+<span class="sd">        :param element: Element selector</span>
+<span class="sd">        :type element: Callable[[Any], Any]</span>
+<span class="sd">        :param result: Result selector</span>
+<span class="sd">        :type result: Callable[[Any, Query], Any]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">GroupByQueryAction</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1">#                               AGGREGATE METHODS                                #</span>
+    <span class="c1"># ################################################################################</span>
+
+<div class="viewcode-block" id="Query.average">
+<a class="viewcode-back" href="../searching.html#search.Query.average">[docs]</a>
+    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the average numeric value of the collection.</span>
+
+<span class="sd">        :return: Average value of the collection, or None if the collection is empty.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sum_</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sum_</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sum_</span> <span class="o">+=</span> <span class="n">element</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">sum_</span> <span class="o">/</span> <span class="n">count</span></div>
+
+
+<div class="viewcode-block" id="Query.count">
+<a class="viewcode-back" href="../searching.html#search.Query.count">[docs]</a>
+    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the number of elements in the collection.</span>
+
+<span class="sd">        :return: Number of elements in the collection.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="Query.max_">
+<a class="viewcode-back" href="../searching.html#search.Query.max_">[docs]</a>
+    <span class="k">def</span> <span class="nf">max_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the maximum value of the elements in the collection.</span>
+
+<span class="sd">        :return: Maximum value of the elements in the collection. Returns None on empty collection.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># No elements in the collection</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Query.min_">
+<a class="viewcode-back" href="../searching.html#search.Query.min_">[docs]</a>
+    <span class="k">def</span> <span class="nf">min_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the minimum value of the elements in the collection.</span>
+
+<span class="sd">        :return: Minimum value of the elements in the collection.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># No elements in the collection</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Query.sum_">
+<a class="viewcode-back" href="../searching.html#search.Query.sum_">[docs]</a>
+    <span class="k">def</span> <span class="nf">sum_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the sum of the elements in the collection.</span>
+
+<span class="sd">        :return: Sum of the elements in the collection.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()))</span></div>
+
+
+    <span class="c1"># ################################################################################</span>
+    <span class="c1">#                                  PAGING METHODS                                #</span>
+    <span class="c1"># ################################################################################</span>
+
+<div class="viewcode-block" id="Query.element_at">
+<a class="viewcode-back" href="../searching.html#search.Query.element_at">[docs]</a>
+    <span class="k">def</span> <span class="nf">element_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the element at a specified index from the collection.</span>
+
+<span class="sd">        :param index: Index of the element to retrieve.</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :param default: Default value to use if there&#39;s not at element at that index.</span>
+<span class="sd">        :type default: Any</span>
+<span class="sd">        :return: Element at the specified index from the collection.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        :exception: IndexError when index is outside of collection and no default value is supplied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">iter_index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">iter_index</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">element</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span></div>
+
+
+<div class="viewcode-block" id="Query.first">
+<a class="viewcode-back" href="../searching.html#search.Query.first">[docs]</a>
+    <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the first element in the collection.</span>
+
+<span class="sd">        :param default: Default value to use if the collection is empty.</span>
+<span class="sd">        :type default: Any</span>
+<span class="sd">        :return: First element in the collection.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        :exception: IndexError when collection is empty and no default value is supplied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+
+
+<div class="viewcode-block" id="Query.last">
+<a class="viewcode-back" href="../searching.html#search.Query.last">[docs]</a>
+    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the last element in the collection.</span>
+
+<span class="sd">        :param default: Default value to use if the collection is empty.</span>
+<span class="sd">        :type default: Any</span>
+<span class="sd">        :return: Last element in the collection.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        :exception: IndexError when collection is empty</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">(),</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dd</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+
+
+<div class="viewcode-block" id="Query.single">
+<a class="viewcode-back" href="../searching.html#search.Query.single">[docs]</a>
+    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a single value from the collection. An error will be thrown if there&#39;s more than one value.</span>
+
+<span class="sd">        :param default: Default value to use if the collection is empty.</span>
+<span class="sd">        :type default: Any</span>
+<span class="sd">        :return: Single value from the collection.</span>
+<span class="sd">        :rtype: Any</span>
+<span class="sd">        :exception: IndexError on empty collection (if no default provided),</span>
+<span class="sd">            InvalidOperationException if the collection has more than one element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()</span>
+            <span class="n">first_value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidOperationException</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">first_value</span></div>
+
+
+<div class="viewcode-block" id="Query.skip">
+<a class="viewcode-back" href="../searching.html#search.Query.skip">[docs]</a>
+    <span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Skips a certain number of elements in the collection.</span>
+
+<span class="sd">        :param skip_count: Number of elements to skip.</span>
+<span class="sd">        :type skip_count: int</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SkipQueryAction</span><span class="p">(</span><span class="n">skip_count</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.skip_while">
+<a class="viewcode-back" href="../searching.html#search.Query.skip_while">[docs]</a>
+    <span class="k">def</span> <span class="nf">skip_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Skips elements while the predicate&#39;s result for the element is True.</span>
+
+<span class="sd">        :param predicate: Function that returns True if the element should be skipped, otherwise False.</span>
+<span class="sd">        :type predicate: Callable[[Any], bool]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SkipWhileQueryAction</span><span class="p">(</span><span class="n">predicate</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.take">
+<a class="viewcode-back" href="../searching.html#search.Query.take">[docs]</a>
+    <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes a certain number of elements in the collection.</span>
+
+<span class="sd">        :param take_count: Number of elements to take.</span>
+<span class="sd">        :type take_count: int</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TakeQueryAction</span><span class="p">(</span><span class="n">take_count</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Query.take_while">
+<a class="viewcode-back" href="../searching.html#search.Query.take_while">[docs]</a>
+    <span class="k">def</span> <span class="nf">take_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes elements while the predicate&#39;s result for the element is True.</span>
+
+<span class="sd">        :param predicate: Function that returns True if the element should be taken, otherwise False.</span>
+<span class="sd">        :type predicate: Callable[[Any], bool]</span>
+<span class="sd">        :return: Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TakeWhileQueryAction</span><span class="p">(</span><span class="n">predicate</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="c1"># Chain all of our generators together to get a cohesive &quot;query&quot;.</span>
+        <span class="n">current_iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
+            <span class="n">current_iterable</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">perform</span><span class="p">(</span><span class="n">current_iterable</span><span class="p">)</span>
+
+        <span class="k">yield from</span> <span class="n">current_iterable</span>
+
+<div class="viewcode-block" id="Query.to_list">
+<a class="viewcode-back" href="../searching.html#search.Query.to_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the current query result as a list.</span>
+
+<span class="sd">        :return: Current query result as a list.</span>
+<span class="sd">        :rtype: list[Any]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Query.reset">
+<a class="viewcode-back" href="../searching.html#search.Query.reset">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears all stored actions from the query.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, Paul Bromwell Jr..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
