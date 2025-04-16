@@ -660,3 +660,7 @@ class Query:  # pylint: disable=too-many-public-methods
     def to_list(self) -> List[Any]:
         """Gets the current query result as a list."""
         return list(self.__evaluate())
+
+    def reset(self) -> None:
+        """Clears all stored actions from the query."""
+        self.actions.clear()

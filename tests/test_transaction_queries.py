@@ -8,8 +8,6 @@ import gnewcash.gnucash_file as gcf
 import gnewcash.search as srch
 import gnewcash.transaction as trn
 
-from gnewcash.search import InvalidOperationException
-
 LOADED_FILES: Dict[str, gcf.GnuCashFile] = {}
 
 

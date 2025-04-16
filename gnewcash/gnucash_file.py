@@ -202,7 +202,9 @@ class Book(GuidObject, SlottableObject):
         :return: New Query object
         :rtype: Query
         """
-        return Query(self.get_all_accounts())
+        # We're converting the accounts to a list here so the account generator isn't fully consumed after the first
+        # query. Not memory efficient, but will cause the LINQ-like library to operate properly.
+        return Query(list(self.get_all_accounts()))
 
     def __str__(self) -> str:
         return f'{len(self.transactions)} transactions'
