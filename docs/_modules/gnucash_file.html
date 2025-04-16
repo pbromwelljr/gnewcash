@@ -79,18 +79,21 @@
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">PathLike</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="kn">import</span> <span class="n">Account</span>
 <span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="kn">import</span> <span class="n">Commodity</span>
 <span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="kn">import</span> <span class="n">GuidObject</span>
+<span class="kn">from</span> <span class="nn">gnewcash.search</span> <span class="kn">import</span> <span class="n">Query</span>
 <span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="kn">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
 <span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ScheduledTransaction</span><span class="p">,</span> <span class="n">SimpleTransaction</span><span class="p">,</span> <span class="n">SortingMethod</span><span class="p">,</span> <span class="n">Split</span><span class="p">,</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span>
+    <span class="n">ScheduledTransaction</span><span class="p">,</span> <span class="n">SimpleTransaction</span><span class="p">,</span> <span class="n">SortingMethod</span><span class="p">,</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span>
 <span class="p">)</span>
 
 
@@ -99,10 +102,10 @@
 <span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a GnuCash file on disk.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">books</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">books</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">books</span><span class="p">:</span>
             <span class="n">books</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">books</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">books</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -120,7 +123,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathLike</span><span class="p">],</span>
             <span class="n">file_format</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
             <span class="n">sort_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">sort_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SortingMethod</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -129,24 +132,29 @@
 <span class="sd">        Reads the specified .gnucash file and loads it into memory.</span>
 
 <span class="sd">        :param source_file: Full or relative path to the .gnucash file.</span>
-<span class="sd">        :type source_file: str</span>
-<span class="sd">        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML</span>
-<span class="sd">        :type sort_transactions: bool</span>
+<span class="sd">        :type source_file: Union[str, PathLike]</span>
 <span class="sd">        :param file_format: File format of the file being uploaded.</span>
 <span class="sd">        :type file_format: BaseFileFormat subclass</span>
+<span class="sd">        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML</span>
+<span class="sd">        :type sort_transactions: bool</span>
 <span class="sd">        :param sort_method: SortingMethod class instance that determines the sort order for the transactions.</span>
 <span class="sd">        :type sort_method: SortingMethod</span>
 <span class="sd">        :return: New GnuCashFile object</span>
 <span class="sd">        :rtype: GnuCashFile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source_file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">()</span>
         <span class="n">built_file</span><span class="p">:</span> <span class="s1">&#39;GnuCashFile&#39;</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source_file</span><span class="p">):</span>
+        <span class="n">built_file</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">source_file_path</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">built_file</span>
 
-        <span class="k">return</span> <span class="n">file_format</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source_file</span><span class="o">=</span><span class="n">source_file</span><span class="p">,</span> <span class="n">sort_transactions</span><span class="o">=</span><span class="n">sort_transactions</span><span class="p">,</span> <span class="n">sort_method</span><span class="o">=</span><span class="n">sort_method</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">file_format</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="n">source_file_path</span><span class="p">,</span>
+            <span class="n">sort_transactions</span><span class="o">=</span><span class="n">sort_transactions</span><span class="p">,</span>
+            <span class="n">sort_method</span><span class="o">=</span><span class="n">sort_method</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GnuCashFile.build_file">
@@ -197,12 +205,12 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">commodities</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">commodities</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">template_root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">template_transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">scheduled_transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ScheduledTransaction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">budgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;Budget&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">template_transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">scheduled_transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">ScheduledTransaction</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">budgets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Budget&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">sort_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SortingMethod</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -211,11 +219,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_account</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span> <span class="n">TransactionManager</span> <span class="o">=</span> <span class="n">transactions</span> <span class="ow">or</span> <span class="n">TransactionManager</span><span class="p">(</span><span class="n">sort_method</span><span class="o">=</span><span class="n">sort_method</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">commodities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodities</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commodities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Commodity</span><span class="p">]</span> <span class="o">=</span> <span class="n">commodities</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template_root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="n">template_root_account</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">template_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="n">template_transactions</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScheduledTransaction</span><span class="p">]</span> <span class="o">=</span> <span class="n">scheduled_transactions</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">budgets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Budget&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">budgets</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_transactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="n">template_transactions</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheduled_transactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ScheduledTransaction</span><span class="p">]</span> <span class="o">=</span> <span class="n">scheduled_transactions</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">budgets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Budget&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">budgets</span> <span class="ow">or</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Book.get_account">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account">[docs]</a>
@@ -236,7 +244,7 @@
 <span class="sd">        * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">current_level</span><span class="p">:</span> <span class="n">Account</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;current_level&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="p">)</span>
-        <span class="n">paths_to_account_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths_to_account</span><span class="p">)</span>
+        <span class="n">paths_to_account_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths_to_account</span><span class="p">)</span>
         <span class="n">next_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">paths_to_account_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">current_level</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">next_level</span><span class="p">:</span>
@@ -257,13 +265,11 @@
 <span class="sd">        :return: Account balance if applicable transactions found, otherwise 0.</span>
 <span class="sd">        :rtype: decimal.Decimal or int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">account_balance</span><span class="p">:</span> <span class="n">Decimal</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">account_transactions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transaction</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">account</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y</span><span class="o">.</span><span class="n">account</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">splits</span><span class="p">],</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">account_transactions</span><span class="p">:</span>
-            <span class="n">split</span><span class="p">:</span> <span class="n">Split</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">,</span> <span class="n">transaction</span><span class="o">.</span><span class="n">splits</span><span class="p">))</span>
-            <span class="n">account_balance</span> <span class="o">+=</span> <span class="n">split</span><span class="o">.</span><span class="n">amount</span> <span class="ow">or</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">account_balance</span></div>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+                                        <span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+                                        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">)</span>
+                                        <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+                                        <span class="o">.</span><span class="n">sum_</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="Book.get_all_accounts">
@@ -288,6 +294,20 @@
             <span class="k">for</span> <span class="n">child_account</span> <span class="ow">in</span> <span class="n">current_account</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
                 <span class="k">yield from</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__yield_account_recursive</span><span class="p">(</span><span class="n">child_account</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Book.accounts_query">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.accounts_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">accounts_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Query</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a new Query object to query accounts.</span>
+
+<span class="sd">        :return: New Query object</span>
+<span class="sd">        :rtype: Query</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We&#39;re converting the accounts to a list here so the account generator isn&#39;t fully consumed after the first</span>
+        <span class="c1"># query. Not memory efficient, but will cause the LINQ-like library to operate properly.</span>
+        <span class="k">return</span> <span class="n">Query</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_all_accounts</span><span class="p">()))</span></div>
+
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">)</span><span class="si">}</span><span class="s1"> transactions&#39;</span>
 
@@ -304,7 +324,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">period_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

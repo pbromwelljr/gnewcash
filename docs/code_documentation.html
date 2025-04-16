@@ -52,6 +52,7 @@
 <li class="toctree-l2"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html">Search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
@@ -144,6 +145,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book"><code class="docutils literal notranslate"><span class="pre">Book</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.accounts_query"><code class="docutils literal notranslate"><span class="pre">Book.accounts_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.get_account"><code class="docutils literal notranslate"><span class="pre">Book.get_account()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.get_account_balance"><code class="docutils literal notranslate"><span class="pre">Book.get_account_balance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="gnucash_file.html#gnucash_file.Book.get_all_accounts"><code class="docutils literal notranslate"><span class="pre">Book.get_all_accounts()</span></code></a></li>
@@ -157,6 +159,103 @@
 <li class="toctree-l3"><a class="reference internal" href="guid_object.html#guid_object.GuidObject.get_guid"><code class="docutils literal notranslate"><span class="pre">GuidObject.get_guid()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="searching.html">Search</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.all_"><code class="docutils literal notranslate"><span class="pre">Query.all_()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.any_"><code class="docutils literal notranslate"><span class="pre">Query.any_()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.average"><code class="docutils literal notranslate"><span class="pre">Query.average()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.concat"><code class="docutils literal notranslate"><span class="pre">Query.concat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.contains"><code class="docutils literal notranslate"><span class="pre">Query.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.count"><code class="docutils literal notranslate"><span class="pre">Query.count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.default_if_empty"><code class="docutils literal notranslate"><span class="pre">Query.default_if_empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.distinct"><code class="docutils literal notranslate"><span class="pre">Query.distinct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.element_at"><code class="docutils literal notranslate"><span class="pre">Query.element_at()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.except_"><code class="docutils literal notranslate"><span class="pre">Query.except_()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.first"><code class="docutils literal notranslate"><span class="pre">Query.first()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.group_by"><code class="docutils literal notranslate"><span class="pre">Query.group_by()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.intersect"><code class="docutils literal notranslate"><span class="pre">Query.intersect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.last"><code class="docutils literal notranslate"><span class="pre">Query.last()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.max_"><code class="docutils literal notranslate"><span class="pre">Query.max_()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.min_"><code class="docutils literal notranslate"><span class="pre">Query.min_()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.order_by"><code class="docutils literal notranslate"><span class="pre">Query.order_by()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.reset"><code class="docutils literal notranslate"><span class="pre">Query.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.reverse"><code class="docutils literal notranslate"><span class="pre">Query.reverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.select"><code class="docutils literal notranslate"><span class="pre">Query.select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.select_many"><code class="docutils literal notranslate"><span class="pre">Query.select_many()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.single"><code class="docutils literal notranslate"><span class="pre">Query.single()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.skip"><code class="docutils literal notranslate"><span class="pre">Query.skip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.skip_while"><code class="docutils literal notranslate"><span class="pre">Query.skip_while()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.sum_"><code class="docutils literal notranslate"><span class="pre">Query.sum_()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.take"><code class="docutils literal notranslate"><span class="pre">Query.take()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.take_while"><code class="docutils literal notranslate"><span class="pre">Query.take_while()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.to_list"><code class="docutils literal notranslate"><span class="pre">Query.to_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.union"><code class="docutils literal notranslate"><span class="pre">Query.union()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.Query.where"><code class="docutils literal notranslate"><span class="pre">Query.where()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.QueryAction"><code class="docutils literal notranslate"><span class="pre">QueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.QueryAction.perform"><code class="docutils literal notranslate"><span class="pre">QueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.SelectQueryAction"><code class="docutils literal notranslate"><span class="pre">SelectQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.SelectQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">SelectQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.WhereQueryAction"><code class="docutils literal notranslate"><span class="pre">WhereQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.WhereQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">WhereQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.ConcatQueryAction"><code class="docutils literal notranslate"><span class="pre">ConcatQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.ConcatQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">ConcatQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.DistinctQueryAction"><code class="docutils literal notranslate"><span class="pre">DistinctQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.DistinctQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">DistinctQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.ExceptQueryAction"><code class="docutils literal notranslate"><span class="pre">ExceptQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.ExceptQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">ExceptQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.IntersectQueryAction"><code class="docutils literal notranslate"><span class="pre">IntersectQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.IntersectQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">IntersectQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.UnionQueryAction"><code class="docutils literal notranslate"><span class="pre">UnionQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.UnionQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">UnionQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.OrderByQueryAction"><code class="docutils literal notranslate"><span class="pre">OrderByQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.OrderByQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">OrderByQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.ReverseQueryAction"><code class="docutils literal notranslate"><span class="pre">ReverseQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.ReverseQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">ReverseQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.GroupByQueryAction"><code class="docutils literal notranslate"><span class="pre">GroupByQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.GroupByQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">GroupByQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.SkipQueryAction"><code class="docutils literal notranslate"><span class="pre">SkipQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.SkipQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">SkipQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.SkipWhileQueryAction"><code class="docutils literal notranslate"><span class="pre">SkipWhileQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.SkipWhileQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">SkipWhileQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.TakeQueryAction"><code class="docutils literal notranslate"><span class="pre">TakeQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.TakeQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">TakeQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.TakeWhileQueryAction"><code class="docutils literal notranslate"><span class="pre">TakeWhileQueryAction</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="searching.html#search.TakeWhileQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">TakeWhileQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html#search.InvalidOperationException"><code class="docutils literal notranslate"><span class="pre">InvalidOperationException</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="slot.html">Slot</a><ul>
@@ -193,6 +292,7 @@
 <li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.Split"><code class="docutils literal notranslate"><span class="pre">Split</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.TransactionManager"><code class="docutils literal notranslate"><span class="pre">TransactionManager</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.add"><code class="docutils literal notranslate"><span class="pre">TransactionManager.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.create_reversing_transaction"><code class="docutils literal notranslate"><span class="pre">TransactionManager.create_reversing_transaction()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.delete"><code class="docutils literal notranslate"><span class="pre">TransactionManager.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_account_ending_balance"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_account_ending_balance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_account_starting_balance"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_account_starting_balance()</span></code></a></li>
@@ -201,6 +301,7 @@
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_cleared_balance"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_cleared_balance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.get_transactions"><code class="docutils literal notranslate"><span class="pre">TransactionManager.get_transactions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.minimum_balance_past_date"><code class="docutils literal notranslate"><span class="pre">TransactionManager.minimum_balance_past_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="transaction.html#transaction.TransactionManager.query"><code class="docutils literal notranslate"><span class="pre">TransactionManager.query()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transaction.html#transaction.ScheduledTransaction"><code class="docutils literal notranslate"><span class="pre">ScheduledTransaction</span></code></a></li>

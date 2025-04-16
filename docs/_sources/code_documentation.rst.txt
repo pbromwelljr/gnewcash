@@ -9,6 +9,7 @@ Code Documentation
    file_formats
    gnucash_file
    guid_object
+   searching
    slot
    transaction
    utils

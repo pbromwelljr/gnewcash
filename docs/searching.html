@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search &mdash; gnewcash 1.0alpha documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=9974cacb"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Slot" href="slot.html" />
+    <link rel="prev" title="GUID Object" href="guid_object.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gnewcash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using GNewCash</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="code_documentation.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="account.html">Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commodity.html">Commodity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_formats.html">File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gnucash_file.html">GnuCash File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guid_object.html">GUID Object</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Search</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#search.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.all_"><code class="docutils literal notranslate"><span class="pre">Query.all_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.any_"><code class="docutils literal notranslate"><span class="pre">Query.any_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.average"><code class="docutils literal notranslate"><span class="pre">Query.average()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.concat"><code class="docutils literal notranslate"><span class="pre">Query.concat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.contains"><code class="docutils literal notranslate"><span class="pre">Query.contains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.count"><code class="docutils literal notranslate"><span class="pre">Query.count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.default_if_empty"><code class="docutils literal notranslate"><span class="pre">Query.default_if_empty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.distinct"><code class="docutils literal notranslate"><span class="pre">Query.distinct()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.element_at"><code class="docutils literal notranslate"><span class="pre">Query.element_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.except_"><code class="docutils literal notranslate"><span class="pre">Query.except_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.first"><code class="docutils literal notranslate"><span class="pre">Query.first()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.group_by"><code class="docutils literal notranslate"><span class="pre">Query.group_by()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.intersect"><code class="docutils literal notranslate"><span class="pre">Query.intersect()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.last"><code class="docutils literal notranslate"><span class="pre">Query.last()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.max_"><code class="docutils literal notranslate"><span class="pre">Query.max_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.min_"><code class="docutils literal notranslate"><span class="pre">Query.min_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.order_by"><code class="docutils literal notranslate"><span class="pre">Query.order_by()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.reset"><code class="docutils literal notranslate"><span class="pre">Query.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.reverse"><code class="docutils literal notranslate"><span class="pre">Query.reverse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.select"><code class="docutils literal notranslate"><span class="pre">Query.select()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.select_many"><code class="docutils literal notranslate"><span class="pre">Query.select_many()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.single"><code class="docutils literal notranslate"><span class="pre">Query.single()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.skip"><code class="docutils literal notranslate"><span class="pre">Query.skip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.skip_while"><code class="docutils literal notranslate"><span class="pre">Query.skip_while()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.sum_"><code class="docutils literal notranslate"><span class="pre">Query.sum_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.take"><code class="docutils literal notranslate"><span class="pre">Query.take()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.take_while"><code class="docutils literal notranslate"><span class="pre">Query.take_while()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.to_list"><code class="docutils literal notranslate"><span class="pre">Query.to_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.union"><code class="docutils literal notranslate"><span class="pre">Query.union()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search.Query.where"><code class="docutils literal notranslate"><span class="pre">Query.where()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.QueryAction"><code class="docutils literal notranslate"><span class="pre">QueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.QueryAction.perform"><code class="docutils literal notranslate"><span class="pre">QueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.SelectQueryAction"><code class="docutils literal notranslate"><span class="pre">SelectQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.SelectQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">SelectQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.WhereQueryAction"><code class="docutils literal notranslate"><span class="pre">WhereQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.WhereQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">WhereQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.ConcatQueryAction"><code class="docutils literal notranslate"><span class="pre">ConcatQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.ConcatQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">ConcatQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.DistinctQueryAction"><code class="docutils literal notranslate"><span class="pre">DistinctQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.DistinctQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">DistinctQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.ExceptQueryAction"><code class="docutils literal notranslate"><span class="pre">ExceptQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.ExceptQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">ExceptQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.IntersectQueryAction"><code class="docutils literal notranslate"><span class="pre">IntersectQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.IntersectQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">IntersectQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.UnionQueryAction"><code class="docutils literal notranslate"><span class="pre">UnionQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.UnionQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">UnionQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.OrderByQueryAction"><code class="docutils literal notranslate"><span class="pre">OrderByQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.OrderByQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">OrderByQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.ReverseQueryAction"><code class="docutils literal notranslate"><span class="pre">ReverseQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.ReverseQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">ReverseQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.GroupByQueryAction"><code class="docutils literal notranslate"><span class="pre">GroupByQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.GroupByQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">GroupByQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.SkipQueryAction"><code class="docutils literal notranslate"><span class="pre">SkipQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.SkipQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">SkipQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.SkipWhileQueryAction"><code class="docutils literal notranslate"><span class="pre">SkipWhileQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.SkipWhileQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">SkipWhileQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.TakeQueryAction"><code class="docutils literal notranslate"><span class="pre">TakeQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.TakeQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">TakeQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.TakeWhileQueryAction"><code class="docutils literal notranslate"><span class="pre">TakeWhileQueryAction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search.TakeWhileQueryAction.perform"><code class="docutils literal notranslate"><span class="pre">TakeWhileQueryAction.perform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#search.InvalidOperationException"><code class="docutils literal notranslate"><span class="pre">InvalidOperationException</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="slot.html">Slot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gnewcash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="code_documentation.html">Code Documentation</a></li>
+      <li class="breadcrumb-item active">Search</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/searching.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-search">
+<span id="search"></span><h1>Search<a class="headerlink" href="#module-search" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="search.Query">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">Query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#Query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query" title="Link to this definition"></a></dt>
+<dd><p>Class to handle searching on objects using a LINQ-like format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.all_">
+<span class="sig-name descname"><span class="pre">all_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.all_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.all_" title="Link to this definition"></a></dt>
+<dd><p>Determines whether all the elements of a sequence satisfy a condition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – Method that takes an element and returns a boolean.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if all elements match the predicate, otherwise false.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.any_">
+<span class="sig-name descname"><span class="pre">any_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.any_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.any_" title="Link to this definition"></a></dt>
+<dd><p>Determines whether any of the elements of a sequence satisfy a condition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – Method that takes an element and returns a boolean.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if any elements match the predicate, otherwise false.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.average">
+<span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.average" title="Link to this definition"></a></dt>
+<dd><p>Calculates the average numeric value of the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Average value of the collection, or None if the collection is empty.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.concat">
+<span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.concat" title="Link to this definition"></a></dt>
+<dd><p>Concatenates another iterable to the end of the current result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>Iterable</em><em>[</em><em>Any</em><em>]</em>) – Other iterable to include at the end of the current result set.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.contains" title="Link to this definition"></a></dt>
+<dd><p>Determines whether any of the elements of a sequence match the provided value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Any</em>) – Value to compare against each element in the sequence.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if any of the collection’s elements matches the value, otherwise False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.count" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the number of elements in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of elements in the collection.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.default_if_empty">
+<span class="sig-name descname"><span class="pre">default_if_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.default_if_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.default_if_empty" title="Link to this definition"></a></dt>
+<dd><p>Returns each element in the collection, using the default if the collection is empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default</strong> (<em>Any</em>) – Default value to use if the collection is empty.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Each element in the collection, or the default value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.distinct">
+<span class="sig-name descname"><span class="pre">distinct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.distinct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.distinct" title="Link to this definition"></a></dt>
+<dd><p>Retrieve unique values from the sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Query object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.element_at">
+<span class="sig-name descname"><span class="pre">element_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.element_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.element_at" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the element at a specified index from the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Index of the element to retrieve.</p></li>
+<li><p><strong>default</strong> (<em>Any</em>) – Default value to use if there’s not at element at that index.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Element at the specified index from the collection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
+<dd class="field-even"><p>IndexError when index is outside of collection and no default value is supplied.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.except_">
+<span class="sig-name descname"><span class="pre">except_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">except_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.except_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.except_" title="Link to this definition"></a></dt>
+<dd><p>Exclude values from the result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>except_values</strong> (<em>Iterable</em><em>[</em><em>Any</em><em>]</em>) – Values to exclude from the result set.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.first">
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.first"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.first" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the first element in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default</strong> (<em>Any</em>) – Default value to use if the collection is empty.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>First element in the collection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
+<dd class="field-even"><p>IndexError when collection is empty and no default value is supplied.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.group_by">
+<span class="sig-name descname"><span class="pre">group_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.group_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.group_by" title="Link to this definition"></a></dt>
+<dd><p>Groups elements by the provided key, and calls the result function for each key and element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>Any</em><em>]</em>) – Grouping selector</p></li>
+<li><p><strong>element</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>Any</em><em>]</em>) – Element selector</p></li>
+<li><p><strong>result</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>, </em><a class="reference internal" href="#search.Query" title="search.Query"><em>Query</em></a><em>]</em><em>, </em><em>Any</em><em>]</em>) – Result selector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.intersect">
+<span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intersect_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.intersect" title="Link to this definition"></a></dt>
+<dd><p>Only include values from intersect_values in the result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>intersect_values</strong> (<em>Iterable</em><em>[</em><em>Any</em><em>]</em>) – Values to exclusively include in the result set.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.last">
+<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.last" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the last element in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default</strong> (<em>Any</em>) – Default value to use if the collection is empty.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Last element in the collection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
+<dd class="field-even"><p>IndexError when collection is empty</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.max_">
+<span class="sig-name descname"><span class="pre">max_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.max_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.max_" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the maximum value of the elements in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Maximum value of the elements in the collection. Returns None on empty collection.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.min_">
+<span class="sig-name descname"><span class="pre">min_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.min_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.min_" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the minimum value of the elements in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Minimum value of the elements in the collection.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.order_by">
+<span class="sig-name descname"><span class="pre">order_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.order_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.order_by" title="Link to this definition"></a></dt>
+<dd><p>Sorts the elements by one or more keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_by</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>Any</em><em>]</em>) – Function that should be passed into “sorted“‘s key field.</p></li>
+<li><p><strong>descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Sort the collection in descending order (default false)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.reset" title="Link to this definition"></a></dt>
+<dd><p>Clears all stored actions from the query.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.reverse">
+<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.reverse" title="Link to this definition"></a></dt>
+<dd><p>Return the elements in the reverse order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Query object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.select" title="Link to this definition"></a></dt>
+<dd><p>Performs a map on the elements in the collection based on the provided method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selector</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>Any</em><em>]</em>) – Method that takes an element and an index and returns a new element.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.select_many">
+<span class="sig-name descname"><span class="pre">select_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.select_many"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.select_many" title="Link to this definition"></a></dt>
+<dd><p>Performs a map on the elements in the collection using the provided method, flattening iterables if applicable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selector</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>Any</em><em>]</em>) – Method that takes an element and an index and returns a new element.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.single">
+<span class="sig-name descname"><span class="pre">single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.single" title="Link to this definition"></a></dt>
+<dd><p>Retrieves a single value from the collection. An error will be thrown if there’s more than one value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default</strong> (<em>Any</em>) – Default value to use if the collection is empty.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Single value from the collection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Exception<span class="colon">:</span></dt>
+<dd class="field-even"><p>IndexError on empty collection (if no default provided),
+InvalidOperationException if the collection has more than one element.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.skip">
+<span class="sig-name descname"><span class="pre">skip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.skip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.skip" title="Link to this definition"></a></dt>
+<dd><p>Skips a certain number of elements in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>skip_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of elements to skip.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.skip_while">
+<span class="sig-name descname"><span class="pre">skip_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.skip_while"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.skip_while" title="Link to this definition"></a></dt>
+<dd><p>Skips elements while the predicate’s result for the element is True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – Function that returns True if the element should be skipped, otherwise False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.sum_">
+<span class="sig-name descname"><span class="pre">sum_</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.sum_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.sum_" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the sum of the elements in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sum of the elements in the collection.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.take">
+<span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">take_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.take" title="Link to this definition"></a></dt>
+<dd><p>Takes a certain number of elements in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>take_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of elements to take.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.take_while">
+<span class="sig-name descname"><span class="pre">take_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.take_while"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.take_while" title="Link to this definition"></a></dt>
+<dd><p>Takes elements while the predicate’s result for the element is True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – Function that returns True if the element should be taken, otherwise False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#Query.to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.to_list" title="Link to this definition"></a></dt>
+<dd><p>Gets the current query result as a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current query result as a list.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.union">
+<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">union_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.union"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.union" title="Link to this definition"></a></dt>
+<dd><p>Perform a set union on the collection’s elements and the provided values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>union_values</strong> (<em>Iterable</em><em>[</em><em>Any</em><em>]</em>) – Values to include along with the collection’s elements.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="search.Query.where">
+<span class="sig-name descname"><span class="pre">where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a></span></span><a class="reference internal" href="_modules/search.html#Query.where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.Query.where" title="Link to this definition"></a></dt>
+<dd><p>Filters the collection’s elements based on the provided method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> (<em>Callable</em><em>[</em><em>[</em><em>Any</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – Method that takes an element and returns a boolean (True to include, False to exclude)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#search.Query" title="search.Query">Query</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.QueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">QueryAction</span></span><a class="reference internal" href="_modules/search.html#QueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.QueryAction" title="Link to this definition"></a></dt>
+<dd><p>Base class for other query actions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.QueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#QueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.QueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Perform the action on the current element in the collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.SelectQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">SelectQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_select_many</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#SelectQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.SelectQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for mapping elements in the collection based on the provided method.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.SelectQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#SelectQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.SelectQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Run the selector against each element and yield it to the next action.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.WhereQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">WhereQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#WhereQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.WhereQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for filtering elements in the collection based on the provided method.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.WhereQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#WhereQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.WhereQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Filter the collection by running each element against the predicate.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.ConcatQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">ConcatQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#ConcatQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.ConcatQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for concatenating another collection at the end of the current one.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.ConcatQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#ConcatQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.ConcatQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Append the other collection to the end of the current one.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.DistinctQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">DistinctQueryAction</span></span><a class="reference internal" href="_modules/search.html#DistinctQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.DistinctQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for getting distinct values of elements in the collection.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.DistinctQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#DistinctQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.DistinctQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Filter results based on distinct values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.ExceptQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">ExceptQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#ExceptQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.ExceptQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for filtering out elements that are in a specified collection.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.ExceptQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#ExceptQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.ExceptQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Filter out elements in the collection that are in the specified exclude values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.IntersectQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">IntersectQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intersect_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#IntersectQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.IntersectQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for only including elements that are in a specified collection.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.IntersectQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#IntersectQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.IntersectQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Perform a set intersection on the collection and the specified values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.UnionQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">UnionQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">union_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#UnionQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.UnionQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for doing a set union on the collection and specified values.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.UnionQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#UnionQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.UnionQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Perform a set union on the collection and the specified values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.OrderByQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">OrderByQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#OrderByQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.OrderByQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for ordering results by an indicated key.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.OrderByQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#OrderByQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.OrderByQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Sort the collection by the provided key or function, following subsequent then-by instructions.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.ReverseQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">ReverseQueryAction</span></span><a class="reference internal" href="_modules/search.html#ReverseQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.ReverseQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for reversing the collection.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.ReverseQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#ReverseQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.ReverseQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Reverses the collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.GroupByQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">GroupByQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#search.Query" title="search.Query"><span class="pre">Query</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#GroupByQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.GroupByQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for grouping the collection by a provided key.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.GroupByQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#GroupByQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.GroupByQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Groups the collection by the specified key.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.SkipQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">SkipQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#SkipQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.SkipQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for skipping a certain number of elements.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.SkipQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#SkipQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.SkipQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Skip a certain number of elements.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.SkipWhileQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">SkipWhileQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#SkipWhileQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.SkipWhileQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for skipping elements while a provided predicate is true.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.SkipWhileQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#SkipWhileQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.SkipWhileQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Skip elements while the provided predicate is true.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.TakeQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">TakeQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">take_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#TakeQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.TakeQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for taking a certain number of elements.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.TakeQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#TakeQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.TakeQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Take a certain number of elements.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.TakeWhileQueryAction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">TakeWhileQueryAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/search.html#TakeWhileQueryAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.TakeWhileQueryAction" title="Link to this definition"></a></dt>
+<dd><p>Class for taking elements while a provided predicate is true.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="search.TakeWhileQueryAction.perform">
+<span class="sig-name descname"><span class="pre">perform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/search.html#TakeWhileQueryAction.perform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.TakeWhileQueryAction.perform" title="Link to this definition"></a></dt>
+<dd><p>Take elements while the provided predicate is true.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="search.InvalidOperationException">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">search.</span></span><span class="sig-name descname"><span class="pre">InvalidOperationException</span></span><a class="reference internal" href="_modules/search.html#InvalidOperationException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#search.InvalidOperationException" title="Link to this definition"></a></dt>
+<dd><p>Exception thrown when an invalid operation was performed.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="guid_object.html" class="btn btn-neutral float-left" title="GUID Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="slot.html" class="btn btn-neutral float-right" title="Slot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018, Paul Bromwell Jr..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

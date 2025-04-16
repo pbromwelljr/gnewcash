@@ -83,7 +83,6 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">listdir</span><span class="p">,</span> <span class="n">remove</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Pattern</span>
 
 <span class="kn">from</span> <span class="nn">genericpath</span> <span class="kn">import</span> <span class="n">exists</span><span class="p">,</span> <span class="n">isfile</span>
 
@@ -97,7 +96,7 @@
 <span class="sd">    :param gnucash_file_path: Directory to delete log files</span>
 <span class="sd">    :type gnucash_file_path: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">backup_file_format</span><span class="p">:</span> <span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*[0-9]</span><span class="si">{14}</span><span class="s1">\.gnucash$&#39;</span><span class="p">)</span>
+    <span class="n">backup_file_format</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*[0-9]</span><span class="si">{14}</span><span class="s1">\.gnucash$&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">,</span> <span class="n">x</span><span class="p">))]:</span>
         <span class="n">full_file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">gnucash_file_path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">((</span><span class="s1">&#39;.gnucash&#39;</span> <span class="ow">in</span> <span class="n">file</span> <span class="ow">and</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.log&#39;</span><span class="p">))</span> <span class="ow">or</span> <span class="n">backup_file_format</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">file</span><span class="p">))</span> \
