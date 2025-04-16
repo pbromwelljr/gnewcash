@@ -99,6 +99,7 @@ jobs:
           poetry run make html
           cp -rf _build/html/* ../docs
       - name: Commit updated documentation
+        continue-on-error: true
         run: |
           git config --global user.name 'Paul Bromwell Jr'
           git config --global user.email 'pbromwelljr@proton.me'
