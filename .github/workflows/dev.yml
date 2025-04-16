@@ -58,11 +58,6 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
-      - name: Generate stubs
-        run: |
-          poetry run stubgen -p gnewcash
-          cp -r out/gnewcash/* gnewcash/
-          rm -rf out/
       - name: Replace setup.py version
         run: |
           version_num=$(echo "${{github.ref_name}}" | sed 's/^b//g')
@@ -106,13 +101,21 @@ jobs:
           cp -rf _build/html/* ../docs
       - name: Commit updated documentation
         run: |
+          set +e
+          
+          echo "Setting user name..."
           git config --global user.name 'Paul Bromwell Jr'
+          echo "Setting e-mail..."
           git config --global user.email 'pbromwelljr@proton.me'
+          echo "Adding docs to index..."
           git add docs/
           
           # Make sure we only commit if there's something to commit.
+          echo "Checking git diff index status..."
           git diff-index --quiet HEAD 2>/dev/null 1>&2
           if [[ $? -ne 0 ]]; then
+            echo "Committing..."
             git commit -m "Sphinx documentation update"
+            echo "Pushing..."
             git push
           fi

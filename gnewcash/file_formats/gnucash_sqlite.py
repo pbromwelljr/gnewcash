@@ -11,7 +11,7 @@ import os.path
 import pathlib
 import sqlite3
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -75,7 +75,7 @@ class GnuCashSQLiteReader(BaseFileReader):
     @classmethod
     def load(cls,
              *args: Any,
-             source_file: str = '',
+             source_file: Optional[pathlib.Path] = None,
              sort_transactions: bool = True,
              sort_method: Optional[SortingMethod] = None,
              **kwargs: Any
@@ -93,12 +93,14 @@ class GnuCashSQLiteReader(BaseFileReader):
         :rtype: GnuCashFile
         """
         built_file: GnuCashFile = GnuCashFile()
-        built_file.file_name = source_file
-
-        source_path: pathlib.Path = pathlib.Path(source_file)
-        if not source_path.exists():
+        if not source_file:
+            cls.LOGGER.error('No file provided to load')
+            return built_file
+        if not source_file.exists():
             cls.LOGGER.warning('Could not find %s', source_file)
             return built_file
+
+        built_file.file_name = source_file.name
 
         sqlite_connection = sqlite3.connect(source_file)
         cursor = sqlite_connection.cursor()
@@ -113,7 +115,7 @@ class GnuCashSQLiteReader(BaseFileReader):
             sqlite_cursor: sqlite3.Cursor,
             sort_transactions: bool,
             sort_method: Optional[SortingMethod] = None,
-    ) -> List[Book]:
+    ) -> list[Book]:
         """
         Creates Book objects from the GnuCash SQLite database.
 
@@ -140,7 +142,7 @@ class GnuCashSQLiteReader(BaseFileReader):
 
             transaction_manager = TransactionManager(disable_sort=not sort_transactions, sort_method=sort_method)
             template_transactions = []
-            template_account_guids: Tuple[str, ...] = tuple()
+            template_account_guids: tuple[str, ...] = tuple()
             if new_book.template_root_account is not None:
                 template_account_guids = tuple(new_book.template_root_account.get_account_guids())
 
@@ -204,7 +206,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         return new_account
 
     @classmethod
-    def create_slots_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor, object_id: str) -> List[Slot]:
+    def create_slots_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor, object_id: str) -> list[Slot]:
         """
         Creates Slot objects from the GnuCash SQLite database.
 
@@ -250,7 +252,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         return new_commodities[0]
 
     @classmethod
-    def create_commodities_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> List[Commodity]:
+    def create_commodities_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> list[Commodity]:
         """
         Creates Commodity objects for all commodities in the SQLite database.
 
@@ -262,7 +264,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         return cls.__create_commodity_objects_from_data(cls.get_sqlite_table_data(sqlite_cursor, 'commodities'))
 
     @classmethod
-    def __create_commodity_objects_from_data(cls, commodity_data: List[Dict]) -> List[Commodity]:
+    def __create_commodity_objects_from_data(cls, commodity_data: list[dict]) -> list[Commodity]:
         new_commodities = []
         for commodity in commodity_data:
             commodity_id = commodity['mnemonic']
@@ -288,7 +290,7 @@ class GnuCashSQLiteReader(BaseFileReader):
             sqlite_cursor: sqlite3.Cursor,
             root_account: Optional[Account],
             template_root_account: Optional[Account],
-    ) -> List[Transaction]:
+    ) -> list[Transaction]:
         """
         Creates Transaction objects from the GnuCash SQLite database.
 
@@ -302,7 +304,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         :rtype: list[Transaction]
         """
         transaction_data = cls.get_sqlite_table_data(sqlite_cursor, 'transactions')
-        new_transactions: List[Transaction] = []
+        new_transactions: list[Transaction] = []
         for transaction in transaction_data:
             new_transaction = Transaction(
                 guid=transaction['guid'],
@@ -324,7 +326,7 @@ class GnuCashSQLiteReader(BaseFileReader):
             cls,
             sqlite_cursor: sqlite3.Cursor,
             template_root_account: Optional[Account],
-    ) -> List[ScheduledTransaction]:
+    ) -> list[ScheduledTransaction]:
         """
         Creates ScheduledTransaction objects from the GnuCash SQLite database.
 
@@ -369,7 +371,7 @@ class GnuCashSQLiteReader(BaseFileReader):
         return new_scheduled_transactions
 
     @classmethod
-    def create_budget_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> List[Budget]:
+    def create_budget_from_sqlite(cls, sqlite_cursor: sqlite3.Cursor) -> list[Budget]:
         """
         Creates Budget objects from the GnuCash SQLite database.
 
@@ -407,7 +409,7 @@ class GnuCashSQLiteReader(BaseFileReader):
             transaction_guid: str,
             root_account: Optional[Account],
             template_root_account: Optional[Account]
-    ) -> List[Split]:
+    ) -> list[Split]:
         """
         Creates Split objects from the GnuCash SQLite database.
 
@@ -455,8 +457,8 @@ class GnuCashSQLiteReader(BaseFileReader):
             sqlite_cursor: sqlite3.Cursor,
             table_name: str,
             where_condition: Optional[str] = None,
-            where_parameters: Optional[Tuple[Any]] = None,
-    ) -> List[Dict[str, Any]]:
+            where_parameters: Optional[tuple[Any]] = None,
+    ) -> list[dict[str, Any]]:
         """
         Helper method for retrieving data from a SQLite table.
 
@@ -569,7 +571,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'budgets', 'guid', budget.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
     INSERT INTO budgets(guid, name, description, num_periods)
@@ -603,7 +605,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         """
         db_action = DBAction.get_db_action(sqlite_cursor, 'recurrences', 'obj_guid', obj.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
 
         recurrence_weekend_adjust = ''
         if hasattr(obj, 'recurrence_weekend_adjust'):
@@ -641,7 +643,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'commodities', 'guid', commodity.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = 'INSERT INTO commodities(guid, namespace, mnemonic, fullname, cusip, fraction, quote_flag, ' \
                   'quote_source, quote_tz) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)'
@@ -667,7 +669,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         :type sqlite_cursor: sqlite3.Cursor
         """
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         update_field_name: str = ''
         if slot.type == 'guid':
             update_field_name = 'guid_val'
@@ -715,7 +717,7 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'accounts', 'guid', account.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
 INSERT INTO accounts(guid, name, account_type, commodity_guid, commodity_scu, non_std_scu,
@@ -765,7 +767,7 @@ WHERE guid  = ?
         """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'transactions', 'guid', transaction.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
     INSERT INTO transactions(guid, currency_guid, num, post_date, enter_date, description)
@@ -797,7 +799,7 @@ WHERE guid  = ?
         """Removes a transaction from the SQLite database, as well as all dependent objects."""
         # Delete slots for deleted transaction
         sql: str = 'DELETE FROM slots WHERE obj_guid = ?'
-        sql_args: Tuple = (deleted_transaction_guid,)
+        sql_args: tuple = (deleted_transaction_guid,)
         sqlite_cursor.execute(sql, sql_args)
 
         # Delete slots for splits in transaction
@@ -824,7 +826,7 @@ WHERE guid  = ?
         """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'splits', 'guid', split.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = '''
     INSERT INTO splits(guid, tx_guid, account_guid, memo, action, reconcile_state, reconcile_date, value_num,
@@ -882,7 +884,7 @@ WHERE guid  = ?
         """
         db_action: DBAction = DBAction.get_db_action(sqlite_cursor, 'schedxactions', 'guid', scheduled_transaction.guid)
         sql: str = ''
-        sql_args: Tuple = tuple()
+        sql_args: tuple = tuple()
         if db_action == DBAction.INSERT:
             sql = 'INSERT INTO schedxactions (guid, name, enabled, start_date, end_date, last_occur, num_occur, ' \
                   'rem_occur, auto_create, auto_notify, adv_creation, adv_notify, instance_count, template_act_guid) ' \

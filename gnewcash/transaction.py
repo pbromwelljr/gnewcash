@@ -7,14 +7,16 @@ Module containing classes that read, manipulate, and write transactions.
 """
 import enum
 import warnings
+from collections.abc import Generator, Iterator
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Any, Generator, Iterator, List, Optional, Tuple
+from typing import Any, Optional
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
+from gnewcash.search import Query
 from gnewcash.slot import Slot, SlottableObject
 
 
@@ -28,12 +30,12 @@ class Transaction(GuidObject, SlottableObject):
     def __init__(
             self,
             guid: Optional[str] = None,
-            slots: Optional[List[Slot]] = None,
+            slots: Optional[list[Slot]] = None,
             currency: Optional[Commodity] = None,
             date_posted: Optional[datetime] = None,
             date_entered: Optional[datetime] = None,
             description: str = '',
-            splits: Optional[List['Split']] = None,
+            splits: Optional[list['Split']] = None,
             memo: Optional[str] = None,
     ) -> None:
         GuidObject.__init__(self, guid)
@@ -42,7 +44,7 @@ class Transaction(GuidObject, SlottableObject):
         self.date_posted: Optional[datetime] = date_posted
         self.date_entered: Optional[datetime] = date_entered
         self.description: str = description
-        self.splits: List[Split] = splits or []
+        self.splits: list[Split] = splits or []
         self.memo: Optional[str] = memo
 
     def __str__(self) -> str:
@@ -64,7 +66,7 @@ class Transaction(GuidObject, SlottableObject):
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Transaction):
-            return NotImplemented
+            raise NotImplementedError
         return self.date_posted == other.date_posted
 
     @property
@@ -300,13 +302,13 @@ class TransactionManager:
 
     def __init__(
             self,
-            transactions: Optional[List[Transaction]] = None,
+            transactions: Optional[list[Transaction]] = None,
             disable_sort: bool = False,
             sort_method: Optional['SortingMethod'] = None,
     ) -> None:
-        self.transactions: List[Transaction] = transactions or []
+        self.transactions: list[Transaction] = transactions or []
         self.disable_sort: bool = disable_sort
-        self.deleted_transaction_guids: List[str] = []
+        self.deleted_transaction_guids: list[str] = []
         self.sort_method: SortingMethod = sort_method or StandardSort()
 
     def add(self, new_transaction: Transaction) -> None:
@@ -363,15 +365,10 @@ class TransactionManager:
         :return: First transaction amount if the account has transactions, otherwise 0.
         :rtype: decimal.Decimal
         """
-        account_transactions: List[Transaction] = [x for x in self.transactions
-                                                   if account in [y.account for y in x.splits
-                                                                  if y.amount is not None and y.amount >= 0]]
-        amount: Decimal = Decimal(0)
-        if account_transactions:
-            first_transaction: Transaction = account_transactions[0]
-            amount = next(filter(lambda x: x.account == account and x.amount is not None and x.amount >= 0,
-                                 first_transaction.splits)).amount or Decimal(0)
-        return amount
+        return (self.query().select_many(lambda t, i: t.splits)
+                            .where(lambda s: s.account == account and s.amount >= 0)
+                            .select(lambda s, i: s.amount)
+                            .first(default=Decimal(0)))
 
     def get_account_ending_balance(self, account: Account) -> Decimal:
         """
@@ -385,7 +382,7 @@ class TransactionManager:
         return self.get_balance_at_date(account)
 
     def minimum_balance_past_date(self, account: Account, date: datetime) \
-            -> Tuple[Optional[Decimal], Optional[datetime]]:
+            -> tuple[Optional[Decimal], Optional[datetime]]:
         """
         Gets the minimum balance for the account after a certain date, given the list of transactions.
 
@@ -424,26 +421,13 @@ class TransactionManager:
         :return: Account balance at specified date (or ending balance) or 0, if no applicable transactions were found.
         :rtype: decimal.Decimal
         """
-        balance: Decimal = Decimal(0)
-        for transaction in self.transactions:
-            transaction_accounts = list(map(lambda y: y.account, transaction.splits))
-            is_applicable: bool = False
-            if date is not None and account in transaction_accounts and transaction.date_posted is not None and \
-                    transaction.date_posted <= date:
-                is_applicable = True
-            elif date is None and account in transaction_accounts:
-                is_applicable = True
-
-            if not is_applicable:
-                continue
-
-            if date is None or (transaction.date_posted is not None and transaction.date_posted <= date):
-                applicable_split: Split = next(filter(lambda x: x.account == account, transaction.splits))
-                amount: Decimal = applicable_split.amount or Decimal(0)
-                if account.type == AccountType.CREDIT:
-                    amount = amount * -1
-                balance += amount
-        return balance
+        return Decimal(
+            self.query().where(lambda t: date is None or t.date_posted <= date)
+                        .select_many(lambda t, i: t.splits)
+                        .where(lambda s: s.account == account)
+                        .select(lambda s, i: s.amount * -1 if s.account.type == AccountType.CREDIT else s.amount)
+                        .sum_()
+        )
 
     def get_balance_at_transaction(self, account: Account, transaction: Transaction) -> Decimal:
         """
@@ -456,15 +440,13 @@ class TransactionManager:
         :return: Account balance at specified transaction or 0, if no applicable transactions were found.
         :rtype: decimal.Decimal
         """
-        balance = Decimal(0)
-        for iter_transaction in self.transactions:
-            for split in iter_transaction.splits:
-                if split.account != account or split.amount is None:
-                    continue
-                balance += split.amount
-            if iter_transaction.guid == transaction.guid:
-                break
-        return abs(balance)
+        return Decimal(
+            self.query().take_while(lambda t: t.guid != transaction.guid)
+                        .select_many(lambda t, i: t.splits)
+                        .where(lambda s: s.amount is not None and s.account == account)
+                        .select(lambda s, i: s.amount)
+                        .sum_()
+        )
 
     def get_cleared_balance(self, account: Account) -> Decimal:
         """
@@ -475,13 +457,68 @@ class TransactionManager:
         :return: Current cleared balance for the account
         :rtype: decimal.Decimal
         """
-        cleared_balance = Decimal(0)
-        for transaction in self.transactions:
-            for split in transaction.splits:
-                if (split.reconciled_state or '').lower() != 'c' or split.account != account or split.amount is None:
-                    continue
-                cleared_balance += split.amount
-        return cleared_balance
+        return Decimal(
+            self.query().select_many(lambda t, i: t.splits)
+                        .where(lambda s: s.reconciled_state == 'c' and s.account == account and s.amount is not None)
+                        .select(lambda s, i: s.amount)
+                        .sum_()
+        )
+
+    def create_reversing_transaction(
+            self,
+            transaction: Transaction,
+            reversed_date: Optional[datetime] = None,
+    ) -> Transaction:
+        """
+        Creates a new transaction that reverses another transaction.
+
+        :param transaction: Transaction to be reversed
+        :type transaction: Transaction
+        :param reversed_date: The date that the transaction was reversed (optional, default is transaction's date)
+        :type reversed_date: datetime
+        :return: New transaction that reverses the provided transaction
+        :rtype: Transaction
+        """
+        reversed_splits = []
+        for split in transaction.splits:
+            reversed_splits.append(Split(
+                account=split.account,
+                amount=split.amount * -1 if split.amount is not None else None,
+                reconciled_state=split.reconciled_state,
+                action=split.action,
+                memo=split.memo,
+                quantity_denominator=split.quantity_denominator,
+                reconcile_date=split.reconcile_date,
+                quantity_num=split.quantity_num,
+                lot_guid=split.lot_guid,
+                value_num=split.value_num,
+                value_denom=split.value_denom
+            ))
+        reversing_transaction = Transaction(
+            slots=transaction.slots,
+            currency=transaction.currency,
+            date_posted=reversed_date or transaction.date_posted,
+            date_entered=transaction.date_entered,
+            description=transaction.description,
+            splits=reversed_splits,
+            memo=transaction.memo
+        )
+        self.add(reversing_transaction)
+        transaction.slots.append(Slot(
+            key='reversed-by',
+            value=reversing_transaction.guid,
+            slot_type='guid'
+        ))
+        return reversing_transaction
+
+    def query(self) -> Query:
+        """
+        Gets a new Query object to query transactions.
+
+        :return: New Query object
+        :rtype: Query
+        """
+        return Query(self.transactions)
 
     # Making TransactionManager iterable
     def __getitem__(self, item: int) -> Transaction:
@@ -494,7 +531,7 @@ class TransactionManager:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, TransactionManager):
-            return NotImplemented
+            raise NotImplementedError
         for my_transaction, other_transaction in zip(self.transactions, other.transactions):
             if my_transaction != other_transaction:
                 return False
@@ -571,7 +608,7 @@ class SimpleTransaction(Transaction):
         )
         self.from_split: Split = Split(None, None)
         self.to_split: Split = Split(None, None)
-        self.splits: List[Split] = [self.from_split, self.to_split]
+        self.splits: list[Split] = [self.from_split, self.to_split]
         if from_account is not None:
             self.from_account = from_account
         if to_account is not None:

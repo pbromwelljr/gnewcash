@@ -5,28 +5,31 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-import os.path
+import pathlib
+from collections.abc import Generator
 from datetime import datetime
 from decimal import Decimal
 from logging import getLogger
-from typing import Any, Generator, List, Optional
+from os import PathLike
+from typing import Any, Optional, Union
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.guid_object import GuidObject
+from gnewcash.search import Query
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.transaction import (
-    ScheduledTransaction, SimpleTransaction, SortingMethod, Split, Transaction, TransactionManager
+    ScheduledTransaction, SimpleTransaction, SortingMethod, Transaction, TransactionManager
 )
 
 
 class GnuCashFile:
     """Class representing a GnuCash file on disk."""
 
-    def __init__(self, books: Optional[List['Book']] = None) -> None:
+    def __init__(self, books: Optional[list['Book']] = None) -> None:
         if not books:
             books = []
-        self.books: List['Book'] = books
+        self.books: list['Book'] = books
         self.file_name: Optional[str] = None
 
     def __str__(self) -> str:
@@ -42,7 +45,7 @@ class GnuCashFile:
     @classmethod
     def read_file(
             cls,
-            source_file: str,
+            source_file: Union[str, PathLike],
             file_format: Any,
             sort_transactions: bool = True,
             sort_method: Optional[SortingMethod] = None,
@@ -51,24 +54,29 @@ class GnuCashFile:
         Reads the specified .gnucash file and loads it into memory.
 
         :param source_file: Full or relative path to the .gnucash file.
-        :type source_file: str
-        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
-        :type sort_transactions: bool
+        :type source_file: Union[str, PathLike]
         :param file_format: File format of the file being uploaded.
         :type file_format: BaseFileFormat subclass
+        :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
+        :type sort_transactions: bool
         :param sort_method: SortingMethod class instance that determines the sort order for the transactions.
         :type sort_method: SortingMethod
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
+        source_file_path: pathlib.Path = pathlib.Path(source_file)
         logger = getLogger()
         built_file: 'GnuCashFile' = cls()
-        built_file.file_name = source_file
-        if not os.path.exists(source_file):
+        built_file.file_name = source_file_path.name
+        if not source_file_path.exists():
             logger.warning('Could not find %s', source_file)
             return built_file
 
-        return file_format.load(source_file=source_file, sort_transactions=sort_transactions, sort_method=sort_method)
+        return file_format.load(
+            source_file=source_file_path,
+            sort_transactions=sort_transactions,
+            sort_method=sort_method
+        )
 
     def build_file(self, target_file: str, file_format: Any, prettify_xml: bool = False) -> None:
         """
@@ -106,12 +114,12 @@ class Book(GuidObject, SlottableObject):
             self,
             root_account: Optional[Account] = None,
             transactions: Optional[TransactionManager] = None,
-            commodities: Optional[List[Commodity]] = None,
-            slots: Optional[List[Slot]] = None,
+            commodities: Optional[list[Commodity]] = None,
+            slots: Optional[list[Slot]] = None,
             template_root_account: Optional[Account] = None,
-            template_transactions: Optional[List[Transaction]] = None,
-            scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
-            budgets: Optional[List['Budget']] = None,
+            template_transactions: Optional[list[Transaction]] = None,
+            scheduled_transactions: Optional[list[ScheduledTransaction]] = None,
+            budgets: Optional[list['Budget']] = None,
             guid: Optional[str] = None,
             sort_method: Optional[SortingMethod] = None,
     ) -> None:
@@ -120,11 +128,11 @@ class Book(GuidObject, SlottableObject):
 
         self.root_account: Optional[Account] = root_account
         self.transactions: TransactionManager = transactions or TransactionManager(sort_method=sort_method)
-        self.commodities: List[Commodity] = commodities or []
+        self.commodities: list[Commodity] = commodities or []
         self.template_root_account: Optional[Account] = template_root_account
-        self.template_transactions: List[Transaction] = template_transactions or []
-        self.scheduled_transactions: List[ScheduledTransaction] = scheduled_transactions or []
-        self.budgets: List['Budget'] = budgets or []
+        self.template_transactions: list[Transaction] = template_transactions or []
+        self.scheduled_transactions: list[ScheduledTransaction] = scheduled_transactions or []
+        self.budgets: list['Budget'] = budgets or []
 
     def get_account(self, *paths_to_account: str, **kwargs: Any) -> Optional[Account]:
         """
@@ -143,7 +151,7 @@ class Book(GuidObject, SlottableObject):
         * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.
         """
         current_level: Account = kwargs.get('current_level', self.root_account)
-        paths_to_account_list: List[str] = list(paths_to_account)
+        paths_to_account_list: list[str] = list(paths_to_account)
         next_level: str = paths_to_account_list.pop(0)
         for account in current_level.children:
             if account.name == next_level:
@@ -161,13 +169,11 @@ class Book(GuidObject, SlottableObject):
         :return: Account balance if applicable transactions found, otherwise 0.
         :rtype: decimal.Decimal or int
         """
-        account_balance: Decimal = Decimal(0)
-        account_transactions: List[Transaction] = list(filter(lambda x: account in [y.account for y in x.splits],
-                                                              self.transactions))
-        for transaction in account_transactions:
-            split: Split = next(filter(lambda x: x.account == account, transaction.splits))
-            account_balance += split.amount or Decimal(0)
-        return account_balance
+        return Decimal(self.transactions.query()
+                                        .select_many(lambda t, i: t.splits)
+                                        .where(lambda s: s.account == account)
+                                        .select(lambda s, i: s.amount)
+                                        .sum_())
 
     def get_all_accounts(self) -> Generator[Optional[Account], None, None]:
         """
@@ -188,6 +194,17 @@ class Book(GuidObject, SlottableObject):
             for child_account in current_account.children:
                 yield from cls.__yield_account_recursive(child_account)
 
+    def accounts_query(self) -> Query:
+        """
+        Get a new Query object to query accounts.
+
+        :return: New Query object
+        :rtype: Query
+        """
+        # We're converting the accounts to a list here so the account generator isn't fully consumed after the first
+        # query. Not memory efficient, but will cause the LINQ-like library to operate properly.
+        return Query(list(self.get_all_accounts()))
+
     def __str__(self) -> str:
         return f'{len(self.transactions)} transactions'
 
@@ -201,7 +218,7 @@ class Budget(GuidObject, SlottableObject):
     def __init__(
             self,
             guid: Optional[str] = None,
-            slots: Optional[List[Slot]] = None,
+            slots: Optional[list[Slot]] = None,
             name: Optional[str] = None,
             description: Optional[str] = None,
             period_count: Optional[int] = None,

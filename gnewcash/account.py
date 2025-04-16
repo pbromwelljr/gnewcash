@@ -10,7 +10,7 @@ import re
 from collections import namedtuple
 from datetime import datetime
 from decimal import Decimal, ROUND_UP
-from typing import Dict, List, Optional, Pattern, Tuple, Union
+from typing import Optional, Union
 
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
@@ -27,11 +27,11 @@ class Account(GuidObject, SlottableObject):
     def __init__(
             self,
             guid: Optional[str] = None,
-            slots: Optional[List[Slot]] = None,
+            slots: Optional[list[Slot]] = None,
             name: str = '',
             account_type: Optional[str] = None,
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -44,7 +44,7 @@ class Account(GuidObject, SlottableObject):
         self.type: Optional[str] = account_type
         self.description: Optional[str] = description
         self.__parent: Optional['Account'] = None
-        self.children: List['Account'] = children or []
+        self.children: list['Account'] = children or []
         self.code: Optional[str] = code
         self.commodity: Optional[Commodity] = commodity
         self.commodity_scu: Optional[str] = commodity_scu
@@ -57,8 +57,8 @@ class Account(GuidObject, SlottableObject):
         return str(self)
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(object, Account):
-            return NotImplemented
+        if not isinstance(other, Account):
+            raise NotImplementedError
         return self.guid == getattr(other, 'guid', None)
 
     def __hash__(self) -> int:
@@ -66,9 +66,9 @@ class Account(GuidObject, SlottableObject):
 
     def as_dict(
         self,
-        account_hierarchy: Optional[Dict[str, 'Account']] = None,
+        account_hierarchy: Optional[dict[str, 'Account']] = None,
         path_to_self: str = '/'
-    ) -> Dict[str, 'Account']:
+    ) -> dict[str, 'Account']:
         """
         Retrieves the current account hierarchy as a dictionary.
 
@@ -99,7 +99,7 @@ class Account(GuidObject, SlottableObject):
         :return: String with the dictionary entry name.
         :rtype: str
         """
-        non_alphanumeric_underscore: Pattern = re.compile('[^a-zA-Z0-9_]')
+        non_alphanumeric_underscore: re.Pattern = re.compile('[^a-zA-Z0-9_]')
         dict_entry_name: str = self.name
         dict_entry_name = dict_entry_name.replace(' ', '_')
         dict_entry_name = dict_entry_name.replace('/', '_')
@@ -212,7 +212,7 @@ class Account(GuidObject, SlottableObject):
     def placeholder(self, value: bool) -> None:
         super().set_slot_value_bool('placeholder', value, 'string')
 
-    def get_account_guids(self, account_guids: Optional[List[str]] = None) -> List[str]:
+    def get_account_guids(self, account_guids: Optional[list[str]] = None) -> list[str]:
         """
         Gets a flat list of account GUIDs under the current account.
 
@@ -236,7 +236,7 @@ class BankAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -261,7 +261,7 @@ class IncomeAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -286,7 +286,7 @@ class AssetAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -311,7 +311,7 @@ class CreditAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -336,7 +336,7 @@ class ExpenseAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -361,7 +361,7 @@ class EquityAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -386,7 +386,7 @@ class LiabilityAccount(Account):
             self,
             name: str = '',
             description: Optional[str] = None,
-            children: Optional[List['Account']] = None,
+            children: Optional[list['Account']] = None,
             code: Optional[str] = None,
             commodity: Optional[Commodity] = None,
             commodity_scu: Optional[str] = None,
@@ -442,7 +442,7 @@ class InterestAccountBase(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all_payments(self, skip_additional_payments: bool = False) -> List[Tuple[datetime, Decimal, Decimal]]:
+    def get_all_payments(self, skip_additional_payments: bool = False) -> list[tuple[datetime, Decimal, Decimal]]:
         """
         Abstract method for retrieving all payments for the loan plan.
 
@@ -457,8 +457,8 @@ class InterestAccount(InterestAccountBase):
 
     def __init__(self, starting_balance: Decimal, starting_date: datetime, interest_percentage: Decimal,
                  payment_amount: Decimal,
-                 additional_payments: Optional[List[LoanExtraPayment]] = None,
-                 skip_payment_dates: Optional[List[datetime]] = None, interest_start_date: Optional[datetime] = None):
+                 additional_payments: Optional[list[LoanExtraPayment]] = None,
+                 skip_payment_dates: Optional[list[datetime]] = None, interest_start_date: Optional[datetime] = None):
         """
         Class initializer.
 
@@ -484,8 +484,8 @@ class InterestAccount(InterestAccountBase):
         self.__starting_balance: Decimal = starting_balance
         self.__starting_date: datetime = starting_date
         self.__interest_percentage: Decimal = interest_percentage
-        self.additional_payments: List[LoanExtraPayment] = additional_payments
-        self.skip_payment_dates: List[datetime] = skip_payment_dates
+        self.additional_payments: list[LoanExtraPayment] = additional_payments
+        self.skip_payment_dates: list[datetime] = skip_payment_dates
         self.__payment_amount: Decimal = payment_amount
         self.interest_start_date: Optional[datetime] = interest_start_date
 
@@ -574,7 +574,7 @@ class InterestAccount(InterestAccountBase):
             else:
                 iterator_date = datetime(iterator_date.year, iterator_date.month + 1, iterator_date.day,
                                          tzinfo=iterator_date.tzinfo)
-            applicable_extra_payments: List[LoanExtraPayment] = [
+            applicable_extra_payments: list[LoanExtraPayment] = [
                 x for x in self.additional_payments if previous_date < x.payment_date < iterator_date
             ]
             if applicable_extra_payments:
@@ -608,7 +608,7 @@ class InterestAccount(InterestAccountBase):
 
         return LoanStatus(iterator_balance, iterator_date, interest, amount_to_capital)
 
-    def get_all_payments(self, skip_additional_payments: bool = False) -> List[Tuple[datetime, Decimal, Decimal]]:
+    def get_all_payments(self, skip_additional_payments: bool = False) -> list[tuple[datetime, Decimal, Decimal]]:
         """
         Retrieves a list of tuples that show all payments for the loan plan.
 
@@ -656,9 +656,9 @@ InterestAccountBase.register(InterestAccount)
 class InterestAccountWithSubaccounts(InterestAccountBase):
     """Class used to calculate interest balances based off of balances of subaccounts."""
 
-    def __init__(self, subaccounts: List[InterestAccount],
-                 additional_payments: Optional[List[Dict[str, Union[Decimal, datetime]]]] = None,
-                 skip_payment_dates: Optional[List[datetime]] = None):
+    def __init__(self, subaccounts: list[InterestAccount],
+                 additional_payments: Optional[list[dict[str, Union[Decimal, datetime]]]] = None,
+                 skip_payment_dates: Optional[list[datetime]] = None):
         """
         Class initializer.
 
@@ -674,9 +674,9 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
             additional_payments = []
         if skip_payment_dates is None:
             skip_payment_dates = []
-        self.additional_payments: Optional[List[Dict[str, Union[Decimal, datetime]]]] = additional_payments
-        self.skip_payment_dates: Optional[List[datetime]] = skip_payment_dates
-        self.subaccounts: List[InterestAccount] = subaccounts
+        self.additional_payments: Optional[list[dict[str, Union[Decimal, datetime]]]] = additional_payments
+        self.skip_payment_dates: Optional[list[datetime]] = skip_payment_dates
+        self.subaccounts: list[InterestAccount] = subaccounts
 
     @property
     def starting_date(self) -> datetime:
@@ -739,7 +739,7 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
             amount_to_capital += account_status.amount_to_capital
         return LoanStatus(iterator_balance, iterator_date, interest, amount_to_capital)
 
-    def get_all_payments(self, skip_additional_payments: bool = False) -> List[Tuple[datetime, Decimal, Decimal]]:
+    def get_all_payments(self, skip_additional_payments: bool = False) -> list[tuple[datetime, Decimal, Decimal]]:
         """
         Retrieves a list of tuples that show all payments for the loan plan.
 
@@ -748,7 +748,7 @@ class InterestAccountWithSubaccounts(InterestAccountBase):
         :return: List of tuples with the date (index 0), balance (index 1) and amount to capital (index 2)
         :rtype: list[tuple]
         """
-        all_payments: List[Tuple[datetime, Decimal, Decimal]] = []
+        all_payments: list[tuple[datetime, Decimal, Decimal]] = []
         for account in self.subaccounts:
             subaccount_payments = account.get_all_payments(skip_additional_payments)
             if not all_payments:

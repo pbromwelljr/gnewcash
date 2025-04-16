@@ -5,7 +5,7 @@ Module containing classes that read, manipulate, and write slots.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-from typing import Any, List, Optional, Union
+from typing import Any, Optional, Union
 
 
 class Slot:
@@ -28,10 +28,10 @@ class SlottableObject:
 
     def __init__(
             self,
-            slots: Optional[List[Slot]] = None
+            slots: Optional[list[Slot]] = None
     ) -> None:
         super().__init__()
-        self.slots: List[Slot] = slots or []
+        self.slots: list[Slot] = slots or []
 
     def get_slot_value(self, key: str) -> Any:
         """
@@ -46,7 +46,7 @@ class SlottableObject:
         if not self.slots:
             return None
 
-        target_slot: List[Slot] = list(filter(lambda x: x.key == key, self.slots))
+        target_slot: list[Slot] = list(filter(lambda x: x.key == key, self.slots))
         if not target_slot:
             return None
 
@@ -63,7 +63,7 @@ class SlottableObject:
         :param slot_type: Type of slot
         :type slot_type: str
         """
-        target_slot: List[Slot] = list(filter(lambda x: x.key == key, self.slots))
+        target_slot: list[Slot] = list(filter(lambda x: x.key == key, self.slots))
         if target_slot:
             target_slot[0].value = value
         else:

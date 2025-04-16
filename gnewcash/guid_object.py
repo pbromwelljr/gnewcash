@@ -6,13 +6,13 @@ Module containing classes that manage GUID objects.
 .. moduleauthor: Paul Bromwell Jr.
 """
 import uuid
-from typing import Optional, Set
+from typing import Optional
 
 
 class GuidObject:
     """Class used to generate unique GUIDs for various GNewCash objects."""
 
-    used_guids: Set[str] = set()
+    used_guids: set[str] = set()
 
     def __init__(
             self,

@@ -9,7 +9,6 @@ import re
 from datetime import datetime
 from os import listdir, remove
 from os.path import join
-from typing import Pattern
 
 from genericpath import exists, isfile
 
@@ -21,7 +20,7 @@ def delete_log_files(gnucash_file_path: str) -> None:
     :param gnucash_file_path: Directory to delete log files
     :type gnucash_file_path: str
     """
-    backup_file_format: Pattern = re.compile(r'.*[0-9]{14}\.gnucash$')
+    backup_file_format: re.Pattern = re.compile(r'.*[0-9]{14}\.gnucash$')
     for file in [x for x in listdir(gnucash_file_path) if isfile(join(gnucash_file_path, x))]:
         full_file_path: str = join(gnucash_file_path, file)
         if (('.gnucash' in file and file.endswith('.log')) or backup_file_format.match(file)) \
