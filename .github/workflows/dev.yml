@@ -98,17 +98,24 @@ jobs:
           cd sphinx
           poetry run make clean
           poetry run make html
-          cp -rfv _build/html/* ../docs
+          cp -rf _build/html/* ../docs
       - name: Commit updated documentation
-        continue-on-error: true
         run: |
+          set +e
+          
+          echo "Setting user name..."
           git config --global user.name 'Paul Bromwell Jr'
+          echo "Setting e-mail..."
           git config --global user.email 'pbromwelljr@proton.me'
+          echo "Adding docs to index..."
           git add docs/
           
           # Make sure we only commit if there's something to commit.
+          echo "Checking git diff index status..."
           git diff-index --quiet HEAD 2>/dev/null 1>&2
           if [[ $? -ne 0 ]]; then
+            echo "Committing..."
             git commit -m "Sphinx documentation update"
+            echo "Pushing..."
             git push
           fi
