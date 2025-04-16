@@ -98,7 +98,7 @@ jobs:
           cd sphinx
           poetry run make clean
           poetry run make html
-          cp -rf _build/html/* ../docs
+          cp -rfv _build/html/* ../docs
       - name: Commit updated documentation
         continue-on-error: true
         run: |
