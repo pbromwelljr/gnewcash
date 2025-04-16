@@ -5,7 +5,6 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
-import os.path
 import pathlib
 from datetime import datetime
 from decimal import Decimal
@@ -64,11 +63,11 @@ class GnuCashFile:
         :return: New GnuCashFile object
         :rtype: GnuCashFile
         """
-        source_file_path: pathlib.Path = pathlib.Path(source_file) if isinstance(source_file, str) else source_file
+        source_file_path: pathlib.Path = pathlib.Path(source_file)
         logger = getLogger()
         built_file: 'GnuCashFile' = cls()
         built_file.file_name = source_file_path.name
-        if not source_file_path.exists(follow_symlinks=True):
+        if not source_file_path.exists():
             logger.warning('Could not find %s', source_file)
             return built_file
 

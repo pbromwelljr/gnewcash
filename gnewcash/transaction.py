@@ -15,8 +15,8 @@ from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.enums import AccountType
 from gnewcash.guid_object import GuidObject
+from gnewcash.search import Query
 from gnewcash.slot import Slot, SlottableObject
-from search import Query
 
 
 class TransactionException(Exception):
@@ -490,7 +490,8 @@ class TransactionManager:
             reversed_date: Optional[datetime] = None,
     ) -> Transaction:
         """
-        Creates a new transaction that reverses another transaction
+        Creates a new transaction that reverses another transaction.
+
         :param transaction: Transaction to be reversed
         :type transaction: Transaction
         :param reversed_date: The date that the transaction was reversed (optional, default is transaction's date)
@@ -502,7 +503,7 @@ class TransactionManager:
         for split in transaction.splits:
             reversed_splits.append(Split(
                 account=split.account,
-                amount=split.amount * -1,
+                amount=split.amount * -1 if split.amount is not None else None,
                 reconciled_state=split.reconciled_state,
                 action=split.action,
                 memo=split.memo,

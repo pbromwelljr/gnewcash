@@ -75,7 +75,7 @@ class GnuCashSQLiteReader(BaseFileReader):
     @classmethod
     def load(cls,
              *args: Any,
-             source_file: pathlib.Path = None,
+             source_file: Optional[pathlib.Path] = None,
              sort_transactions: bool = True,
              sort_method: Optional[SortingMethod] = None,
              **kwargs: Any
@@ -93,11 +93,14 @@ class GnuCashSQLiteReader(BaseFileReader):
         :rtype: GnuCashFile
         """
         built_file: GnuCashFile = GnuCashFile()
-        built_file.file_name = source_file.name
-
+        if not source_file:
+            cls.LOGGER.error('No file provided to load')
+            return built_file
         if not source_file.exists():
             cls.LOGGER.warning('Could not find %s', source_file)
             return built_file
+
+        built_file.file_name = source_file.name
 
         sqlite_connection = sqlite3.connect(source_file)
         cursor = sqlite_connection.cursor()

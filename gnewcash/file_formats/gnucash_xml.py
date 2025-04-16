@@ -82,11 +82,15 @@ class GnuCashXMLReader(BaseFileReader):
         :rtype: GnuCashFile
         """
         built_file: GnuCashFile = GnuCashFile()
-        built_file.file_name = source_file.name
 
+        if not source_file:
+            cls.LOGGER.error('No file provided to load')
+            return built_file
         if not source_file.exists():
             cls.LOGGER.warning('Could not find %s', source_file)
             return built_file
+
+        built_file.file_name = source_file.name
 
         root: ElementTree.Element = cls.get_xml_root(source_file)
 
