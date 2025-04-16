@@ -10,7 +10,7 @@ import logging
 import pathlib
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 from xml.dom import minidom
 from xml.etree import ElementTree
 
@@ -22,7 +22,7 @@ from gnewcash.slot import Slot
 from gnewcash.transaction import ScheduledTransaction, SortingMethod, Split, Transaction, TransactionManager
 from gnewcash.utils import safe_iso_date_formatting, safe_iso_date_parsing
 
-XML_NAMESPACES: Dict[str, str] = {
+XML_NAMESPACES: dict[str, str] = {
     'gnc': 'http://www.gnucash.org/XML/gnc',
     'act': 'http://www.gnucash.org/XML/act',
     'book': 'http://www.gnucash.org/XML/book',
@@ -94,7 +94,7 @@ class GnuCashXMLReader(BaseFileReader):
 
         root: ElementTree.Element = cls.get_xml_root(source_file)
 
-        books: List[ElementTree.Element] = root.findall('gnc:book', XML_NAMESPACES)
+        books: list[ElementTree.Element] = root.findall('gnc:book', XML_NAMESPACES)
         for book in books:
             new_book: Book = cls.create_book_from_xml(book,
                                                       sort_transactions=sort_transactions,
@@ -137,19 +137,19 @@ class GnuCashXMLReader(BaseFileReader):
         book_id_node: Optional[ElementTree.Element] = book_node.find('book:id', XML_NAMESPACES)
         if book_id_node is not None and book_id_node.text:
             new_book.guid = book_id_node.text
-        accounts: List[ElementTree.Element] = book_node.findall('gnc:account', XML_NAMESPACES)
-        transactions: List[ElementTree.Element] = book_node.findall('gnc:transaction', XML_NAMESPACES)
+        accounts: list[ElementTree.Element] = book_node.findall('gnc:account', XML_NAMESPACES)
+        transactions: list[ElementTree.Element] = book_node.findall('gnc:transaction', XML_NAMESPACES)
         slots: Optional[ElementTree.Element] = book_node.find('book:slots', XML_NAMESPACES)
 
         if slots is not None:
             for slot in slots.findall('slot'):
                 new_book.slots.append(cls.create_slot_from_xml(slot))
 
-        commodities: List[ElementTree.Element] = book_node.findall('gnc:commodity', XML_NAMESPACES)
+        commodities: list[ElementTree.Element] = book_node.findall('gnc:commodity', XML_NAMESPACES)
         for commodity in commodities:
             new_book.commodities.append(cls.create_commodity_from_xml(commodity))
 
-        account_objects: List[Account] = []
+        account_objects: list[Account] = []
         transaction_manager: TransactionManager = TransactionManager(disable_sort=not sort_transactions,
                                                                      sort_method=sort_method)
 
@@ -162,11 +162,11 @@ class GnuCashXMLReader(BaseFileReader):
         new_book.root_account = [x for x in account_objects if x.type == 'ROOT'][0]
         new_book.transactions = transaction_manager
 
-        template_transactions_xml: Optional[List[ElementTree.Element]] = book_node.findall('gnc:template-transactions',
+        template_transactions_xml: Optional[list[ElementTree.Element]] = book_node.findall('gnc:template-transactions',
                                                                                            XML_NAMESPACES)
         if template_transactions_xml is not None:
-            template_accounts: List[Account] = []
-            template_transactions: List[Transaction] = []
+            template_accounts: list[Account] = []
+            template_transactions: list[Transaction] = []
             for template_transaction in template_transactions_xml:
                 # Process accounts before transactions
                 for subelement in template_transaction:
@@ -179,18 +179,18 @@ class GnuCashXMLReader(BaseFileReader):
                         continue
                     template_transactions.append(cls.create_transaction_from_xml(subelement, template_accounts))
             new_book.template_transactions = template_transactions
-            template_root_accounts: List[Account] = [x for x in template_accounts if x.type == 'ROOT']
+            template_root_accounts: list[Account] = [x for x in template_accounts if x.type == 'ROOT']
             if template_root_accounts:
                 new_book.template_root_account = template_root_accounts[0]
 
-        scheduled_transactions: Optional[List[ElementTree.Element]] = book_node.findall('gnc:schedxaction',
+        scheduled_transactions: Optional[list[ElementTree.Element]] = book_node.findall('gnc:schedxaction',
                                                                                         XML_NAMESPACES)
         if scheduled_transactions is not None:
             for scheduled_transaction in scheduled_transactions:
                 new_book.scheduled_transactions.append(
                     cls.create_scheduled_transaction_from_xml(scheduled_transaction, new_book.template_root_account))
 
-        budgets: Optional[List[ElementTree.Element]] = book_node.findall('gnc:budget', XML_NAMESPACES)
+        budgets: Optional[list[ElementTree.Element]] = book_node.findall('gnc:budget', XML_NAMESPACES)
         if budgets is not None:
             for budget in budgets:
                 new_book.budgets.append(cls.create_budget_from_xml(budget))
@@ -230,7 +230,7 @@ class GnuCashXMLReader(BaseFileReader):
         elif slot_type == 'double' and value_node.text:
             value = Decimal(value_node.text)
         else:
-            child_tags: List[str] = list(set(map(lambda x: x.tag, value_node)))
+            child_tags: list[str] = list(set(map(lambda x: x.tag, value_node)))
             if len(child_tags) == 1 and child_tags[0] == 'slot':
                 value = [cls.create_slot_from_xml(x) for x in value_node]
             elif slot_type == 'frame':
@@ -284,7 +284,7 @@ class GnuCashXMLReader(BaseFileReader):
         return new_commodity
 
     @classmethod
-    def create_account_from_xml(cls, account_node: ElementTree.Element, account_objects: List[Account]) -> Account:
+    def create_account_from_xml(cls, account_node: ElementTree.Element, account_objects: list[Account]) -> Account:
         """
         Creates an Account object from the GnuCash XML.
 
@@ -338,7 +338,7 @@ class GnuCashXMLReader(BaseFileReader):
 
     @classmethod
     def create_transaction_from_xml(cls, transaction_node: ElementTree.Element,
-                                    account_objects: List[Account]) -> Transaction:
+                                    account_objects: list[Account]) -> Transaction:
         """
         Creates a Transaction object from the GnuCash XML.
 
@@ -394,7 +394,7 @@ class GnuCashXMLReader(BaseFileReader):
         return transaction
 
     @classmethod
-    def create_split_from_xml(cls, split_node: ElementTree.Element, account_objects: List[Account]) -> Split:
+    def create_split_from_xml(cls, split_node: ElementTree.Element, account_objects: list[Account]) -> Split:
         """
         Creates an Split object from the GnuCash XML.
 
@@ -543,7 +543,7 @@ class GnuCashXMLReader(BaseFileReader):
 
     @classmethod
     def read_xml_child_text(cls, xml_object: ElementTree.Element, tag_name: str,
-                            namespaces: Dict[str, str]) -> Optional[str]:
+                            namespaces: dict[str, str]) -> Optional[str]:
         """
         Reads the text from a specific child XML element.
 
@@ -563,7 +563,7 @@ class GnuCashXMLReader(BaseFileReader):
 
     @classmethod
     def read_xml_child_boolean(cls, xml_object: ElementTree.Element, tag_name: str,
-                               namespaces: Dict[str, str]) -> Optional[bool]:
+                               namespaces: dict[str, str]) -> Optional[bool]:
         """
         Reads the text from a specific child XML element and returns a Boolean if the text is "Y" or "y".
 
@@ -585,7 +585,7 @@ class GnuCashXMLReader(BaseFileReader):
 
     @classmethod
     def read_xml_child_int(cls, xml_object: ElementTree.Element, tag_name: str,
-                           namespaces: Dict[str, str]) -> Optional[int]:
+                           namespaces: dict[str, str]) -> Optional[int]:
         """
         Reads the text from a specific child XML element and returns its text as an integer value.
 
@@ -605,7 +605,7 @@ class GnuCashXMLReader(BaseFileReader):
 
     @classmethod
     def read_xml_child_date(cls, xml_object: ElementTree.Element, tag_name: str,
-                            namespaces: Dict[str, str]) -> Optional[datetime]:
+                            namespaces: dict[str, str]) -> Optional[datetime]:
         """
         Reads the text from a specific child XML element and returns its inner gdate text as a datetime.
 
@@ -678,7 +678,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         book_id_node = ElementTree.SubElement(book_node, 'book:id', {'type': 'guid'})
         book_id_node.text = book.guid
 
-        accounts_xml: Optional[List[ElementTree.Element]] = None
+        accounts_xml: Optional[list[ElementTree.Element]] = None
         if book.root_account:
             accounts_xml = cls.cast_account_as_xml(book.root_account)
 
@@ -731,7 +731,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         return book_node
 
     @classmethod
-    def cast_account_as_xml(cls, account: Account) -> List[ElementTree.Element]:
+    def cast_account_as_xml(cls, account: Account) -> list[ElementTree.Element]:
         """
         Returns the current account configuration (and all of its child accounts) as GnuCash-compatible XML.
 
@@ -739,7 +739,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         :rtype: list[xml.etree.ElementTree.Element]
         :raises: ValueError if no commodity found.
         """
-        node_and_children: List = []
+        node_and_children: list = []
         account_node: ElementTree.Element = ElementTree.Element('gnc:account', {'version': '2.0.0'})
         ElementTree.SubElement(account_node, 'act:name').text = account.name
         ElementTree.SubElement(account_node, 'act:id', {'type': 'guid'}).text = account.guid

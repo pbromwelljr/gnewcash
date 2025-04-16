@@ -1,6 +1,7 @@
 """Python module to handle searching on objects using a LINQ-like format."""
 from collections import defaultdict, deque
-from typing import Any, Callable, Dict, Generator, Iterable, List, Set
+from collections.abc import Callable, Generator, Iterable
+from typing import Any
 
 from typing_extensions import TypeAlias
 
@@ -72,7 +73,7 @@ class DistinctQueryAction(QueryAction):
 
     def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
         """Filter results based on distinct values."""
-        seen_values: Set[Any] = set()
+        seen_values: set[Any] = set()
         for element in collection:
             if element in seen_values:
                 continue
@@ -112,7 +113,7 @@ class UnionQueryAction(QueryAction):
     """Class for doing a set union on the collection and specified values."""
 
     def __init__(self, union_values: Iterable[Any]) -> None:
-        self.union_values: List[Any] = list(union_values)
+        self.union_values: list[Any] = list(union_values)
 
     def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
         """Perform a set union on the collection and the specified values."""
@@ -162,7 +163,7 @@ class GroupByQueryAction(QueryAction):
 
     def perform(self, collection: Iterable[Any]) -> Generator[Any, None, None]:
         """Groups the collection by the specified key."""
-        group_by_values: Dict[Any, List[Any]] = defaultdict(list)
+        group_by_values: dict[Any, list[Any]] = defaultdict(list)
         for element in collection:
             group_by_values[self.key(element)].append(self.element(element))
 
@@ -236,7 +237,7 @@ class Query:  # pylint: disable=too-many-public-methods
 
     def __init__(self, collection: Iterable[Any]) -> None:
         self.collection: Iterable[Any] = collection
-        self.actions: List[QueryAction] = []
+        self.actions: list[QueryAction] = []
 
     # ################################################################################
     #                      PROJECTION AND RESTRICTION METHODS                        #
@@ -657,8 +658,13 @@ class Query:  # pylint: disable=too-many-public-methods
 
         yield from current_iterable
 
-    def to_list(self) -> List[Any]:
-        """Gets the current query result as a list."""
+    def to_list(self) -> list[Any]:
+        """
+        Gets the current query result as a list.
+
+        :return: Current query result as a list.
+        :rtype: list[Any]
+        """
         return list(self.__evaluate())
 
     def reset(self) -> None:

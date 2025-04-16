@@ -6,11 +6,12 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
 .. moduleauthor: Paul Bromwell Jr.
 """
 import pathlib
+from collections.abc import Generator
 from datetime import datetime
 from decimal import Decimal
 from logging import getLogger
 from os import PathLike
-from typing import Any, Generator, List, Optional, Union
+from typing import Any, Optional, Union
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -18,17 +19,17 @@ from gnewcash.guid_object import GuidObject
 from gnewcash.search import Query
 from gnewcash.slot import Slot, SlottableObject
 from gnewcash.transaction import (
-    ScheduledTransaction, SimpleTransaction, SortingMethod, Split, Transaction, TransactionManager
+    ScheduledTransaction, SimpleTransaction, SortingMethod, Transaction, TransactionManager
 )
 
 
 class GnuCashFile:
     """Class representing a GnuCash file on disk."""
 
-    def __init__(self, books: Optional[List['Book']] = None) -> None:
+    def __init__(self, books: Optional[list['Book']] = None) -> None:
         if not books:
             books = []
-        self.books: List['Book'] = books
+        self.books: list['Book'] = books
         self.file_name: Optional[str] = None
 
     def __str__(self) -> str:
@@ -113,12 +114,12 @@ class Book(GuidObject, SlottableObject):
             self,
             root_account: Optional[Account] = None,
             transactions: Optional[TransactionManager] = None,
-            commodities: Optional[List[Commodity]] = None,
-            slots: Optional[List[Slot]] = None,
+            commodities: Optional[list[Commodity]] = None,
+            slots: Optional[list[Slot]] = None,
             template_root_account: Optional[Account] = None,
-            template_transactions: Optional[List[Transaction]] = None,
-            scheduled_transactions: Optional[List[ScheduledTransaction]] = None,
-            budgets: Optional[List['Budget']] = None,
+            template_transactions: Optional[list[Transaction]] = None,
+            scheduled_transactions: Optional[list[ScheduledTransaction]] = None,
+            budgets: Optional[list['Budget']] = None,
             guid: Optional[str] = None,
             sort_method: Optional[SortingMethod] = None,
     ) -> None:
@@ -127,11 +128,11 @@ class Book(GuidObject, SlottableObject):
 
         self.root_account: Optional[Account] = root_account
         self.transactions: TransactionManager = transactions or TransactionManager(sort_method=sort_method)
-        self.commodities: List[Commodity] = commodities or []
+        self.commodities: list[Commodity] = commodities or []
         self.template_root_account: Optional[Account] = template_root_account
-        self.template_transactions: List[Transaction] = template_transactions or []
-        self.scheduled_transactions: List[ScheduledTransaction] = scheduled_transactions or []
-        self.budgets: List['Budget'] = budgets or []
+        self.template_transactions: list[Transaction] = template_transactions or []
+        self.scheduled_transactions: list[ScheduledTransaction] = scheduled_transactions or []
+        self.budgets: list['Budget'] = budgets or []
 
     def get_account(self, *paths_to_account: str, **kwargs: Any) -> Optional[Account]:
         """
@@ -150,7 +151,7 @@ class Book(GuidObject, SlottableObject):
         * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.
         """
         current_level: Account = kwargs.get('current_level', self.root_account)
-        paths_to_account_list: List[str] = list(paths_to_account)
+        paths_to_account_list: list[str] = list(paths_to_account)
         next_level: str = paths_to_account_list.pop(0)
         for account in current_level.children:
             if account.name == next_level:
@@ -217,7 +218,7 @@ class Budget(GuidObject, SlottableObject):
     def __init__(
             self,
             guid: Optional[str] = None,
-            slots: Optional[List[Slot]] = None,
+            slots: Optional[list[Slot]] = None,
             name: Optional[str] = None,
             description: Optional[str] = None,
             period_count: Optional[int] = None,

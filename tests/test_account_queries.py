@@ -1,5 +1,3 @@
-from typing import Dict
-
 import pytest
 
 import gnewcash.account as acc
@@ -8,7 +6,7 @@ import gnewcash.gnucash_file as gcf
 import gnewcash.search as srch
 
 
-LOADED_FILES: Dict[str, gcf.GnuCashFile] = {}
+LOADED_FILES: dict[str, gcf.GnuCashFile] = {}
 
 
 def get_test_file_query(test_file: str) -> srch.Query:

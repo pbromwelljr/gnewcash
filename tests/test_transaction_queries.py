@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Dict
 
 import pytest
 
@@ -8,7 +7,7 @@ import gnewcash.gnucash_file as gcf
 import gnewcash.search as srch
 import gnewcash.transaction as trn
 
-LOADED_FILES: Dict[str, gcf.GnuCashFile] = {}
+LOADED_FILES: dict[str, gcf.GnuCashFile] = {}
 
 
 def get_test_file_query(test_file: str) -> srch.Query:

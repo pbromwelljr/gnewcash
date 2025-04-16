@@ -7,9 +7,10 @@ Module containing classes that read, manipulate, and write transactions.
 """
 import enum
 import warnings
+from collections.abc import Generator, Iterator
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Any, Generator, Iterator, List, Optional, Tuple
+from typing import Any, Optional
 
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
@@ -29,12 +30,12 @@ class Transaction(GuidObject, SlottableObject):
     def __init__(
             self,
             guid: Optional[str] = None,
-            slots: Optional[List[Slot]] = None,
+            slots: Optional[list[Slot]] = None,
             currency: Optional[Commodity] = None,
             date_posted: Optional[datetime] = None,
             date_entered: Optional[datetime] = None,
             description: str = '',
-            splits: Optional[List['Split']] = None,
+            splits: Optional[list['Split']] = None,
             memo: Optional[str] = None,
     ) -> None:
         GuidObject.__init__(self, guid)
@@ -43,7 +44,7 @@ class Transaction(GuidObject, SlottableObject):
         self.date_posted: Optional[datetime] = date_posted
         self.date_entered: Optional[datetime] = date_entered
         self.description: str = description
-        self.splits: List[Split] = splits or []
+        self.splits: list[Split] = splits or []
         self.memo: Optional[str] = memo
 
     def __str__(self) -> str:
@@ -301,13 +302,13 @@ class TransactionManager:
 
     def __init__(
             self,
-            transactions: Optional[List[Transaction]] = None,
+            transactions: Optional[list[Transaction]] = None,
             disable_sort: bool = False,
             sort_method: Optional['SortingMethod'] = None,
     ) -> None:
-        self.transactions: List[Transaction] = transactions or []
+        self.transactions: list[Transaction] = transactions or []
         self.disable_sort: bool = disable_sort
-        self.deleted_transaction_guids: List[str] = []
+        self.deleted_transaction_guids: list[str] = []
         self.sort_method: SortingMethod = sort_method or StandardSort()
 
     def add(self, new_transaction: Transaction) -> None:
@@ -381,7 +382,7 @@ class TransactionManager:
         return self.get_balance_at_date(account)
 
     def minimum_balance_past_date(self, account: Account, date: datetime) \
-            -> Tuple[Optional[Decimal], Optional[datetime]]:
+            -> tuple[Optional[Decimal], Optional[datetime]]:
         """
         Gets the minimum balance for the account after a certain date, given the list of transactions.
 
@@ -607,7 +608,7 @@ class SimpleTransaction(Transaction):
         )
         self.from_split: Split = Split(None, None)
         self.to_split: Split = Split(None, None)
-        self.splits: List[Split] = [self.from_split, self.to_split]
+        self.splits: list[Split] = [self.from_split, self.to_split]
         if from_account is not None:
             self.from_account = from_account
         if to_account is not None:
