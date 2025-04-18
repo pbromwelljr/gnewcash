@@ -27,6 +27,11 @@
             "label": "Poetry Install",
             "type": "shell",
             "command": "poetry install"
+        },
+        {
+            "label": "MyPy",
+            "type": "shell",
+            "command": "poetry run mypy gnewcash"
         }
     ]
 }
