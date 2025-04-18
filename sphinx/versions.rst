@@ -1,6 +1,13 @@
 Versions
 ********
 
+- 1.3.0 (April 16, 2025)
+    - `Fixed a bug in the Account equality operator <https://github.com/pbromwelljr/gnewcash/commit/f02371237ce947de183b6d55a4e0f302817ae669>`__: Should be seeing if "other" is an Account, not "object". Also, the comparison was silently failing, so changed it to raise a NotImplementedError exception.
+    - `#35 <https://github.com/pbromwelljr/gnewcash/issues/35>`__: Generate a py.typed file during packaging process
+    - `#36 <https://github.com/pbromwelljr/gnewcash/issues/36>`__: Modify any calls that use a string path to also accept PathLike.
+    - Added `Transaction.create_reversing_transaction <transaction.html#trnsaction.Transaction.create_reversing_transaction>`__.
+    - `#33 <http://github.com/pbromwelljr/gnewcash/issues/33>`__: Add `LINQ-like searching <usage.html#searching>`__ for transactions
+    - `Updated type-hints to use built-ins instead of the typing module. <https://github.com/pbromwelljr/gnewcash/commit/395c3fb3845a2bf2a7e31fddf786743bfa5d35a2>`__
 - 1.2.0 (December 20, 2024)
     - **BREAKING CHANGE**: Changed supported Python versions to 3.9+.
     - `#22 <https://github.com/pbromwelljr/gnewcash/issues/22>`__: Add `get_cleared_balance <transaction.html#transaction.TransactionManager.get_cleared_balance>`__ to `TransactionManager <transaction.html#transaction.TransactionManager>`__.
