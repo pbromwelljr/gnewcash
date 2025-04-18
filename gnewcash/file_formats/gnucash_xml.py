@@ -178,8 +178,6 @@ class GnuCashXMLReader(BaseFileReader):
             parsed_tag = ElementTag.parse(elem.tag)
             if event == 'end' and parsed_tag.tag == 'book':
                 break
-            if event == 'end':
-                continue
 
             if parsed_tag.tag == 'id' and (elem.text or '').strip():
                 new_book.guid = elem.text.strip()
@@ -306,8 +304,6 @@ class GnuCashXMLReader(BaseFileReader):
             parsed_tag = ElementTag.parse(elem.tag)
             if event == 'end' and parsed_tag.tag == 'commodity':
                 break
-            if event == 'end':
-                continue
 
             if parsed_tag.tag == 'space' and (elem.text or '').strip():
                 space = elem.text.strip()
@@ -360,15 +356,15 @@ class GnuCashXMLReader(BaseFileReader):
                 break
 
             if parsed_tag.tag == 'id' and (elem.text or '').strip():
-                account_object.guid = elem.text
+                account_object.guid = elem.text.strip()
             elif parsed_tag.tag == 'name' and (elem.text or '').strip():
-                account_object.name = elem.text
+                account_object.name = elem.text.strip()
             elif parsed_tag.tag == 'type' and (elem.text or '').strip():
-                account_object.type = elem.text
+                account_object.type = elem.text.strip()
             elif parsed_tag.tag == 'commodity':
                 account_object.commodity = cls.create_commodity_from_xml(current_iter)
             elif parsed_tag.tag == 'commodity-scu' and (elem.text or '').strip():
-                account_object.commodity_scu = elem.text
+                account_object.commodity_scu = elem.text.strip()
             elif parsed_tag.tag == 'slots':
                 account_object.slots = cls.__collect_slots(current_iter, elem.tag)
             elif parsed_tag.tag == 'code' and (elem.text or '').strip():
