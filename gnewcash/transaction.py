@@ -259,7 +259,7 @@ class Transaction(GuidObject, SlottableObject):
         return sum((x.amount for x in self.to_splits if x.amount is not None), start=Decimal(0))
 
 
-class Split(GuidObject):
+class Split(GuidObject, SlottableObject):
     """Represents a split in GnuCash."""
 
     def __init__(
@@ -268,6 +268,7 @@ class Split(GuidObject):
             amount: Optional[Decimal],
             reconciled_state: str = 'n',
             guid: Optional[str] = None,
+            slots: Optional[list[Slot]] = None,
             action: Optional[str] = None,
             memo: Optional[str] = None,
             quantity_denominator: str = '100',
@@ -277,7 +278,8 @@ class Split(GuidObject):
             value_num: Optional[int] = None,
             value_denom: Optional[int] = None,
     ):
-        super().__init__(guid)
+        GuidObject.__init__(self, guid)
+        SlottableObject.__init__(self, slots)
         self.reconciled_state: str = reconciled_state
         self.amount: Optional[Decimal] = amount
         self.account: Optional[Account] = account
