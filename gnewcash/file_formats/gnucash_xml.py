@@ -8,6 +8,9 @@ Module containing the logic for loading and saving XML files.
 import gzip
 import logging
 import pathlib
+import re
+from collections.abc import Iterator
+from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Optional
@@ -55,6 +58,30 @@ XML_NAMESPACES: dict[str, str] = {
 }
 
 
+@dataclass
+class ElementTag:
+    """Class to hold tag namespace and actual tag name info."""
+
+    namespace: str = field()
+    tag: str = field()
+
+    tag_format: re.Pattern = re.compile(r'^(\{[^}]+})?(.*)$')
+
+    @classmethod
+    def parse(cls, tag_name: str) -> 'ElementTag':
+        """Parses ElementTree's full tag name into namespace and actual tag name."""
+        match = cls.tag_format.match(tag_name)
+        if match is None:
+            return ElementTag(namespace='', tag='')
+
+        return ElementTag(namespace=match.group(1),
+                          tag=match.group(2))
+
+
+class MalformedXMLElementException(Exception):
+    """Custom error class for when a malformed XML element is detected."""
+
+
 class GnuCashXMLReader(BaseFileReader):
     """Class containing the logic for loading XML files."""
 
@@ -92,40 +119,50 @@ class GnuCashXMLReader(BaseFileReader):
 
         built_file.file_name = source_file.name
 
-        root: ElementTree.Element = cls.get_xml_root(source_file)
+        cls._build_file(built_file, source_file, sort_transactions, sort_method)
 
-        books: list[ElementTree.Element] = root.findall('gnc:book', XML_NAMESPACES)
-        for book in books:
-            new_book: Book = cls.create_book_from_xml(book,
-                                                      sort_transactions=sort_transactions,
-                                                      sort_method=sort_method)
-            built_file.books.append(new_book)
         return built_file
 
     @classmethod
-    def get_xml_root(cls, source_path: pathlib.Path) -> ElementTree.Element:
+    def _build_file(
+            cls,
+            built_file: GnuCashFile,
+            source_file: pathlib.Path,
+            sort_transactions: bool = True,
+            sort_method: Optional[SortingMethod] = None
+    ) -> None:
+        current_iter: Iterator = cls.__get_xml_root(source_file)
+        for event, elem in current_iter:
+            if event == 'start' and elem.tag == '{http://www.gnucash.org/XML/gnc}book':
+                new_book = cls.create_book_from_xml(current_iter,
+                                                    sort_transactions=sort_transactions,
+                                                    sort_method=sort_method)
+                built_file.books.append(new_book)
+
+    @classmethod
+    def __get_xml_root(cls, source_path: pathlib.Path) -> Iterator:
         """
-        Retrieves the root element from a given XML document.
+        Retrieves an iterator to all the XML elements.
 
         :param source_path: Path to XML document
         :type source_path: pathlib.Path
-        :return: Root element
-        :rtype: ElementTree.Element
+        :return: Iterator to all XML elements
+        :rtype: Iterator
         """
-        return ElementTree.parse(source=str(source_path)).getroot()
+        return ElementTree.iterparse(source=str(source_path), events=('start', 'end'))
 
     @classmethod
     def create_book_from_xml(
             cls,
-            book_node: ElementTree.Element,
+            current_iter: Iterator,
             sort_transactions: bool = True,
             sort_method: Optional[SortingMethod] = None,
     ) -> Book:
         """
         Creates a Book object from the GnuCash XML.
 
-        :param book_node: XML node for the book
-        :type book_node: ElementTree.Element
+        :param current_iter: Current iterator to XML elements
+        :type current_iter: Iterator
         :param sort_transactions: Flag for if transactions should be sorted by date_posted when reading from XML
         :type sort_transactions: bool
         :param sort_method: SortingMethod class instance that determines the sort order for the transactions.
@@ -134,499 +171,444 @@ class GnuCashXMLReader(BaseFileReader):
         :rtype: Book
         """
         new_book = Book()
-        book_id_node: Optional[ElementTree.Element] = book_node.find('book:id', XML_NAMESPACES)
-        if book_id_node is not None and book_id_node.text:
-            new_book.guid = book_id_node.text
-        accounts: list[ElementTree.Element] = book_node.findall('gnc:account', XML_NAMESPACES)
-        transactions: list[ElementTree.Element] = book_node.findall('gnc:transaction', XML_NAMESPACES)
-        slots: Optional[ElementTree.Element] = book_node.find('book:slots', XML_NAMESPACES)
-
-        if slots is not None:
-            for slot in slots.findall('slot'):
-                new_book.slots.append(cls.create_slot_from_xml(slot))
-
-        commodities: list[ElementTree.Element] = book_node.findall('gnc:commodity', XML_NAMESPACES)
-        for commodity in commodities:
-            new_book.commodities.append(cls.create_commodity_from_xml(commodity))
-
         account_objects: list[Account] = []
         transaction_manager: TransactionManager = TransactionManager(disable_sort=not sort_transactions,
                                                                      sort_method=sort_method)
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'book':
+                break
+            if event == 'end':
+                continue
 
-        for account in accounts:
-            account_objects.append(cls.create_account_from_xml(account, account_objects))
-
-        for transaction in transactions:
-            transaction_manager.add(cls.create_transaction_from_xml(transaction, account_objects))
-
-        new_book.root_account = [x for x in account_objects if x.type == 'ROOT'][0]
-        new_book.transactions = transaction_manager
-
-        template_transactions_xml: Optional[list[ElementTree.Element]] = book_node.findall('gnc:template-transactions',
-                                                                                           XML_NAMESPACES)
-        if template_transactions_xml is not None:
-            template_accounts: list[Account] = []
-            template_transactions: list[Transaction] = []
-            for template_transaction in template_transactions_xml:
-                # Process accounts before transactions
-                for subelement in template_transaction:
-                    if not subelement.tag.endswith('account'):
-                        continue
-                    template_accounts.append(cls.create_account_from_xml(subelement, template_accounts))
-
-                for subelement in template_transaction:
-                    if not subelement.tag.endswith('transaction'):
-                        continue
-                    template_transactions.append(cls.create_transaction_from_xml(subelement, template_accounts))
-            new_book.template_transactions = template_transactions
-            template_root_accounts: list[Account] = [x for x in template_accounts if x.type == 'ROOT']
-            if template_root_accounts:
-                new_book.template_root_account = template_root_accounts[0]
-
-        scheduled_transactions: Optional[list[ElementTree.Element]] = book_node.findall('gnc:schedxaction',
-                                                                                        XML_NAMESPACES)
-        if scheduled_transactions is not None:
-            for scheduled_transaction in scheduled_transactions:
+            if parsed_tag.tag == 'id' and (elem.text or '').strip():
+                new_book.guid = elem.text.strip()
+            elif event == 'start' and parsed_tag.tag == 'slots':
+                new_book.slots = cls.__collect_slots(current_iter, elem.tag)
+            elif event == 'start' and parsed_tag.tag == 'commodity':
+                new_book.commodities.append(cls.create_commodity_from_xml(current_iter))
+            elif event == 'start' and parsed_tag.tag == 'account':
+                account_objects.append(cls.create_account_from_xml(current_iter, account_objects))
+            elif event == 'start' and parsed_tag.tag == 'transaction':
+                transaction_manager.add(cls.create_transaction_from_xml(current_iter, account_objects))
+            elif event == 'start' and parsed_tag.tag == 'template-transactions':
+                template_accounts: list[Account] = []
+                template_transactions: list[Transaction] = []
+                for templ_trans_event, templ_trans_elem in current_iter:
+                    if templ_trans_event == 'end' and templ_trans_elem.tag == elem.tag:
+                        break
+                    templ_trans_tag = ElementTag.parse(templ_trans_elem.tag)
+                    if templ_trans_event == 'start' and templ_trans_tag.tag == 'account':
+                        template_accounts.append(cls.create_account_from_xml(current_iter, template_accounts))
+                    elif templ_trans_event == 'start' and templ_trans_tag.tag == 'transaction':
+                        template_transactions.append(cls.create_transaction_from_xml(current_iter, template_accounts))
+                new_book.template_transactions = template_transactions
+                template_root_account: Optional[Account] = next((x for x in template_accounts if x.type == 'ROOT'),
+                                                                None)
+                if template_root_account:
+                    new_book.template_root_account = template_root_account
+            elif event == 'start' and parsed_tag.tag == 'schedxaction':
                 new_book.scheduled_transactions.append(
-                    cls.create_scheduled_transaction_from_xml(scheduled_transaction, new_book.template_root_account))
+                    cls.create_scheduled_transaction_from_xml(current_iter, new_book.template_root_account)
+                )
+            elif event == 'start' and parsed_tag.tag == 'budget':
+                new_book.budgets.append(cls.create_budget_from_xml(current_iter))
 
-        budgets: Optional[list[ElementTree.Element]] = book_node.findall('gnc:budget', XML_NAMESPACES)
-        if budgets is not None:
-            for budget in budgets:
-                new_book.budgets.append(cls.create_budget_from_xml(budget))
+        new_book.root_account = next(x for x in account_objects if x.type == 'ROOT')
+        new_book.transactions = transaction_manager
 
         return new_book
 
     @classmethod
-    def create_slot_from_xml(cls, slot_node: ElementTree.Element) -> Slot:
+    def __collect_slots(cls, current_iter: Iterator, slots_tag_name: str) -> list[Slot]:
+        slots: list[Slot] = []
+        for slot_event, slot_elem in current_iter:
+            if slot_event == 'end' and slot_elem.tag == slots_tag_name:
+                break
+            if slot_event == 'start' and slot_elem.tag == 'slot':
+                slots.append(cls.create_slot_from_xml(current_iter))
+        return slots
+
+    @classmethod
+    def create_slot_from_xml(cls, current_iter: Iterator) -> Slot:
         """
         Creates a Slot object from the GnuCash XML.
 
-        :param slot_node: XML node for the slot
-        :type slot_node: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :return: Slot object from XML
         :rtype: Slot
         """
-        key_node: Optional[ElementTree.Element] = slot_node.find('slot:key', XML_NAMESPACES)
-        if key_node is None or not key_node.text:
-            raise ValueError('slot:key missing or empty in slot node')
-        key: str = key_node.text
-        value_node: Optional[ElementTree.Element] = slot_node.find('slot:value', XML_NAMESPACES)
-        if value_node is None:
-            raise ValueError('slot:value missing in slot node')
-        slot_type = value_node.attrib['type']
-        value: Any = None
-        if slot_type == 'gdate':
-            value_gdate_node: Optional[ElementTree.Element] = value_node.find('gdate')
-            if value_gdate_node is None:
-                raise ValueError('slot type is gdate but missing gdate node')
-            if not value_gdate_node.text:
-                raise ValueError('slot type is gdate but gdate node is empty')
-            value = datetime.strptime(value_gdate_node.text, '%Y-%m-%d')
-        elif slot_type in ['string', 'guid', 'numeric']:
-            value = value_node.text
-        elif slot_type == 'integer' and value_node.text:
-            value = int(value_node.text)
-        elif slot_type == 'double' and value_node.text:
-            value = Decimal(value_node.text)
-        else:
-            child_tags: list[str] = list(set(map(lambda x: x.tag, value_node)))
-            if len(child_tags) == 1 and child_tags[0] == 'slot':
-                value = [cls.create_slot_from_xml(x) for x in value_node]
-            elif slot_type == 'frame':
-                value = None  # Empty frame element, just leave it
-            else:
-                raise NotImplementedError(f'Slot type {slot_type} is not implemented.')
+        key: Optional[str] = None
+        slot_type: Optional[str] = None
+        value: Optional[Any] = None
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and elem.tag == 'slot':
+                break
+            if parsed_tag.tag == 'key' and (elem.text or '').strip():
+                key = elem.text.strip()
+            elif parsed_tag.tag == 'value':
+                slot_type = elem.attrib['type']
+                if slot_type in ('string', 'guid', 'numeric'):
+                    # NOTE: Separate "if" so we don't get NotImplementedError on empty string values
+                    if (elem.text or '').strip():
+                        value = elem.text.strip()
+                elif slot_type == 'integer':
+                    # NOTE: Separate "if" so we don't get NotImplementedError on empty string values
+                    if (elem.text or '').strip():
+                        value = int(elem.text.strip())
+                elif slot_type == 'double':
+                    # NOTE: Separate "if" so we don't get NotImplementedError on empty string values
+                    if (elem.text or '').strip():
+                        value = Decimal(elem.text.strip())
+                elif slot_type == 'gdate':
+                    value = cls.__extract_gdate_value(current_iter, elem.tag)
+                elif slot_type == 'frame':
+                    value = cls.__collect_slots(current_iter, elem.tag)
+                else:
+                    raise NotImplementedError(f'Slot type {slot_type} is not implemented.')
+
+        if key is None or slot_type is None:
+            raise NotImplementedError('Malformed slot.')
 
         return Slot(key, value, slot_type)
 
     @classmethod
-    def create_commodity_from_xml(cls, commodity_node: ElementTree.Element) -> Commodity:
+    def __extract_gdate_value(cls, current_iter: Iterator, parent_tag_name: str) -> Optional[datetime]:
+        value: Optional[datetime] = None
+        for event, element in current_iter:
+            if event == 'end' and element.tag == parent_tag_name:
+                break
+            if element.tag == 'gdate' and (element.text or '').strip():
+                value = datetime.strptime(element.text.strip(), '%Y-%m-%d')
+        return value
+
+    @classmethod
+    def create_commodity_from_xml(cls, current_iter: Iterator) -> Commodity:
         """
         Creates a Commodity object from the GnuCash XML.
 
-        :param commodity_node: XML node for the commodity
-        :type commodity_node: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :return: Commodity object from XML
         :rtype: Commodity
         """
-        commodity_id_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:id', XML_NAMESPACES)
-        if commodity_id_node is None or not commodity_id_node.text:
-            raise ValueError('Commodity node is missing id')
-        commodity_id: str = commodity_id_node.text
-        commodity_space_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:space', XML_NAMESPACES)
-        if commodity_space_node is None or not commodity_space_node.text:
-            raise ValueError('Commodity node is missing space')
-        space: str = commodity_space_node.text
+        commodity_id: Optional[str] = None
+        space: Optional[str] = None
+        get_quotes: Optional[bool] = None
+        quote_source: Optional[str] = None
+        quote_tz: Optional[bool] = None
+        name: Optional[str] = None
+        xcode: Optional[str] = None
+        fraction: Optional[str] = None
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'commodity':
+                break
+            if event == 'end':
+                continue
+
+            if parsed_tag.tag == 'space' and (elem.text or '').strip():
+                space = elem.text.strip()
+            elif parsed_tag.tag == 'id' and (elem.text or '').strip():
+                commodity_id = elem.text.strip()
+            elif parsed_tag.tag == 'get_quotes':
+                get_quotes = True
+            elif parsed_tag.tag == 'quote_source' and (elem.text or '').strip():
+                quote_source = elem.text.strip()
+            elif parsed_tag.tag == 'quote_tz':
+                quote_tz = True
+            elif parsed_tag.tag == 'name' and (elem.text or '').strip():
+                name = elem.text.strip()
+            elif parsed_tag.tag == 'xcode' and (elem.text or '').strip():
+                xcode = elem.text.strip()
+            elif parsed_tag.tag == 'fraction' and (elem.text or '').strip():
+                fraction = elem.text.strip()
+
+        if commodity_id is None or space is None:
+            raise MalformedXMLElementException('Malformed commodity.')
+
         new_commodity: Commodity = Commodity(commodity_id, space)
-        if commodity_node.find('cmdty:get_quotes', XML_NAMESPACES) is not None:
-            new_commodity.get_quotes = True
-
-        quote_source_node = commodity_node.find('cmdty:quote_source', XML_NAMESPACES)
-        if quote_source_node is not None:
-            new_commodity.quote_source = quote_source_node.text
-
-        if commodity_node.find('quote_tz', XML_NAMESPACES) is not None:
-            new_commodity.quote_tz = True
-
-        name_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:name', XML_NAMESPACES)
-        if name_node is not None:
-            new_commodity.name = name_node.text
-
-        xcode_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:xcode', XML_NAMESPACES)
-        if xcode_node is not None:
-            new_commodity.xcode = xcode_node.text
-
-        fraction_node: Optional[ElementTree.Element] = commodity_node.find('cmdty:fraction', XML_NAMESPACES)
-        if fraction_node is not None:
-            new_commodity.fraction = fraction_node.text
+        if get_quotes is not None:
+            new_commodity.get_quotes = get_quotes
+        new_commodity.quote_source = quote_source
+        if quote_tz is not None:
+            new_commodity.quote_tz = quote_tz
+        new_commodity.name = name
+        new_commodity.xcode = xcode
+        new_commodity.fraction = fraction
 
         return new_commodity
 
     @classmethod
-    def create_account_from_xml(cls, account_node: ElementTree.Element, account_objects: list[Account]) -> Account:
+    def create_account_from_xml(cls, current_iter: Iterator, account_objects: list[Account]) -> Account:
         """
         Creates an Account object from the GnuCash XML.
 
-        :param account_node: XML node for the account
-        :type account_node: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :param account_objects: Account objects already created from XML (used for assigning parent account)
         :type account_objects: list[Account]
         :return: Account object from XML
         :rtype: Account
         """
         account_object: Account = Account()
-        account_guid_node = account_node.find('act:id', XML_NAMESPACES)
-        if account_guid_node is None or not account_guid_node.text:
-            raise ValueError('Account guid node is missing or empty')
-        account_object.guid = account_guid_node.text
-        account_name_node = account_node.find('act:name', XML_NAMESPACES)
-        if account_name_node is not None and account_name_node.text:
-            account_object.name = account_name_node.text
-        account_type_node = account_node.find('act:type', XML_NAMESPACES)
-        if account_type_node is not None and account_type_node.text:
-            account_object.type = account_type_node.text
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'account':
+                break
 
-        commodity: Optional[ElementTree.Element] = account_node.find('act:commodity', XML_NAMESPACES)
-        if commodity is not None and commodity.find('cmdty:id', XML_NAMESPACES) is not None:
-            account_object.commodity = cls.create_commodity_from_xml(commodity)
-        else:
-            account_object.commodity = None
-
-        commodity_scu: Optional[ElementTree.Element] = account_node.find('act:commodity-scu', XML_NAMESPACES)
-        if commodity_scu is not None:
-            account_object.commodity_scu = commodity_scu.text
-
-        slots: Optional[ElementTree.Element] = account_node.find('act:slots', XML_NAMESPACES)
-        if slots is not None:
-            for slot in slots.findall('slot', XML_NAMESPACES):
-                account_object.slots.append(cls.create_slot_from_xml(slot))
-
-        code: Optional[ElementTree.Element] = account_node.find('act:code', XML_NAMESPACES)
-        if code is not None:
-            account_object.code = code.text
-
-        description: Optional[ElementTree.Element] = account_node.find('act:description', XML_NAMESPACES)
-        if description is not None:
-            account_object.description = description.text
-
-        parent: Optional[ElementTree.Element] = account_node.find('act:parent', XML_NAMESPACES)
-        if parent is not None:
-            account_object.parent = [x for x in account_objects if x.guid == parent.text][0]
+            if parsed_tag.tag == 'id' and (elem.text or '').strip():
+                account_object.guid = elem.text
+            elif parsed_tag.tag == 'name' and (elem.text or '').strip():
+                account_object.name = elem.text
+            elif parsed_tag.tag == 'type' and (elem.text or '').strip():
+                account_object.type = elem.text
+            elif parsed_tag.tag == 'commodity':
+                account_object.commodity = cls.create_commodity_from_xml(current_iter)
+            elif parsed_tag.tag == 'commodity-scu' and (elem.text or '').strip():
+                account_object.commodity_scu = elem.text
+            elif parsed_tag.tag == 'slots':
+                account_object.slots = cls.__collect_slots(current_iter, elem.tag)
+            elif parsed_tag.tag == 'code' and (elem.text or '').strip():
+                account_object.code = elem.text.strip()
+            elif parsed_tag.tag == 'description' and (elem.text or '').strip():
+                account_object.description = elem.text.strip()
+            elif parsed_tag.tag == 'parent' and (elem.text or '').strip():
+                account_object.parent = next(x for x in account_objects if x.guid == elem.text.strip())
 
         return account_object
 
     @classmethod
-    def create_transaction_from_xml(cls, transaction_node: ElementTree.Element,
+    def create_transaction_from_xml(cls, current_iter: Iterator,
                                     account_objects: list[Account]) -> Transaction:
         """
         Creates a Transaction object from the GnuCash XML.
 
-        :param transaction_node: XML node for the transaction
-        :type transaction_node: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :param account_objects: Account objects already created from XML (used for assigning accounts)
         :type account_objects: list[Account]
         :return: Transaction object from XML
         :rtype: Transaction
         """
         transaction: Transaction = Transaction()
-        guid_node: Optional[ElementTree.Element] = transaction_node.find('trn:id', XML_NAMESPACES)
-        if guid_node is not None and guid_node.text:
-            transaction.guid = guid_node.text
-        date_entered_node: Optional[ElementTree.Element] = transaction_node.find('trn:date-entered', XML_NAMESPACES)
-        if date_entered_node is not None:
-            date_entered_ts_node: Optional[ElementTree.Element] = date_entered_node.find('ts:date', XML_NAMESPACES)
-            if date_entered_ts_node is not None and date_entered_ts_node.text:
-                transaction.date_entered = safe_iso_date_parsing(date_entered_ts_node.text)
-        date_posted_node: Optional[ElementTree.Element] = transaction_node.find('trn:date-posted', XML_NAMESPACES)
-        if date_posted_node is not None:
-            date_posted_ts_node: Optional[ElementTree.Element] = date_posted_node.find('ts:date', XML_NAMESPACES)
-            if date_posted_ts_node is not None and date_posted_ts_node.text:
-                transaction.date_posted = safe_iso_date_parsing(date_posted_ts_node.text)
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'transaction':
+                break
 
-        description_node: Optional[ElementTree.Element] = transaction_node.find('trn:description', XML_NAMESPACES)
-        if description_node is not None and description_node.text:
-            transaction.description = description_node.text
-
-        memo: Optional[ElementTree.Element] = transaction_node.find('trn:num', XML_NAMESPACES)
-        if memo is not None:
-            transaction.memo = memo.text
-
-        currency_node = transaction_node.find('trn:currency', XML_NAMESPACES)
-        if currency_node is not None:
-            currency_id_node = currency_node.find('cmdty:id', XML_NAMESPACES)
-            currency_space_node = currency_node.find('cmdty:space', XML_NAMESPACES)
-            if currency_id_node is not None and currency_space_node is not None \
-                    and currency_id_node.text and currency_space_node.text:
-                transaction.currency = Commodity(currency_id_node.text,
-                                                 currency_space_node.text)
-
-        slots: Optional[ElementTree.Element] = transaction_node.find('trn:slots', XML_NAMESPACES)
-        if slots is not None:
-            for slot in slots.findall('slot', XML_NAMESPACES):
-                transaction.slots.append(cls.create_slot_from_xml(slot))
-
-        splits: Optional[ElementTree.Element] = transaction_node.find('trn:splits', XML_NAMESPACES)
-        if splits is not None:
-            for split in list(splits):
-                transaction.splits.append(cls.create_split_from_xml(split, account_objects))
+            if parsed_tag.tag == 'id' and (elem.text or '').strip():
+                transaction.guid = elem.text.strip()
+            elif parsed_tag.tag == 'date-entered':
+                for date_entered_event, date_entered_elem in current_iter:
+                    if date_entered_event == 'end' and date_entered_elem.tag == elem.tag:
+                        break
+                    if (date_entered_elem.tag == '{http://www.gnucash.org/XML/ts}date' and
+                            (date_entered_elem.text or '').strip()):
+                        transaction.date_entered = safe_iso_date_parsing(date_entered_elem.text.strip())
+            elif parsed_tag.tag == 'date-posted':
+                for date_posted_event, date_posted_elem in current_iter:
+                    if date_posted_event == 'end' and date_posted_elem.tag == elem.tag:
+                        break
+                    if (date_posted_elem.tag == '{http://www.gnucash.org/XML/ts}date' and
+                            (date_posted_elem.text or '').strip()):
+                        transaction.date_posted = safe_iso_date_parsing(date_posted_elem.text.strip())
+            elif parsed_tag.tag == 'description' and (elem.text or '').strip():
+                transaction.description = elem.text.strip()
+            elif parsed_tag.tag == 'num' and (elem.text or '').strip():
+                transaction.memo = elem.text.strip()
+            elif parsed_tag.tag == 'currency':
+                currency_id: Optional[str] = None
+                currency_space: Optional[str] = None
+                for currency_event, currency_elem in current_iter:
+                    if currency_event == 'end' and currency_elem.tag == elem.tag:
+                        break
+                    parsed_currency_tag = ElementTag.parse(currency_elem.tag)
+                    if parsed_currency_tag.tag == 'id' and currency_id is None and (currency_elem.text or '').strip():
+                        currency_id = currency_elem.text.strip()
+                    elif (parsed_currency_tag.tag == 'space' and currency_space is None and
+                          (currency_elem.text or '').strip()):
+                        currency_space = currency_elem.text.strip()
+                if currency_id is None or currency_space is None:
+                    raise MalformedXMLElementException('Malformed currency')
+                transaction.currency = Commodity(currency_id, currency_space)
+            elif parsed_tag.tag == 'slots':
+                transaction.slots = cls.__collect_slots(current_iter, elem.tag)
+            elif parsed_tag.tag == 'splits':
+                for split_event, split_elem in current_iter:
+                    if split_event == 'end' and split_elem.tag == elem.tag:
+                        break
+                    if split_event == 'start' and split_elem.tag == '{http://www.gnucash.org/XML/trn}split':
+                        transaction.splits.append(cls.create_split_from_xml(current_iter, account_objects))
 
         return transaction
 
     @classmethod
-    def create_split_from_xml(cls, split_node: ElementTree.Element, account_objects: list[Account]) -> Split:
+    def create_split_from_xml(cls, current_iter: Iterator, account_objects: list[Account]) -> Split:
         """
         Creates an Split object from the GnuCash XML.
 
-        :param split_node: XML node for the split
-        :type split_node: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :param account_objects: Account objects already created from XML (used for assigning parent account)
         :type account_objects: list[Account]
         :return: Split object from XML
         :rtype: Split
         """
-        account_node: Optional[ElementTree.Element] = split_node.find('split:account', XML_NAMESPACES)
-        if account_node is None or not account_node.text:
-            raise ValueError('Invalid or missing split:account node')
-        account: str = account_node.text
+        split_id: Optional[str] = None
+        reconciled_state: Optional[str] = None
+        value: Optional[str] = None
+        quantity: Optional[str] = None
+        account_id: Optional[str] = None
+        memo: Optional[str] = None
+        action: Optional[str] = None
+        slots: list[Slot] = []
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'split':
+                break
+            if parsed_tag.tag == 'id' and (elem.text or '').strip():
+                split_id = elem.text
+            elif parsed_tag.tag == 'reconciled-state' and (elem.text or '').strip():
+                reconciled_state = elem.text
+            elif parsed_tag.tag == 'value' and (elem.text or '').strip():
+                value = elem.text
+            elif parsed_tag.tag == 'quantity' and (elem.text or '').strip():
+                quantity = elem.text
+            elif parsed_tag.tag == 'account' and (elem.text or '').strip():
+                account_id = elem.text
+            elif parsed_tag.tag == 'memo' and (elem.text or '').strip():
+                memo = elem.text
+            elif parsed_tag.tag == 'action' and (elem.text or '').strip():
+                action = elem.text
+            elif event == 'start' and parsed_tag.tag == 'slots':
+                slots = cls.__collect_slots(current_iter, elem.tag)
 
-        value_node: Optional[ElementTree.Element] = split_node.find('split:value', XML_NAMESPACES)
-        if value_node is None or not value_node.text:
-            raise ValueError('Invalid or missing split:value node')
-        value_str: str = value_node.text
-        value: Decimal = Decimal(value_str[:value_str.find('/')]) / Decimal(value_str[value_str.find('/') + 1:])
+        if value is None or reconciled_state is None:
+            raise MalformedXMLElementException('Malformed split')
 
-        reconciled_state_node: Optional[ElementTree.Element] = split_node.find('split:reconciled-state',
-                                                                               XML_NAMESPACES)
-        if reconciled_state_node is None or not reconciled_state_node.text:
-            raise ValueError('Invalid or missing split:reconciled-state node')
-        new_split = Split([x for x in account_objects if x.guid == account][0],
-                          value, reconciled_state_node.text)
-        guid_node = split_node.find('split:id', XML_NAMESPACES)
-        if guid_node is not None and guid_node.text:
-            new_split.guid = guid_node.text
+        new_split = Split(
+            guid=split_id,
+            account=next(x for x in account_objects if x.guid == account_id),
+            amount=Decimal(value[:value.find('/')]) / Decimal(value[value.find('/') + 1:]),
+            reconciled_state=reconciled_state
+        )
 
-        split_memo: Optional[ElementTree.Element] = split_node.find('split:memo', XML_NAMESPACES)
-        if split_memo is not None:
-            new_split.memo = split_memo.text
-
-        split_action: Optional[ElementTree.Element] = split_node.find('split:action', XML_NAMESPACES)
-        if split_action is not None:
-            new_split.action = split_action.text
-
-        quantity_node = split_node.find('split:quantity', XML_NAMESPACES)
-        if quantity_node is not None:
-            quantity = quantity_node.text
-            if quantity is not None and '/' in quantity:
+        if memo:
+            new_split.memo = memo
+        if action:
+            new_split.action = action
+        if quantity:
+            if '/' in quantity:
+                new_split.quantity_num = int(quantity.split('/')[0])
                 new_split.quantity_denominator = quantity.split('/')[1]
-
+            else:
+                new_split.quantity_num = int(quantity) * 100
+                new_split.quantity_denominator = '100'
+        if slots:
+            new_split.slots = slots
         return new_split
 
     @classmethod
-    def create_scheduled_transaction_from_xml(cls, xml_obj: ElementTree.Element,
-                                              template_account_root: Optional[Account]) -> ScheduledTransaction:
+    def create_scheduled_transaction_from_xml(
+        cls,
+        current_iter: Iterator,
+        template_account_root: Optional[Account]
+    ) -> ScheduledTransaction:
         """
         Creates a ScheduledTransaction object from the GnuCash XML.
 
-        :param xml_obj: XML node for the scheduled transaction
-        :type xml_obj: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :param template_account_root: Root template account
         :type template_account_root: Account
         :return: ScheduledTransaction object from XML
         :rtype: ScheduledTransaction
         """
-        new_obj: 'ScheduledTransaction' = ScheduledTransaction()
-        sx_transaction_guid: Optional[str] = cls.read_xml_child_text(xml_obj, 'sx:id', XML_NAMESPACES)
-        if sx_transaction_guid is not None and sx_transaction_guid:
-            new_obj.guid = sx_transaction_guid
-        new_obj.name = cls.read_xml_child_text(xml_obj, 'sx:name', XML_NAMESPACES)
-        new_obj.enabled = cls.read_xml_child_boolean(xml_obj, 'sx:enabled', XML_NAMESPACES)
-        new_obj.auto_create = cls.read_xml_child_boolean(xml_obj, 'sx:autoCreate', XML_NAMESPACES)
-        new_obj.auto_create_notify = cls.read_xml_child_boolean(xml_obj, 'sx:autoCreateNotify', XML_NAMESPACES)
-        new_obj.advance_create_days = cls.read_xml_child_int(xml_obj, 'sx:advanceCreateDays', XML_NAMESPACES)
-        new_obj.advance_remind_days = cls.read_xml_child_int(xml_obj, 'sx:advanceRemindDays', XML_NAMESPACES)
-        new_obj.instance_count = cls.read_xml_child_int(xml_obj, 'sx:instanceCount', XML_NAMESPACES)
-        new_obj.start_date = cls.read_xml_child_date(xml_obj, 'sx:start', XML_NAMESPACES)
-        new_obj.last_date = cls.read_xml_child_date(xml_obj, 'sx:last', XML_NAMESPACES)
-        new_obj.end_date = cls.read_xml_child_date(xml_obj, 'sx:end', XML_NAMESPACES)
-
-        template_account_node: Optional[ElementTree.Element] = xml_obj.find('sx:templ-acct', XML_NAMESPACES)
-        if template_account_node is not None and template_account_node.text and template_account_root is not None:
-            new_obj.template_account = template_account_root.get_subaccount_by_id(template_account_node.text)
-
-        schedule_node: Optional[ElementTree.Element] = xml_obj.find('sx:schedule', XML_NAMESPACES)
-        if schedule_node is not None:
-            recurrence_node = schedule_node.find('gnc:recurrence', XML_NAMESPACES)
-            if recurrence_node is not None:
-                new_obj.recurrence_multiplier = cls.read_xml_child_int(
-                    recurrence_node, 'recurrence:mult', XML_NAMESPACES
-                )
-                new_obj.recurrence_period = cls.read_xml_child_text(
-                    recurrence_node, 'recurrence:period_type', XML_NAMESPACES)
-                new_obj.recurrence_start = cls.read_xml_child_date(
-                    recurrence_node, 'recurrence:start', XML_NAMESPACES)
-
+        new_obj: ScheduledTransaction = ScheduledTransaction()
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'schedxaction':
+                break
+            if parsed_tag.tag == 'id' and (elem.text or '').strip():
+                new_obj.guid = elem.text.strip()
+            elif parsed_tag.tag == 'name' and (elem.text or '').strip():
+                new_obj.name = elem.text.strip()
+            elif parsed_tag.tag == 'enabled' and (elem.text or '').strip():
+                new_obj.enabled = elem.text.strip() == 'y'
+            elif parsed_tag.tag == 'autoCreate' and (elem.text or '').strip():
+                new_obj.auto_create = elem.text.strip() == 'y'
+            elif parsed_tag.tag == 'autoCreateNotify' and (elem.text or '').strip():
+                new_obj.auto_create_notify = elem.text.strip() == 'y'
+            elif parsed_tag.tag == 'advanceCreateDays' and (elem.text or '').strip():
+                new_obj.advance_create_days = int(elem.text.strip())
+            elif parsed_tag.tag == 'advanceRemindDays' and (elem.text or '').strip():
+                new_obj.advance_remind_days = int(elem.text.strip())
+            elif parsed_tag.tag == 'instanceCount' and (elem.text or '').strip():
+                new_obj.instance_count = int(elem.text.strip())
+            elif event == 'start' and parsed_tag.tag == 'start':
+                new_obj.start_date = cls.__extract_gdate_value(current_iter, elem.tag)
+            elif event == 'start' and parsed_tag.tag == 'last':
+                new_obj.last_date = cls.__extract_gdate_value(current_iter, elem.tag)
+            elif event == 'start' and parsed_tag.tag == 'end':
+                new_obj.end_date = cls.__extract_gdate_value(current_iter, elem.tag)
+            elif parsed_tag.tag == 'templ-acct' and (elem.text or '').strip() and template_account_root is not None:
+                new_obj.template_account = template_account_root.get_subaccount_by_id(elem.text.strip())
+            elif event == 'start' and parsed_tag.tag == 'schedule':
+                for schedule_event, schedule_elem in current_iter:
+                    if schedule_event == 'end' and schedule_elem.tag == elem.tag:
+                        break
+                    schedule_tag = ElementTag.parse(schedule_elem.tag)
+                    if schedule_tag.tag == 'mult' and (schedule_elem.text or '').strip():
+                        new_obj.recurrence_multiplier = int(schedule_elem.text.strip())
+                    elif schedule_tag.tag == 'period_type' and (schedule_elem.text or '').strip():
+                        new_obj.recurrence_period = schedule_elem.text.strip()
+                    elif schedule_tag.tag == 'start':
+                        new_obj.recurrence_start = cls.__extract_gdate_value(current_iter, schedule_elem.tag)
         return new_obj
 
     @classmethod
-    def create_budget_from_xml(cls, budget_node: ElementTree.Element) -> Budget:
+    def create_budget_from_xml(cls, current_iter: Iterator) -> Budget:
         """
         Creates a Budget object from the GnuCash XML.
 
-        :param budget_node: XML node for the budget
-        :type budget_node: ElementTree.Element
+        :param current_iter: Iterator for XML elements
+        :type current_iter: Iterator
         :return: Budget object from XML
         :rtype: Budget
         """
         new_obj = Budget()
 
-        id_node: Optional[ElementTree.Element] = budget_node.find('bgt:id', XML_NAMESPACES)
-        if id_node is not None and id_node.text:
-            new_obj.guid = id_node.text
+        for event, elem in current_iter:
+            parsed_tag = ElementTag.parse(elem.tag)
+            if event == 'end' and parsed_tag.tag == 'budget':
+                break
 
-        name_node: Optional[ElementTree.Element] = budget_node.find('bgt:name', XML_NAMESPACES)
-        if name_node is not None:
-            new_obj.name = name_node.text
-
-        description_node: Optional[ElementTree.Element] = budget_node.find('bgt:description', XML_NAMESPACES)
-        if description_node is not None:
-            new_obj.description = description_node.text
-
-        period_count_node: Optional[ElementTree.Element] = budget_node.find('bgt:num-periods', XML_NAMESPACES)
-        if period_count_node is not None and period_count_node.text:
-            new_obj.period_count = int(period_count_node.text)
-
-        recurrence_node: Optional[ElementTree.Element] = budget_node.find('bgt:recurrence', XML_NAMESPACES)
-        if recurrence_node is not None:
-            multiplier_node: Optional[ElementTree.Element] = recurrence_node.find('recurrence:mult', XML_NAMESPACES)
-            if multiplier_node is not None and multiplier_node.text:
-                new_obj.recurrence_multiplier = int(multiplier_node.text)
-
-            period_type_node: Optional[ElementTree.Element] = recurrence_node.find('recurrence:period_type',
-                                                                                   XML_NAMESPACES)
-            if period_type_node is not None:
-                new_obj.recurrence_period_type = period_type_node.text
-
-            recurrence_start_node: Optional[ElementTree.Element] = recurrence_node.find('recurrence:start',
-                                                                                        XML_NAMESPACES)
-            if recurrence_start_node is not None:
-                gdate_node: Optional[ElementTree.Element] = recurrence_start_node.find('gdate', XML_NAMESPACES)
-                if gdate_node is not None and gdate_node.text:
-                    new_obj.recurrence_start = datetime.strptime(gdate_node.text, '%Y-%m-%d')
-
-        slots: Optional[ElementTree.Element] = budget_node.find('bgt:slots', XML_NAMESPACES)
-        if slots is not None:
-            for slot in slots.findall('slot', XML_NAMESPACES):
-                new_obj.slots.append(cls.create_slot_from_xml(slot))
+            if parsed_tag.tag == 'id' and (elem.text or '').strip():
+                new_obj.guid = elem.text.strip()
+            elif parsed_tag.tag == 'name' and (elem.text or '').strip():
+                new_obj.name = elem.text.strip()
+            elif parsed_tag.tag == 'description' and (elem.text or '').strip():
+                new_obj.description = elem.text.strip()
+            elif parsed_tag.tag == 'num-periods' and (elem.text or '').strip():
+                new_obj.period_count = int(elem.text.strip())
+            elif event == 'start' and parsed_tag.tag == 'recurrence':
+                for recurrence_event, recurrence_elem in current_iter:
+                    recurrence_tag = ElementTag.parse(recurrence_elem.tag)
+                    if recurrence_event == 'end' and recurrence_elem.tag == elem.tag:
+                        break
+                    if recurrence_tag.tag == 'mult' and (recurrence_elem.text or '').strip():
+                        new_obj.recurrence_multiplier = int(recurrence_elem.text.strip())
+                    elif recurrence_tag.tag == 'period_type' and (recurrence_elem.text or '').strip():
+                        new_obj.recurrence_period_type = recurrence_elem.text.strip()
+                    elif recurrence_tag.tag == 'start':
+                        new_obj.recurrence_start = cls.__extract_gdate_value(current_iter, recurrence_elem.tag)
+            elif event == 'start' and parsed_tag.tag == 'slots':
+                new_obj.slots = cls.__collect_slots(current_iter, elem.tag)
 
         return new_obj
-
-    @classmethod
-    def read_xml_child_text(cls, xml_object: ElementTree.Element, tag_name: str,
-                            namespaces: dict[str, str]) -> Optional[str]:
-        """
-        Reads the text from a specific child XML element.
-
-        :param xml_object: Current XML object
-        :type xml_object: ElementTree.Element
-        :param tag_name: Child tag name
-        :type tag_name: str
-        :param namespaces: GnuCash namespaces
-        :type namespaces: dict[str, str]
-        :return: Child node's text
-        :rtype: str
-        """
-        target_node: Optional[ElementTree.Element] = xml_object.find(tag_name, namespaces)
-        if target_node is not None:
-            return target_node.text
-        return None
-
-    @classmethod
-    def read_xml_child_boolean(cls, xml_object: ElementTree.Element, tag_name: str,
-                               namespaces: dict[str, str]) -> Optional[bool]:
-        """
-        Reads the text from a specific child XML element and returns a Boolean if the text is "Y" or "y".
-
-        :param xml_object: Current XML object
-        :type xml_object: ElementTree.Element
-        :param tag_name: Child tag name
-        :type tag_name: str
-        :param namespaces: GnuCash namespaces
-        :type namespaces: dict[str, str]
-        :return: True if child node's text is "Y" or "Y", otherwise False.
-        :rtype: bool
-        """
-        node_text: Optional[str] = cls.read_xml_child_text(xml_object, tag_name, namespaces)
-        if node_text and node_text.lower() == 'y':
-            return True
-        if node_text:
-            return False
-        return None
-
-    @classmethod
-    def read_xml_child_int(cls, xml_object: ElementTree.Element, tag_name: str,
-                           namespaces: dict[str, str]) -> Optional[int]:
-        """
-        Reads the text from a specific child XML element and returns its text as an integer value.
-
-        :param xml_object: Current XML object
-        :type xml_object: ElementTree.Element
-        :param tag_name: Child tag name
-        :type tag_name: str
-        :param namespaces: GnuCash namespaces
-        :type namespaces: dict[str, str]
-        :return: Child's text as an integer value
-        :rtype: int
-        """
-        node_text: Optional[str] = cls.read_xml_child_text(xml_object, tag_name, namespaces)
-        if node_text:
-            return int(node_text)
-        return None
-
-    @classmethod
-    def read_xml_child_date(cls, xml_object: ElementTree.Element, tag_name: str,
-                            namespaces: dict[str, str]) -> Optional[datetime]:
-        """
-        Reads the text from a specific child XML element and returns its inner gdate text as a datetime.
-
-        :param xml_object: Current XML object
-        :type xml_object: ElementTree.Element
-        :param tag_name: Child tag name
-        :type tag_name: str
-        :param namespaces: GnuCash namespaces
-        :type namespaces: dict[str, str]
-        :return: Child's gdate's text as datetime
-        :rtype: datetime.datetime
-        """
-        target_node: Optional[ElementTree.Element] = xml_object.find(tag_name, namespaces)
-        if target_node is None:
-            return None
-
-        date_node: Optional[ElementTree.Element] = target_node.find('gdate', namespaces)
-        if date_node is None:
-            return None
-
-        return datetime.strptime(date_node.text, '%Y-%m-%d') if date_node.text else None
 
 
 class GnuCashXMLWriter(BaseFileWriter):
@@ -907,6 +889,12 @@ class GnuCashXMLWriter(BaseFileWriter):
                 str(int(split.amount * 100)), split.quantity_denominator])
         if split.account:
             ElementTree.SubElement(split_node, 'split:account', {'type': 'guid'}).text = split.account.guid
+
+        if split.slots:
+            slots_node = ElementTree.SubElement(split_node, 'split:slots')
+            for slot in split.slots:
+                slots_node.append(cls.cast_slot_as_xml(slot))
+
         return split_node
 
     @classmethod
@@ -1019,18 +1007,33 @@ class GZipXMLFileFormat(XMLFileFormat):
     """Class containing the logic for loading and saving XML files with GZip compression."""
 
     @classmethod
-    def get_xml_root(cls, source_path: pathlib.Path) -> ElementTree.Element:
+    def _build_file(
+            cls,
+            built_file: GnuCashFile,
+            source_file: pathlib.Path,
+            sort_transactions: bool = True,
+            sort_method: Optional[SortingMethod] = None
+    ) -> None:
+        with gzip.GzipFile(source_file, 'r') as gzipped_file:
+            current_iter: Iterator = cls.__get_xml_root(gzipped_file)
+            for event, elem in current_iter:
+                if event == 'start' and elem.tag == '{http://www.gnucash.org/XML/gnc}book':
+                    new_book = cls.create_book_from_xml(current_iter,
+                                                        sort_transactions=sort_transactions,
+                                                        sort_method=sort_method)
+                    built_file.books.append(new_book)
+
+    @classmethod
+    def __get_xml_root(cls, gzipped_file: gzip.GzipFile) -> Iterator:
         """
         Retrieves the XML root element from a GZipped XML file.
 
         :param source_path: Path to GZipped XML File.
         :type source_path: str
-        :return: XML root element
-        :rtype: ElementTree.Element
+        :return: Iterator to all XML elements
+        :rtype: Iterator
         """
-        with gzip.open(source_path, 'rb') as gzipped_file:
-            contents = gzipped_file.read().decode('utf-8')
-        return ElementTree.fromstring(contents)
+        return ElementTree.iterparse(gzipped_file, events=('start', 'end'))
 
     @classmethod
     def write_file_contents(cls, target_file: str, file_contents: bytes) -> None:
@@ -1042,5 +1045,5 @@ class GZipXMLFileFormat(XMLFileFormat):
         :param file_contents: Contents to write to the GZip file
         :type file_contents: bytes
         """
-        with gzip.open(target_file, 'wb', compresslevel=9) as gzip_file:
+        with gzip.GzipFile(target_file, 'w', compresslevel=9) as gzip_file:
             gzip_file.write(file_contents)
