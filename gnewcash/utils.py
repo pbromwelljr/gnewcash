@@ -5,31 +5,36 @@ Catch-all module containing methods that might be helpful to GNewCash users.
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
+import pathlib
 import re
 from datetime import datetime
-from os import listdir, remove
-from os.path import join
-
-from genericpath import exists, isfile
+from os import PathLike
+from typing import Union
 
 
-def delete_log_files(gnucash_file_path: str) -> None:
+def delete_log_files(
+        gnucash_folder: Union[str, PathLike],
+        ignore_permission_errors: bool = True
+) -> None:
     """
     Deletes log files at the specified directory.
 
-    :param gnucash_file_path: Directory to delete log files
-    :type gnucash_file_path: str
+    :param gnucash_folder: Directory to delete log files
+    :type gnucash_folder: Union[str, PathLike]
+    :param ignore_permission_errors: Ignore PermissionError thrown when deleting files. (default true)
+    :type ignore_permission_errors: bool
     """
     backup_file_format: re.Pattern = re.compile(r'.*[0-9]{14}\.gnucash$')
-    for file in [x for x in listdir(gnucash_file_path) if isfile(join(gnucash_file_path, x))]:
-        full_file_path: str = join(gnucash_file_path, file)
-        if (('.gnucash' in file and file.endswith('.log')) or backup_file_format.match(file)) \
-                and exists(full_file_path):
+    gnucash_path = pathlib.Path(gnucash_folder)
+    for file in gnucash_path.glob('*.*'):
+        if not file.is_file():
+            continue
+        if ('.gnucash' in file.name and file.name.endswith('.log')) or backup_file_format.match(file.name):
             try:
-                remove(full_file_path)
-            except PermissionError:
-                # Fine, ignore it.
-                pass
+                file.unlink()
+            except PermissionError as e:
+                if not ignore_permission_errors:
+                    raise e
 
 
 def safe_iso_date_parsing(date_string: str) -> datetime:
