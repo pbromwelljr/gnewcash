@@ -442,13 +442,17 @@ class TransactionManager:
         :return: Account balance at specified transaction or 0, if no applicable transactions were found.
         :rtype: decimal.Decimal
         """
-        return Decimal(
+        running_balance = Decimal(
             self.query().take_while(lambda t: t.guid != transaction.guid)
                         .select_many(lambda t, i: t.splits)
                         .where(lambda s: s.amount is not None and s.account == account)
                         .select(lambda s, i: s.amount)
                         .sum_()
         )
+        for split in transaction.splits:
+            if split.account == account and split.amount is not None:
+                running_balance += split.amount
+        return abs(running_balance)
 
     def get_cleared_balance(self, account: Account) -> Decimal:
         """
