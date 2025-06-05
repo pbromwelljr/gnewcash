@@ -4,6 +4,21 @@ on:
   push:
     tags:
       - b*
+permissions:
+  actions: none
+  attestations: none
+  checks: none
+  contents: write
+  deployments: none
+  id-token: none
+  issues: none
+  discussions: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
 jobs:
   build:
     strategy:
@@ -39,6 +54,7 @@ jobs:
           poetry run flake8 gnewcash
           poetry run pylint gnewcash
           poetry run mypy gnewcash
+          poetry run xenon --max-absolute B --max-modules A --max-average A gnewcash
       - name: Run unit tests
         run: |
           poetry run pytest --cov=gnewcash tests/
@@ -78,7 +94,7 @@ jobs:
           poetry publish --repository testpypi --username ${{secrets.TEST_PYPI_USERNAME}} --password ${{secrets.TEST_PYPI_PASSWORD}}
   update-documentation:
     needs: publish-test-pypi
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   
     steps:
       - uses: actions/checkout@v4
         with:

@@ -3,6 +3,21 @@ name: Pull Request
 on:
   pull_request:
     types: [opened, reopened]
+permissions:
+  actions: none
+  attestations: none
+  checks: none
+  contents: read
+  deployments: none
+  id-token: none
+  issues: none
+  discussions: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
 jobs:
   lint-and-test:
     strategy:
@@ -36,6 +51,7 @@ jobs:
           poetry run flake8 gnewcash
           poetry run pylint gnewcash
           poetry run mypy gnewcash
+          poetry run xenon --max-absolute B --max-modules A --max-average A gnewcash
       - name: Run unit tests
         run: |
           poetry run pytest --cov=gnewcash tests/
