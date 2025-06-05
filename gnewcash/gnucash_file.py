@@ -150,7 +150,9 @@ class Book(GuidObject, SlottableObject):
 
         * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.
         """
-        current_level: Account = kwargs.get('current_level', self.root_account)
+        current_level: Optional[Account] = kwargs.get('current_level', self.root_account)
+        if current_level is None:
+            return None
         paths_to_account_list: list[str] = list(paths_to_account)
         next_level: str = paths_to_account_list.pop(0)
         for account in current_level.children:
