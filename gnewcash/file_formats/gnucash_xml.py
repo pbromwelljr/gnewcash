@@ -20,7 +20,7 @@ from xml.etree import ElementTree
 from gnewcash.account import Account
 from gnewcash.commodity import Commodity
 from gnewcash.file_formats.base import BaseFileFormat, BaseFileReader, BaseFileWriter
-from gnewcash.gnucash_file import Book, Budget, GnuCashFile
+from gnewcash.gnucash_file import Book, Budget, GnuCashFile, RecurrencePeriodType
 from gnewcash.slot import Slot
 from gnewcash.transaction import ScheduledTransaction, SortingMethod, Split, Transaction, TransactionManager
 from gnewcash.utils import safe_iso_date_formatting, safe_iso_date_parsing
@@ -598,7 +598,7 @@ class GnuCashXMLReader(BaseFileReader):
                     if recurrence_tag.tag == 'mult' and (recurrence_elem.text or '').strip():
                         new_obj.recurrence_multiplier = int(recurrence_elem.text.strip())
                     elif recurrence_tag.tag == 'period_type' and (recurrence_elem.text or '').strip():
-                        new_obj.recurrence_period_type = recurrence_elem.text.strip()
+                        new_obj.recurrence_period_type = RecurrencePeriodType(recurrence_elem.text.strip())
                     elif recurrence_tag.tag == 'start':
                         new_obj.recurrence_start = cls.__extract_gdate_value(current_iter, recurrence_elem.tag)
             elif event == 'start' and parsed_tag.tag == 'slots':
@@ -762,7 +762,7 @@ class GnuCashXMLWriter(BaseFileWriter):
         :rtype: xml.etree.ElementTree.Element
         """
         slot_node: ElementTree.Element = ElementTree.Element('slot')
-        ElementTree.SubElement(slot_node, 'slot:key').text = slot.key
+        ElementTree.SubElement(slot_node, 'slot:key').text = str(slot.key)
 
         slot_value_node = ElementTree.SubElement(slot_node, 'slot:value', {'type': slot.type})
         if slot.type == 'gdate':
@@ -969,7 +969,9 @@ class GnuCashXMLWriter(BaseFileWriter):
             if budget.recurrence_multiplier is not None:
                 ElementTree.SubElement(recurrence_node, 'recurrence:mult').text = str(budget.recurrence_multiplier)
             if budget.recurrence_period_type is not None:
-                ElementTree.SubElement(recurrence_node, 'recurrence:period_type').text = budget.recurrence_period_type
+                ElementTree.SubElement(
+                    recurrence_node, 'recurrence:period_type'
+                ).text = budget.recurrence_period_type.value
             if budget.recurrence_start is not None:
                 start_node = ElementTree.SubElement(recurrence_node, 'recurrence:start')
                 ElementTree.SubElement(start_node, 'gdate').text = budget.recurrence_start.strftime('%Y-%m-%d')

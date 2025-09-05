@@ -5,10 +5,13 @@ Module containing classes that read, manipulate, and write GnuCash files, books,
    :synopsis:
 .. moduleauthor: Paul Bromwell Jr.
 """
+import calendar
 import pathlib
 from collections.abc import Generator
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+from enum import Enum
+from fractions import Fraction
 from logging import getLogger
 from os import PathLike
 from typing import Any, Optional, Union
@@ -225,7 +228,7 @@ class Budget(GuidObject, SlottableObject):
             description: Optional[str] = None,
             period_count: Optional[int] = None,
             recurrence_multiplier: Optional[int] = None,
-            recurrence_period_type: Optional[str] = None,
+            recurrence_period_type: Optional['RecurrencePeriodType'] = None,
             recurrence_start: Optional[datetime] = None,
     ) -> None:
         GuidObject.__init__(self, guid)
@@ -235,5 +238,185 @@ class Budget(GuidObject, SlottableObject):
         self.description: Optional[str] = description
         self.period_count: Optional[int] = period_count
         self.recurrence_multiplier: Optional[int] = recurrence_multiplier
-        self.recurrence_period_type: Optional[str] = recurrence_period_type
+        self.recurrence_period_type: Optional[RecurrencePeriodType] = recurrence_period_type
         self.recurrence_start: Optional[datetime] = recurrence_start
+
+    def all_periods(self, account: Account, amount: Decimal, action: 'AllPeriodsActionType') -> None:
+        """
+        Applies an amount to a given account over all budget periods using the indicated action.
+
+        :param account: Account that the amount should be applied for.
+        :type account: Account
+        :param amount: Amount for that account in a given period.
+        :type amount: Decimal
+        :param action: Action to take on each period (replace, add, or multiply).
+        :type action: AllPeriodsActionType
+        """
+        if self.period_count is None:
+            raise ValueError('"period_count" is required!')
+
+        # Try to find an existing slot for this account.
+        for slot in self.slots:
+            if slot.key != account.guid:
+                continue
+            for period_slot in slot.value:
+                existing_value_fraction = Fraction(period_slot.value)
+                existing_value = (
+                    Decimal(existing_value_fraction.numerator) / Decimal(existing_value_fraction.denominator)
+                )
+                if action == AllPeriodsActionType.REPLACE:
+                    existing_value = amount
+                elif action == AllPeriodsActionType.ADD:
+                    existing_value += amount
+                elif action == AllPeriodsActionType.MULTIPLY:
+                    existing_value *= amount
+                existing_value_fraction = Fraction(existing_value)
+                period_slot.value = f'{existing_value_fraction.numerator}/{existing_value_fraction.denominator}'
+            break
+        else:
+            # We couldn't find an existing slot, so let's make a new one.
+            period_slots: list[Slot] = []
+            if action == AllPeriodsActionType.MULTIPLY:
+                amount = Decimal(0)  # Anything times zero is zero.
+
+            fraction_amount = Fraction(amount)
+            period_slot_value = f'{fraction_amount.numerator}/{fraction_amount.denominator}'
+
+            for period_index in range(self.period_count):
+                period_slots.append(Slot(key=period_index, value=period_slot_value, slot_type='numeric'))
+            new_slot = Slot(key=account.guid, value=period_slots, slot_type='frame')
+            self.slots.append(new_slot)
+
+    def estimate(
+            self,
+            account: Account,
+            transactions: TransactionManager,
+            start_date: datetime,
+            average: bool = False
+    ) -> None:
+        """
+        Estimates the cost for each recurrence period, using the average if specified.
+
+        :param account: Account that the amount should be applied for.
+        :type account: Account
+        :param transactions: TransactionManager of transactions to analyze.
+        :type transactions: TransactionManager
+        :param start_date: Date to start estimating from.
+        :type start_date: datetime
+        :param average: Should the average value across all periods be used? (default false)
+        :type average: bool
+        """
+        period_amounts: list[Decimal] = []
+        period_start_index: int = 0
+        for period_start_date, period_end_date, period_index in self.__generate_recurrence_periods():
+            if period_end_date < start_date:
+                period_start_index = period_index
+                continue
+            account_transactions_sum = Decimal(
+                transactions.query()
+                .where(lambda t, start=period_start_date, end=period_end_date: start <= t.date_posted <= end)
+                .select_many(lambda t, i: t.splits)
+                .where(lambda s: s.account == account)
+                .select(lambda s, i: s.amount)
+                .sum_()
+            )
+            period_amounts.append(Decimal(account_transactions_sum))
+
+        if average:
+            average_amount = Decimal(Query(period_amounts).average())
+            period_amounts = [average_amount] * len(period_amounts)
+
+        for slot in self.slots:
+            if slot.key != account.guid:
+                continue
+            for i, period_amount in enumerate(period_amounts):
+                for period_slot in slot.value:
+                    if period_slot.key != (period_start_index + i):
+                        continue
+                    period_amount_fraction = Fraction(period_amount)
+                    period_slot.value = f'{period_amount_fraction.numerator}/{period_amount_fraction.denominator}'
+                    break
+            break
+        else:
+            # Make a new slot for the account
+            period_slots: list[Slot] = []
+            for i, period_amount in enumerate(period_amounts):
+                fraction_amount = Fraction(period_amount)
+                period_slot_value = f'{fraction_amount.numerator}/{fraction_amount.denominator}'
+                period_slots.append(Slot(key=period_start_index + i,
+                                         value=period_slot_value,
+                                         slot_type='numeric'))
+
+            new_slot = Slot(key=account.guid, value=period_slots, slot_type='frame')
+            self.slots.append(new_slot)
+
+    def __generate_recurrence_periods(self) -> Generator[tuple[datetime, datetime, int], None, None]:
+        if self.recurrence_start is None:
+            raise ValueError('"recurrence_start" is required!')
+        if self.recurrence_multiplier is None:
+            raise ValueError('"recurrence_multiplier" is required!')
+        if self.period_count is None:
+            raise ValueError('"period_count" is required!')
+
+        anchor = self.recurrence_start
+        one_day = timedelta(days=1)
+
+        previous_end_date: Optional[datetime] = None
+        for i in range(self.period_count):
+            start_date: datetime
+            if previous_end_date is None:
+                start_date = anchor
+            else:
+                start_date = previous_end_date + one_day
+            start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            end_date = self.__add_period(anchor, (i + 1) * self.recurrence_multiplier)
+            end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999)
+            if start_date.tzinfo is not None and end_date.tzinfo is None:
+                end_date = end_date.replace(tzinfo=start_date.tzinfo)
+
+            yield start_date, end_date, i
+            previous_end_date = end_date
+
+    def __add_period(self, start_date: datetime, count: int) -> datetime:
+        if self.recurrence_period_type == RecurrencePeriodType.DAYS:
+            return start_date + timedelta(days=count)
+        if self.recurrence_period_type == RecurrencePeriodType.WEEKS:
+            return start_date + timedelta(weeks=count)
+        if self.recurrence_period_type == RecurrencePeriodType.MONTHS:
+            return self.__add_months(start_date, count)
+        if self.recurrence_period_type == RecurrencePeriodType.YEARS:
+            return self.__add_years(start_date, count)
+        return start_date
+
+    @classmethod
+    def __add_months(cls, date: datetime, months: int) -> datetime:
+        year = date.year + (date.month - 1 + months) // 12
+        month = (date.month - 1 + months) % 12 + 1
+        day = min(date.day, calendar.monthrange(year, month)[1])
+        return date.replace(year, month, day)
+
+    @classmethod
+    def __add_years(cls, date: datetime, years: int) -> datetime:
+        day = date.day
+        is_leap_year = (date.year % 4 == 0 and date.year % 100 != 0) or (date.year % 400 == 0)
+        if date.month == 2 and date.day == 29 and not is_leap_year:
+            day = 28
+        return date.replace(year=date.year + years, month=date.month, day=day)
+
+
+class RecurrencePeriodType(Enum):
+    """Enumeration for the different recurrence period types."""
+
+    DAYS = 'day'
+    WEEKS = 'week'
+    MONTHS = 'month'
+    YEARS = 'year'
+
+
+class AllPeriodsActionType(Enum):
+    """Enumeration for different actions to apply a value to all budget periods."""
+
+    REPLACE = 1
+    ADD = 2
+    MULTIPLY = 3

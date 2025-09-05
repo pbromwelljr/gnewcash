@@ -13,11 +13,11 @@ class Slot:
 
     def __init__(
             self,
-            key: str,
+            key: Union[str, int],
             value: Any,
             slot_type: str
     ) -> None:
-        self.key: str = key
+        self.key: Union[str, int] = key
         self.value: Any = value
         self.type: str = slot_type
         self.sqlite_id: Optional[int] = None
