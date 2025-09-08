@@ -1,6 +1,26 @@
 Versions
 ********
 
+- 1.4.0 (September 8, 2025)
+    - `Updated splits to support numeric values. <https://github.com/pbromwelljr/gnewcash/commit/899aff24fee1c9baf41f5363d2508fd4000c5e14>`__
+    - `Updated XML parsing to use iterparse to improve performance. <https://github.com/pbromwelljr/gnewcash/commit/1e70ce653da639ff0c867deea1edc10d347373db>`__
+    - `Improvements to the delete_log_files utility function. <https://github.com/pbromwelljr/gnewcash/commit/faef901a3d25b1ba789711d4494a48d3859b4f0b>`__
+    - `Fixed a bug in Transaction::get_balance_at_transaction. <https://github.com/pbromwelljr/gnewcash/commit/e89627d3ea63e7c0ce6ba51fba8a138fb9436c44>`__ The function wasn't including the amount of the transaction you specifie,d just everything leading up to it. It now also calls `abs()`.
+    - Introduced new methods to the `Budget <gnucash_file.html#gnucash_file.Budget>`__ class.
+        - `all_periods <gnucash_file.html#gnucash_file.Budget.all_periods>`__ applies an amount to a given account in the budget over all periods using the indicated action.
+        - `estimate <gnucash_file.html#gnucash_file.Budget.estimate>`__ estimates the cost for each recurrence period, using the average if specified.
+        - `get_budget_accounts <gnucash_file.html#gnucash_file.Budget.get_budget_accounts>`__ filters the given accounts to identify those that are associated with the budget.
+        - `get_period_amount <gnucash_file.html#gnucash_file.Budget.get_period_amount>`__ gets the period amount of a specific account and index.
+        - `set_period_amount <gnucash_file.html#gnucash_file.Budget.set_period_amount>`__ sets the amount for a specific period in a specific account.
+        - `get_period_index <gnucash_file.html#gnucash_file.Budget.get_period_index>`__ determines the index of the recurrence period that contains the specified date.
+        - `clear <gnucash_file.html#gnucash_file.Budget.clear>`__ clears all or specified values based on account and/or index.
+- 1.3.0 (April 16, 2025)
+    - `Fixed a bug in the Account equality operator <https://github.com/pbromwelljr/gnewcash/commit/f02371237ce947de183b6d55a4e0f302817ae669>`__: Should be seeing if "other" is an Account, not "object". Also, the comparison was silently failing, so changed it to raise a NotImplementedError exception.
+    - `#35 <https://github.com/pbromwelljr/gnewcash/issues/35>`__: Generate a py.typed file during packaging process
+    - `#36 <https://github.com/pbromwelljr/gnewcash/issues/36>`__: Modify any calls that use a string path to also accept PathLike.
+    - Added `Transaction.create_reversing_transaction <transaction.html#transaction.Transaction.create_reversing_transaction>`__.
+    - `#33 <http://github.com/pbromwelljr/gnewcash/issues/33>`__: Add `LINQ-like searching <usage.html#searching>`__ for transactions
+    - `Updated type-hints to use built-ins instead of the typing module. <https://github.com/pbromwelljr/gnewcash/commit/395c3fb3845a2bf2a7e31fddf786743bfa5d35a2>`__
 - 1.2.0 (December 20, 2024)
     - **BREAKING CHANGE**: Changed supported Python versions to 3.9+.
     - `#22 <https://github.com/pbromwelljr/gnewcash/issues/22>`__: Add `get_cleared_balance <transaction.html#transaction.TransactionManager.get_cleared_balance>`__ to `TransactionManager <transaction.html#transaction.TransactionManager>`__.

@@ -73,11 +73,11 @@
              
   <h1>Source code for search</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Python module to handle searching on objects using a LINQ-like format.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
 
 <span class="n">Selector</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
 <span class="n">Predicate</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
@@ -88,19 +88,19 @@
 
 <div class="viewcode-block" id="InvalidOperationException">
 <a class="viewcode-back" href="../searching.html#search.InvalidOperationException">[docs]</a>
-<span class="k">class</span> <span class="nc">InvalidOperationException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidOperationException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception thrown when an invalid operation was performed.&quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="QueryAction">
 <a class="viewcode-back" href="../searching.html#search.QueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">QueryAction</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QueryAction</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for other query actions.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="QueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.QueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the action on the current element in the collection.&quot;&quot;&quot;</span>
         <span class="c1"># Should be implemented by subclasses.</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -110,16 +110,16 @@
 
 <div class="viewcode-block" id="SelectQueryAction">
 <a class="viewcode-back" href="../searching.html#search.SelectQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">SelectQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SelectQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for mapping elements in the collection based on the provided method.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">,</span> <span class="n">is_select_many</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">,</span> <span class="n">is_select_many</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span> <span class="o">=</span> <span class="n">selector</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_select_many</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">is_select_many</span>
 
 <div class="viewcode-block" id="SelectQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.SelectQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the selector against each element and yield it to the next action.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
             <span class="n">selector_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
@@ -133,15 +133,15 @@
 
 <div class="viewcode-block" id="WhereQueryAction">
 <a class="viewcode-back" href="../searching.html#search.WhereQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">WhereQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WhereQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for filtering elements in the collection based on the provided method.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span> <span class="o">=</span> <span class="n">predicate</span>
 
 <div class="viewcode-block" id="WhereQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.WhereQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter the collection by running each element against the predicate.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
@@ -153,15 +153,15 @@
 
 <div class="viewcode-block" id="ConcatQueryAction">
 <a class="viewcode-back" href="../searching.html#search.ConcatQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">ConcatQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConcatQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for concatenating another collection at the end of the current one.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span>
 
 <div class="viewcode-block" id="ConcatQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.ConcatQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Append the other collection to the end of the current one.&quot;&quot;&quot;</span>
         <span class="k">yield from</span> <span class="n">collection</span>
         <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">other</span></div>
@@ -171,12 +171,12 @@
 
 <div class="viewcode-block" id="DistinctQueryAction">
 <a class="viewcode-back" href="../searching.html#search.DistinctQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">DistinctQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DistinctQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for getting distinct values of elements in the collection.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DistinctQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.DistinctQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter results based on distinct values.&quot;&quot;&quot;</span>
         <span class="n">seen_values</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
@@ -190,15 +190,15 @@
 
 <div class="viewcode-block" id="ExceptQueryAction">
 <a class="viewcode-back" href="../searching.html#search.ExceptQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">ExceptQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExceptQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for filtering out elements that are in a specified collection.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exclude_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">exclude_values</span>
 
 <div class="viewcode-block" id="ExceptQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.ExceptQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter out elements in the collection that are in the specified exclude values.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_values</span><span class="p">:</span>
@@ -210,15 +210,15 @@
 
 <div class="viewcode-block" id="IntersectQueryAction">
 <a class="viewcode-back" href="../searching.html#search.IntersectQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">IntersectQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IntersectQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for only including elements that are in a specified collection.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">intersect_values</span>
 
 <div class="viewcode-block" id="IntersectQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.IntersectQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a set intersection on the collection and the specified values.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersect_values</span><span class="p">:</span>
@@ -230,15 +230,15 @@
 
 <div class="viewcode-block" id="UnionQueryAction">
 <a class="viewcode-back" href="../searching.html#search.UnionQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">UnionQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnionQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for doing a set union on the collection and specified values.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">union_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">union_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">union_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">union_values</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UnionQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.UnionQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform a set union on the collection and the specified values.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">union_values</span><span class="p">:</span>
@@ -252,16 +252,16 @@
 
 <div class="viewcode-block" id="OrderByQueryAction">
 <a class="viewcode-back" href="../searching.html#search.OrderByQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">OrderByQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OrderByQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for ordering results by an indicated key.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span> <span class="o">=</span> <span class="n">order_by</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">descending</span>
 
 <div class="viewcode-block" id="OrderByQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.OrderByQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort the collection by the provided key or function, following subsequent then-by instructions.&quot;&quot;&quot;</span>
         <span class="k">yield from</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order_by</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">descending</span><span class="p">)</span></div>
 </div>
@@ -270,12 +270,12 @@
 
 <div class="viewcode-block" id="ReverseQueryAction">
 <a class="viewcode-back" href="../searching.html#search.ReverseQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">ReverseQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReverseQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for reversing the collection.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ReverseQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.ReverseQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverses the collection.&quot;&quot;&quot;</span>
         <span class="c1"># Unfortunately. no way to reverse a (potentially) generator without consuming it.</span>
         <span class="c1"># So, possible high memory usage here.</span>
@@ -287,10 +287,10 @@
 
 <div class="viewcode-block" id="GroupByQueryAction">
 <a class="viewcode-back" href="../searching.html#search.GroupByQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">GroupByQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GroupByQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for grouping the collection by a provided key.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">key</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
             <span class="n">element</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
@@ -302,7 +302,7 @@
 
 <div class="viewcode-block" id="GroupByQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.GroupByQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Groups the collection by the specified key.&quot;&quot;&quot;</span>
         <span class="n">group_by_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
@@ -316,15 +316,15 @@
 
 <div class="viewcode-block" id="SkipQueryAction">
 <a class="viewcode-back" href="../searching.html#search.SkipQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">SkipQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SkipQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for skipping a certain number of elements.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">skip_count</span>
 
 <div class="viewcode-block" id="SkipQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.SkipQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Skip a certain number of elements.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_count</span><span class="p">:</span>
@@ -336,15 +336,15 @@
 
 <div class="viewcode-block" id="SkipWhileQueryAction">
 <a class="viewcode-back" href="../searching.html#search.SkipWhileQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">SkipWhileQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SkipWhileQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for skipping elements while a provided predicate is true.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span> <span class="o">=</span> <span class="n">predicate</span>
 
 <div class="viewcode-block" id="SkipWhileQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.SkipWhileQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Skip elements while the provided predicate is true.&quot;&quot;&quot;</span>
         <span class="n">should_skip_elements</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
@@ -359,15 +359,15 @@
 
 <div class="viewcode-block" id="TakeQueryAction">
 <a class="viewcode-back" href="../searching.html#search.TakeQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">TakeQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TakeQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for taking a certain number of elements.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">take_count</span>
 
 <div class="viewcode-block" id="TakeQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.TakeQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Take a certain number of elements.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_count</span><span class="p">:</span>
@@ -380,15 +380,15 @@
 
 <div class="viewcode-block" id="TakeWhileQueryAction">
 <a class="viewcode-back" href="../searching.html#search.TakeWhileQueryAction">[docs]</a>
-<span class="k">class</span> <span class="nc">TakeWhileQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TakeWhileQueryAction</span><span class="p">(</span><span class="n">QueryAction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for taking elements while a provided predicate is true.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span> <span class="o">=</span> <span class="n">predicate</span>
 
 <div class="viewcode-block" id="TakeWhileQueryAction.perform">
 <a class="viewcode-back" href="../searching.html#search.TakeWhileQueryAction.perform">[docs]</a>
-    <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Take elements while the provided predicate is true.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
@@ -401,10 +401,10 @@
 
 <div class="viewcode-block" id="Query">
 <a class="viewcode-back" href="../searching.html#search.Query">[docs]</a>
-<span class="k">class</span> <span class="nc">Query</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-public-methods</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-public-methods</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to handle searching on objects using a LINQ-like format.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">QueryAction</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -414,7 +414,7 @@
 
 <div class="viewcode-block" id="Query.select">
 <a class="viewcode-back" href="../searching.html#search.Query.select">[docs]</a>
-    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs a map on the elements in the collection based on the provided method.</span>
 
@@ -429,7 +429,7 @@
 
 <div class="viewcode-block" id="Query.select_many">
 <a class="viewcode-back" href="../searching.html#search.Query.select_many">[docs]</a>
-    <span class="k">def</span> <span class="nf">select_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs a map on the elements in the collection using the provided method, flattening iterables if applicable.</span>
 
@@ -444,7 +444,7 @@
 
 <div class="viewcode-block" id="Query.where">
 <a class="viewcode-back" href="../searching.html#search.Query.where">[docs]</a>
-    <span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filters the collection&#39;s elements based on the provided method.</span>
 
@@ -463,7 +463,7 @@
 
 <div class="viewcode-block" id="Query.all_">
 <a class="viewcode-back" href="../searching.html#search.Query.all_">[docs]</a>
-    <span class="k">def</span> <span class="nf">all_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether all the elements of a sequence satisfy a condition.</span>
 
@@ -477,7 +477,7 @@
 
 <div class="viewcode-block" id="Query.any_">
 <a class="viewcode-back" href="../searching.html#search.Query.any_">[docs]</a>
-    <span class="k">def</span> <span class="nf">any_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">any_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether any of the elements of a sequence satisfy a condition.</span>
 
@@ -491,7 +491,7 @@
 
 <div class="viewcode-block" id="Query.contains">
 <a class="viewcode-back" href="../searching.html#search.Query.contains">[docs]</a>
-    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether any of the elements of a sequence match the provided value.</span>
 
@@ -508,7 +508,7 @@
 
 <div class="viewcode-block" id="Query.concat">
 <a class="viewcode-back" href="../searching.html#search.Query.concat">[docs]</a>
-    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Concatenates another iterable to the end of the current result set.</span>
 
@@ -523,7 +523,7 @@
 
 <div class="viewcode-block" id="Query.default_if_empty">
 <a class="viewcode-back" href="../searching.html#search.Query.default_if_empty">[docs]</a>
-    <span class="k">def</span> <span class="nf">default_if_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_if_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns each element in the collection, using the default if the collection is empty.</span>
 
@@ -547,7 +547,7 @@
 
 <div class="viewcode-block" id="Query.distinct">
 <a class="viewcode-back" href="../searching.html#search.Query.distinct">[docs]</a>
-    <span class="k">def</span> <span class="nf">distinct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distinct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve unique values from the sequence.</span>
 
@@ -560,7 +560,7 @@
 
 <div class="viewcode-block" id="Query.except_">
 <a class="viewcode-back" href="../searching.html#search.Query.except_">[docs]</a>
-    <span class="k">def</span> <span class="nf">except_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">except_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">except_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">except_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exclude values from the result set.</span>
 
@@ -575,7 +575,7 @@
 
 <div class="viewcode-block" id="Query.intersect">
 <a class="viewcode-back" href="../searching.html#search.Query.intersect">[docs]</a>
-    <span class="k">def</span> <span class="nf">intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intersect_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Only include values from intersect_values in the result set.</span>
 
@@ -590,7 +590,7 @@
 
 <div class="viewcode-block" id="Query.union">
 <a class="viewcode-back" href="../searching.html#search.Query.union">[docs]</a>
-    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">union_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">union_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a set union on the collection&#39;s elements and the provided values.</span>
 
@@ -609,7 +609,7 @@
 
 <div class="viewcode-block" id="Query.order_by">
 <a class="viewcode-back" href="../searching.html#search.Query.order_by">[docs]</a>
-    <span class="k">def</span> <span class="nf">order_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_by</span><span class="p">:</span> <span class="n">OrderByKey</span><span class="p">,</span> <span class="n">descending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sorts the elements by one or more keys.</span>
 
@@ -626,7 +626,7 @@
 
 <div class="viewcode-block" id="Query.reverse">
 <a class="viewcode-back" href="../searching.html#search.Query.reverse">[docs]</a>
-    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the elements in the reverse order.</span>
 
@@ -643,7 +643,7 @@
 
 <div class="viewcode-block" id="Query.group_by">
 <a class="viewcode-back" href="../searching.html#search.Query.group_by">[docs]</a>
-    <span class="k">def</span> <span class="nf">group_by</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">group_by</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">key</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
             <span class="n">element</span><span class="p">:</span> <span class="n">GroupBySelector</span><span class="p">,</span>
@@ -671,7 +671,7 @@
 
 <div class="viewcode-block" id="Query.average">
 <a class="viewcode-back" href="../searching.html#search.Query.average">[docs]</a>
-    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the average numeric value of the collection.</span>
 
@@ -693,7 +693,7 @@
 
 <div class="viewcode-block" id="Query.count">
 <a class="viewcode-back" href="../searching.html#search.Query.count">[docs]</a>
-    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the number of elements in the collection.</span>
 
@@ -705,7 +705,7 @@
 
 <div class="viewcode-block" id="Query.max_">
 <a class="viewcode-back" href="../searching.html#search.Query.max_">[docs]</a>
-    <span class="k">def</span> <span class="nf">max_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the maximum value of the elements in the collection.</span>
 
@@ -720,7 +720,7 @@
 
 <div class="viewcode-block" id="Query.min_">
 <a class="viewcode-back" href="../searching.html#search.Query.min_">[docs]</a>
-    <span class="k">def</span> <span class="nf">min_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the minimum value of the elements in the collection.</span>
 
@@ -735,7 +735,7 @@
 
 <div class="viewcode-block" id="Query.sum_">
 <a class="viewcode-back" href="../searching.html#search.Query.sum_">[docs]</a>
-    <span class="k">def</span> <span class="nf">sum_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the sum of the elements in the collection.</span>
 
@@ -751,7 +751,7 @@
 
 <div class="viewcode-block" id="Query.element_at">
 <a class="viewcode-back" href="../searching.html#search.Query.element_at">[docs]</a>
-    <span class="k">def</span> <span class="nf">element_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">element_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the element at a specified index from the collection.</span>
 
@@ -773,7 +773,7 @@
 
 <div class="viewcode-block" id="Query.first">
 <a class="viewcode-back" href="../searching.html#search.Query.first">[docs]</a>
-    <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the first element in the collection.</span>
 
@@ -788,12 +788,12 @@
         <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">default</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 
 
 <div class="viewcode-block" id="Query.last">
 <a class="viewcode-back" href="../searching.html#search.Query.last">[docs]</a>
-    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the last element in the collection.</span>
 
@@ -809,12 +809,12 @@
         <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">default</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 
 
 <div class="viewcode-block" id="Query.single">
 <a class="viewcode-back" href="../searching.html#search.Query.single">[docs]</a>
-    <span class="k">def</span> <span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a single value from the collection. An error will be thrown if there&#39;s more than one value.</span>
 
@@ -831,7 +831,7 @@
         <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">default</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span> <span class="nn">exc</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">next</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
@@ -842,7 +842,7 @@
 
 <div class="viewcode-block" id="Query.skip">
 <a class="viewcode-back" href="../searching.html#search.Query.skip">[docs]</a>
-    <span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">skip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Skips a certain number of elements in the collection.</span>
 
@@ -857,7 +857,7 @@
 
 <div class="viewcode-block" id="Query.skip_while">
 <a class="viewcode-back" href="../searching.html#search.Query.skip_while">[docs]</a>
-    <span class="k">def</span> <span class="nf">skip_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">skip_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Skips elements while the predicate&#39;s result for the element is True.</span>
 
@@ -872,7 +872,7 @@
 
 <div class="viewcode-block" id="Query.take">
 <a class="viewcode-back" href="../searching.html#search.Query.take">[docs]</a>
-    <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">take_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes a certain number of elements in the collection.</span>
 
@@ -887,7 +887,7 @@
 
 <div class="viewcode-block" id="Query.take_while">
 <a class="viewcode-back" href="../searching.html#search.Query.take_while">[docs]</a>
-    <span class="k">def</span> <span class="nf">take_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="p">:</span> <span class="n">Predicate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Query&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Takes elements while the predicate&#39;s result for the element is True.</span>
 
@@ -900,10 +900,10 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="c1"># Chain all of our generators together to get a cohesive &quot;query&quot;.</span>
         <span class="n">current_iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
         <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
@@ -913,7 +913,7 @@
 
 <div class="viewcode-block" id="Query.to_list">
 <a class="viewcode-back" href="../searching.html#search.Query.to_list">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the current query result as a list.</span>
 
@@ -925,7 +925,7 @@
 
 <div class="viewcode-block" id="Query.reset">
 <a class="viewcode-back" href="../searching.html#search.Query.reset">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears all stored actions from the query.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 </div>

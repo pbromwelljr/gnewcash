@@ -79,49 +79,52 @@
 <span class="sd">   :synopsis:</span>
 <span class="sd">.. moduleauthor: Paul Bromwell Jr.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">PathLike</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">calendar</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fraction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathLike</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash.account</span> <span class="kn">import</span> <span class="n">Account</span>
-<span class="kn">from</span> <span class="nn">gnewcash.commodity</span> <span class="kn">import</span> <span class="n">Commodity</span>
-<span class="kn">from</span> <span class="nn">gnewcash.guid_object</span> <span class="kn">import</span> <span class="n">GuidObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.search</span> <span class="kn">import</span> <span class="n">Query</span>
-<span class="kn">from</span> <span class="nn">gnewcash.slot</span> <span class="kn">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
-<span class="kn">from</span> <span class="nn">gnewcash.transaction</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash.account</span><span class="w"> </span><span class="kn">import</span> <span class="n">Account</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash.commodity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Commodity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash.guid_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">GuidObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">Query</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash.slot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">SlottableObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash.transaction</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ScheduledTransaction</span><span class="p">,</span> <span class="n">SimpleTransaction</span><span class="p">,</span> <span class="n">SortingMethod</span><span class="p">,</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">TransactionManager</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="GnuCashFile">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile">[docs]</a>
-<span class="k">class</span> <span class="nc">GnuCashFile</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GnuCashFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a GnuCash file on disk.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">books</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">books</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">books</span><span class="p">:</span>
             <span class="n">books</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Book&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">books</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">as_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">:</span>
             <span class="n">as_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span>
         <span class="n">as_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">)</span><span class="si">}</span><span class="s1"> books&#39;</span>
         <span class="k">return</span> <span class="n">as_string</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GnuCashFile.read_file">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.read_file">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">source_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathLike</span><span class="p">],</span>
             <span class="n">file_format</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -159,7 +162,7 @@
 
 <div class="viewcode-block" id="GnuCashFile.build_file">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.build_file">[docs]</a>
-    <span class="k">def</span> <span class="nf">build_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">prettify_xml</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">prettify_xml</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the contents of the GnuCashFile object out to a .gnucash file on disk.</span>
 
@@ -175,7 +178,7 @@
 
 <div class="viewcode-block" id="GnuCashFile.simplify_transactions">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.simplify_transactions">[docs]</a>
-    <span class="k">def</span> <span class="nf">simplify_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simplify_transactions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts every transaction to a SimpleTransaction.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">book</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">transactions</span><span class="p">):</span>
@@ -184,7 +187,7 @@
 
 <div class="viewcode-block" id="GnuCashFile.strip_transaction_timezones">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.GnuCashFile.strip_transaction_timezones">[docs]</a>
-    <span class="k">def</span> <span class="nf">strip_transaction_timezones</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">strip_transaction_timezones</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes timezone information from the date_posted and date_entered properties in every transaction.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">books</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">book</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">transactions</span><span class="p">:</span>
@@ -198,10 +201,10 @@
 
 <div class="viewcode-block" id="Book">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book">[docs]</a>
-<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Book</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a Book in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">root_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">transactions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -227,7 +230,7 @@
 
 <div class="viewcode-block" id="Book.get_account">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths_to_account</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths_to_account</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves an account based on a path of account names.</span>
 
@@ -243,7 +246,9 @@
 
 <span class="sd">        * ``current_level`` = Account to start searching from. If no account is provided, root account is assumed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">current_level</span><span class="p">:</span> <span class="n">Account</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;current_level&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="p">)</span>
+        <span class="n">current_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;current_level&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_account</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">current_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">paths_to_account_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths_to_account</span><span class="p">)</span>
         <span class="n">next_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">paths_to_account_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">current_level</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
@@ -256,7 +261,7 @@
 
 <div class="viewcode-block" id="Book.get_account_balance">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_account_balance">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_account_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_account_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the balance for a specified account based on the transactions in the Book.</span>
 
@@ -274,7 +279,7 @@
 
 <div class="viewcode-block" id="Book.get_all_accounts">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.get_all_accounts">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a generator that retrieves all accounts, starting with the root account and going depth-first.</span>
 
@@ -285,7 +290,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__yield_account_recursive</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__yield_account_recursive</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">current_account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
@@ -296,7 +301,7 @@
 
 <div class="viewcode-block" id="Book.accounts_query">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Book.accounts_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">accounts_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Query</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accounts_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Query</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a new Query object to query accounts.</span>
 
@@ -308,20 +313,20 @@
         <span class="k">return</span> <span class="n">Query</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_all_accounts</span><span class="p">()))</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transactions</span><span class="p">)</span><span class="si">}</span><span class="s1"> transactions&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="Budget">
 <a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget">[docs]</a>
-<span class="k">class</span> <span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Budget</span><span class="p">(</span><span class="n">GuidObject</span><span class="p">,</span> <span class="n">SlottableObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class object representing a Budget in GnuCash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">guid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">slots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -329,7 +334,7 @@
             <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">period_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">recurrence_multiplier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">recurrence_period_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">recurrence_period_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;RecurrencePeriodType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">recurrence_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">GuidObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guid</span><span class="p">)</span>
@@ -339,9 +344,372 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">period_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">period_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">recurrence_multiplier</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">recurrence_period_type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">recurrence_start</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RecurrencePeriodType</span><span class="p">]</span> <span class="o">=</span> <span class="n">recurrence_period_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">recurrence_start</span>
 
+<div class="viewcode-block" id="Budget.all_periods">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.all_periods">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all_periods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="s1">&#39;AllPeriodsActionType&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies an amount to a given account over all budget periods using the indicated action.</span>
+
+<span class="sd">        :param account: Account that the amount should be applied for.</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :param amount: Amount for that account in a given period.</span>
+<span class="sd">        :type amount: Decimal</span>
+<span class="sd">        :param action: Action to take on each period (replace, add, or multiply).</span>
+<span class="sd">        :type action: AllPeriodsActionType</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;period_count&quot; is required!&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Try to find an existing slot for this account.</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">period_slot</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="n">existing_value_fraction</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">period_slot</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">existing_value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">Decimal</span><span class="p">(</span><span class="n">existing_value_fraction</span><span class="o">.</span><span class="n">numerator</span><span class="p">)</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">existing_value_fraction</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">AllPeriodsActionType</span><span class="o">.</span><span class="n">REPLACE</span><span class="p">:</span>
+                    <span class="n">existing_value</span> <span class="o">=</span> <span class="n">amount</span>
+                <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">AllPeriodsActionType</span><span class="o">.</span><span class="n">ADD</span><span class="p">:</span>
+                    <span class="n">existing_value</span> <span class="o">+=</span> <span class="n">amount</span>
+                <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">AllPeriodsActionType</span><span class="o">.</span><span class="n">MULTIPLY</span><span class="p">:</span>
+                    <span class="n">existing_value</span> <span class="o">*=</span> <span class="n">amount</span>
+                <span class="n">existing_value_fraction</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">existing_value</span><span class="p">)</span>
+                <span class="n">period_slot</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">existing_value_fraction</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">existing_value_fraction</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># We couldn&#39;t find an existing slot, so let&#39;s make a new one.</span>
+            <span class="n">period_slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">AllPeriodsActionType</span><span class="o">.</span><span class="n">MULTIPLY</span><span class="p">:</span>
+                <span class="n">amount</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Anything times zero is zero.</span>
+
+            <span class="n">fraction_amount</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+            <span class="n">period_slot_value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">fraction_amount</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">fraction_amount</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s1">&#39;</span>
+
+            <span class="k">for</span> <span class="n">period_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_count</span><span class="p">):</span>
+                <span class="n">period_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">period_index</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">period_slot_value</span><span class="p">,</span> <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;numeric&#39;</span><span class="p">))</span>
+            <span class="n">new_slot</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">period_slots</span><span class="p">,</span> <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;frame&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_slot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Budget.estimate">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.estimate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimate</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span>
+            <span class="n">transactions</span><span class="p">:</span> <span class="n">TransactionManager</span><span class="p">,</span>
+            <span class="n">start_date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+            <span class="n">average</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Estimates the cost for each recurrence period, using the average if specified.</span>
+
+<span class="sd">        :param account: Account that the amount should be applied for.</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :param transactions: TransactionManager of transactions to analyze.</span>
+<span class="sd">        :type transactions: TransactionManager</span>
+<span class="sd">        :param start_date: Date to start estimating from.</span>
+<span class="sd">        :type start_date: datetime</span>
+<span class="sd">        :param average: Should the average value across all periods be used? (default false)</span>
+<span class="sd">        :type average: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">period_amounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">period_start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">period_start_date</span><span class="p">,</span> <span class="n">period_end_date</span><span class="p">,</span> <span class="n">period_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_recurrence_periods</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">period_end_date</span> <span class="o">&lt;</span> <span class="n">start_date</span><span class="p">:</span>
+                <span class="n">period_start_index</span> <span class="o">=</span> <span class="n">period_index</span>
+                <span class="k">continue</span>
+            <span class="n">account_transactions_sum</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span>
+                <span class="n">transactions</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">period_start_date</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">period_end_date</span><span class="p">:</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">t</span><span class="o">.</span><span class="n">date_posted</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">select_many</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">splits</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">account</span> <span class="o">==</span> <span class="n">account</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">amount</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">sum_</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">period_amounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="n">account_transactions_sum</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="n">average_amount</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">Query</span><span class="p">(</span><span class="n">period_amounts</span><span class="p">)</span><span class="o">.</span><span class="n">average</span><span class="p">())</span>
+            <span class="n">period_amounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">average_amount</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_amounts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">period_amount</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">period_amounts</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">period_slot</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">period_slot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="p">(</span><span class="n">period_start_index</span> <span class="o">+</span> <span class="n">i</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="n">period_amount_fraction</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">period_amount</span><span class="p">)</span>
+                    <span class="n">period_slot</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">period_amount_fraction</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">period_amount_fraction</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="k">break</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Make a new slot for the account</span>
+            <span class="n">period_slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">period_amount</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">period_amounts</span><span class="p">):</span>
+                <span class="n">fraction_amount</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">period_amount</span><span class="p">)</span>
+                <span class="n">period_slot_value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">fraction_amount</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">fraction_amount</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">period_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">period_start_index</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span>
+                                         <span class="n">value</span><span class="o">=</span><span class="n">period_slot_value</span><span class="p">,</span>
+                                         <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;numeric&#39;</span><span class="p">))</span>
+
+            <span class="n">new_slot</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">period_slots</span><span class="p">,</span> <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;frame&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_slot</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__generate_recurrence_periods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;recurrence_start&quot; is required!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;recurrence_multiplier&quot; is required!&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;period_count&quot; is required!&#39;</span><span class="p">)</span>
+
+        <span class="n">anchor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_start</span>
+        <span class="n">one_day</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">previous_end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_count</span><span class="p">):</span>
+            <span class="n">start_date</span><span class="p">:</span> <span class="n">datetime</span>
+            <span class="k">if</span> <span class="n">previous_end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">start_date</span> <span class="o">=</span> <span class="n">anchor</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start_date</span> <span class="o">=</span> <span class="n">previous_end_date</span> <span class="o">+</span> <span class="n">one_day</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">start_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">end_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add_period</span><span class="p">(</span><span class="n">anchor</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_multiplier</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">end_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">59</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">59</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">999</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">start_date</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">end_date</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">end_date</span> <span class="o">=</span> <span class="n">end_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">start_date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
+
+            <span class="k">yield</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">i</span>
+            <span class="n">previous_end_date</span> <span class="o">=</span> <span class="n">end_date</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_period</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">==</span> <span class="n">RecurrencePeriodType</span><span class="o">.</span><span class="n">DAYS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">==</span> <span class="n">RecurrencePeriodType</span><span class="o">.</span><span class="n">WEEKS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="n">count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">==</span> <span class="n">RecurrencePeriodType</span><span class="o">.</span><span class="n">MONTHS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add_months</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrence_period_type</span> <span class="o">==</span> <span class="n">RecurrencePeriodType</span><span class="o">.</span><span class="n">YEARS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__add_years</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">start_date</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_months</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">months</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">months</span><span class="p">)</span> <span class="o">//</span> <span class="mi">12</span>
+        <span class="n">month</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">months</span><span class="p">)</span> <span class="o">%</span> <span class="mi">12</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_years</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">years</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span>
+        <span class="n">is_leap_year</span> <span class="o">=</span> <span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">%</span> <span class="mi">400</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">date</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">29</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_leap_year</span><span class="p">:</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="mi">28</span>
+        <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">date</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="n">years</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Budget.get_period_amount">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.get_period_amount">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_period_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the period amount of a specific account and index.</span>
+
+<span class="sd">        This method iterates through the slots to find a match for the specified account&#39;s</span>
+<span class="sd">        unique identifier (GUID) and the provided index. Upon locating a match, it converts</span>
+<span class="sd">        the fraction amount of the matched subslot into a decimal and returns it.</span>
+
+<span class="sd">        :param account: The account whose period amount is being retrieved.</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :param index: The index for which the period amount is being looked up.</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :return: The period amount as a Decimal if the account and index match is found,</span>
+<span class="sd">            otherwise None.</span>
+<span class="sd">        :rtype: Optional[Decimal]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">subslot</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">subslot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">index</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">subslot_value</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">subslot</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">subslot_value</span><span class="o">.</span><span class="n">numerator</span><span class="p">)</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">subslot_value</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Budget.set_period_amount">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.set_period_amount">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_period_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the amount for a specific period in a specific account.</span>
+
+<span class="sd">        The amount is stored as a fraction in string representation. If the period or account does not already exist,</span>
+<span class="sd">        it gets created.</span>
+
+<span class="sd">        :param account: The account object where the period amount should be set.</span>
+<span class="sd">        :type account: Account</span>
+<span class="sd">        :param index: The index identifying the target period.</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :param amount: The amount to be set for the specific period, as a Decimal.</span>
+<span class="sd">        :type amount: Decimal</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raises ValueError: If the &quot;period_count&quot; attribute is not set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;period_count&quot; is required!&#39;</span><span class="p">)</span>
+
+        <span class="n">amount_fraction</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+        <span class="n">amount_fraction_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">amount_fraction</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">amount_fraction</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">period_slot</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">period_slot</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">index</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">period_slot</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">amount_fraction_string</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">slot</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Slot</span><span class="p">(</span>
+                    <span class="n">key</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">amount_fraction_string</span><span class="p">,</span>
+                    <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;numeric&#39;</span>
+                <span class="p">))</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Slot</span><span class="p">(</span>
+                    <span class="n">key</span><span class="o">=</span><span class="n">account</span><span class="o">.</span><span class="n">guid</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="n">Slot</span><span class="p">(</span>
+                        <span class="n">key</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">amount_fraction_string</span><span class="p">,</span>
+                        <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;numeric&#39;</span>
+                    <span class="p">)],</span>
+                    <span class="n">slot_type</span><span class="o">=</span><span class="s1">&#39;frame&#39;</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Budget.get_period_index">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.get_period_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_period_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines the index of the recurrence period that contains the specified date.</span>
+
+<span class="sd">        This method iterates through generated recurrence periods and checks if the</span>
+<span class="sd">        provided date falls between the start and end date of any period. If a match</span>
+<span class="sd">        is found, the index of that period is returned. If no matching period is</span>
+<span class="sd">        found, the method returns None.</span>
+
+<span class="sd">        :param date: The date to evaluate against the recurrence periods.</span>
+<span class="sd">        :type date: datetime</span>
+<span class="sd">        :return: The index of the period containing the given date, or None if no</span>
+<span class="sd">                 matching period is found.</span>
+<span class="sd">        :rtype: Optional[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_recurrence_periods</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">start_date</span> <span class="o">&lt;=</span> <span class="n">date</span> <span class="o">&lt;=</span> <span class="n">end_date</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">index</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Budget.get_budget_accounts">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.get_budget_accounts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_budget_accounts</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">accounts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Account</span><span class="p">],</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Account</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Account</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filters the given accounts to identify those that are associated with the budget.</span>
+
+<span class="sd">        The method iterates through the provided list of accounts and determines if</span>
+<span class="sd">        their GUIDs match with the keys of the existing slots. If a match is found,</span>
+<span class="sd">        the account is added to the resulting list.</span>
+
+<span class="sd">        :param accounts: A list or generator of Account objects to be filtered.</span>
+<span class="sd">        :type accounts: Union[list[Account], Generator[Account, None, None]]</span>
+<span class="sd">        :return: A list of Account objects that match against the budget accounts.</span>
+<span class="sd">        :rtype: list[Account]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot_account_guids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">slot</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">accounts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">slot_account_guids</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">yield</span> <span class="n">account</span></div>
+
+
+<div class="viewcode-block" id="Budget.clear">
+<a class="viewcode-back" href="../gnucash_file.html#gnucash_file.Budget.clear">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Account</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear specific amounts or all slots in the budget.</span>
+
+<span class="sd">        This method allows clearing data from the internal slots based on the given</span>
+<span class="sd">        account and/or index parameters. If neither account nor index is provided,</span>
+<span class="sd">        it will clear all slots. Otherwise, it will selectively remove entries</span>
+<span class="sd">        matching the specified criteria.</span>
+
+<span class="sd">        :param account: The account instance to clear slots from. If None, the operation</span>
+<span class="sd">            is performed for all accounts.</span>
+<span class="sd">        :type account: Optional[Account]</span>
+<span class="sd">        :param index: The specific index in the slots of the account to clear. If None,</span>
+<span class="sd">            all indices in the account are cleared.</span>
+<span class="sd">        :type index: Optional[int]</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">account</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Clear out everything</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>
+
+        <span class="n">new_slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">account_slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">account</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">account</span><span class="o">.</span><span class="n">guid</span> <span class="o">!=</span> <span class="n">account_slot</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                <span class="n">new_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">account_slot</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">new_period_slots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Slot</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">period_slot</span> <span class="ow">in</span> <span class="n">account_slot</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">period_slot</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">new_period_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">period_slot</span><span class="p">)</span>
+            <span class="n">account_slot</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_period_slots</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">account_slot</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">new_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">account_slot</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">new_slots</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RecurrencePeriodType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration for the different recurrence period types.&quot;&quot;&quot;</span>
+
+    <span class="n">DAYS</span> <span class="o">=</span> <span class="s1">&#39;day&#39;</span>
+    <span class="n">WEEKS</span> <span class="o">=</span> <span class="s1">&#39;week&#39;</span>
+    <span class="n">MONTHS</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
+    <span class="n">YEARS</span> <span class="o">=</span> <span class="s1">&#39;year&#39;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AllPeriodsActionType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enumeration for different actions to apply a value to all budget periods.&quot;&quot;&quot;</span>
+
+    <span class="n">REPLACE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ADD</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="mi">3</span>
 </pre></div>
 
            </div>
