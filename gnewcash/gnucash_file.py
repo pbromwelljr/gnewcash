@@ -501,7 +501,10 @@ class Budget(GuidObject, SlottableObject):
                 return index
         return None
 
-    def get_budget_accounts(self, accounts: list[Account]) -> list[Account]:
+    def get_budget_accounts(
+            self,
+            accounts: Union[list[Account], Generator[Account, None, None]]
+    ) -> Generator[Account, None, None]:
         """
         Filters the given accounts to identify those that are associated with the budget.
 
@@ -509,18 +512,16 @@ class Budget(GuidObject, SlottableObject):
         their GUIDs match with the keys of the existing slots. If a match is found,
         the account is added to the resulting list.
 
-        :param accounts: A list of Account objects to be filtered.
-        :type accounts: list[Account]
+        :param accounts: A list or generator of Account objects to be filtered.
+        :type accounts: Union[list[Account], Generator[Account, None, None]]
         :return: A list of Account objects that match against the budget accounts.
         :rtype: list[Account]
         """
         slot_account_guids = set(map(lambda slot: slot.key, self.slots))
-        found_accounts: list[Account] = []
         for account in accounts:
             if account.guid not in slot_account_guids:
                 continue
-            found_accounts.append(account)
-        return found_accounts
+            yield account
 
     def clear(self, account: Optional[Account] = None, index: Optional[int] = None) -> None:
         """
@@ -544,17 +545,26 @@ class Budget(GuidObject, SlottableObject):
             self.slots = []
             return
 
-        for account_index, account_slot in enumerate(self.slots):
-            if account is not None and account != slot.key:
+        new_slots: list[Slot] = []
+        for account_slot in self.slots:
+            if account is not None and account.guid != account_slot.key:
+                new_slots.append(account_slot)
                 continue
             if index is None:
-                account_slot.value = []
                 continue
-            for period_index, period_slot in enumerate(account_slot.value):
-                if period_index != index:
-                    continue
-                period_slot.value.pop(period_index)
 
+            new_period_slots: list[Slot] = []
+            for period_slot in account_slot.value:
+                if period_slot.key == index:
+                    continue
+                new_period_slots.append(period_slot)
+            account_slot.value = new_period_slots
+
+            if not account_slot.value:
+                continue
+            new_slots.append(account_slot)
+
+        self.slots = new_slots
 
 
 class RecurrencePeriodType(Enum):

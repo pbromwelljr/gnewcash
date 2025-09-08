@@ -538,10 +538,6 @@ def test_budget_set_period_amount__no_period_data():
 
 
 def test_budget_get_period_index__within_range():
-    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
-    current_book = test_file.books[0]
-    video_games_account = current_book.get_account('Expenses', 'Frivolous', 'Video Games')
-
     new_budget = gcf.Budget(
         name='My Budget',
         period_count=12,
@@ -554,10 +550,6 @@ def test_budget_get_period_index__within_range():
 
 
 def test_budget_get_period_index__outside_range():
-    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
-    current_book = test_file.books[0]
-    video_games_account = current_book.get_account('Expenses', 'Frivolous', 'Video Games')
-
     new_budget = gcf.Budget(
         name='My Budget',
         period_count=12,
@@ -583,12 +575,41 @@ def test_budget_get_budget_accounts__has_match():
     )
     new_budget.set_period_amount(video_games_account, 0, Decimal(1))
 
-    budget_accounts = new_budget.get_budget_accounts(current_book.get_all_accounts())
+    budget_accounts = list(new_budget.get_budget_accounts(current_book.get_all_accounts()))
     assert len(budget_accounts) == 1
     assert budget_accounts[0] == video_games_account
 
 
 def test_budget_get_budget_accounts__no_match():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
+    current_book = test_file.books[0]
+
+    new_budget = gcf.Budget(
+        name='My Budget',
+        period_count=12,
+        recurrence_multiplier=1,
+        recurrence_period_type=gcf.RecurrencePeriodType.MONTHS,
+        recurrence_start=datetime(2019, 1, 1, tzinfo=timezone.utc),
+    )
+
+    budget_accounts = list(new_budget.get_budget_accounts(current_book.get_all_accounts()))
+    assert len(budget_accounts) == 0
+
+
+def test_budget_clear__no_data():
+    new_budget = gcf.Budget(
+        name='My Budget',
+        period_count=12,
+        recurrence_multiplier=1,
+        recurrence_period_type=gcf.RecurrencePeriodType.MONTHS,
+        recurrence_start=datetime(2019, 1, 1, tzinfo=timezone.utc),
+    )
+    # Just make sure clear doesn't break with no data.
+    new_budget.clear()
+    assert len(new_budget.slots) == 0
+
+
+def test_budget_clear__everything():
     test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
     current_book = test_file.books[0]
     video_games_account = current_book.get_account('Expenses', 'Frivolous', 'Video Games')
@@ -600,6 +621,82 @@ def test_budget_get_budget_accounts__no_match():
         recurrence_period_type=gcf.RecurrencePeriodType.MONTHS,
         recurrence_start=datetime(2019, 1, 1, tzinfo=timezone.utc),
     )
+    new_budget.estimate(video_games_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    assert len(new_budget.slots) == 1
 
-    budget_accounts = new_budget.get_budget_accounts(current_book.get_all_accounts())
-    assert len(budget_accounts) == 0
+    new_budget.clear()
+    assert len(new_budget.slots) == 0
+
+
+def test_budget_clear__account_only():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
+    current_book = test_file.books[0]
+    video_games_account = current_book.get_account('Expenses', 'Frivolous', 'Video Games')
+    groceries_account = current_book.get_account('Expenses', 'Necessary', 'Groceries')
+
+    new_budget = gcf.Budget(
+        name='My Budget',
+        period_count=12,
+        recurrence_multiplier=1,
+        recurrence_period_type=gcf.RecurrencePeriodType.MONTHS,
+        recurrence_start=datetime(2019, 1, 1, tzinfo=timezone.utc),
+    )
+    new_budget.estimate(video_games_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    new_budget.estimate(groceries_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    assert len(new_budget.slots) == 2
+
+    new_budget.clear(account=video_games_account)
+    assert len(new_budget.slots) == 1
+
+
+def test_budget_clear__index_only():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
+    current_book = test_file.books[0]
+    video_games_account = current_book.get_account('Expenses', 'Frivolous', 'Video Games')
+    groceries_account = current_book.get_account('Expenses', 'Necessary', 'Groceries')
+
+    new_budget = gcf.Budget(
+        name='My Budget',
+        period_count=12,
+        recurrence_multiplier=1,
+        recurrence_period_type=gcf.RecurrencePeriodType.MONTHS,
+        recurrence_start=datetime(2019, 1, 1, tzinfo=timezone.utc),
+    )
+    new_budget.estimate(video_games_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    new_budget.estimate(groceries_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    assert len(new_budget.slots) == 2
+
+    new_budget.clear(index=0)
+    assert len(new_budget.slots) == 2
+    assert len(new_budget.slots[0].value) == 11
+    assert len(new_budget.slots[1].value) == 11
+
+
+def test_budget_clear__account_and_index():
+    test_file = gcf.GnuCashFile.read_file('test_files/Test1.gnucash', gff.XMLFileFormat)
+    current_book = test_file.books[0]
+    video_games_account = current_book.get_account('Expenses', 'Frivolous', 'Video Games')
+    groceries_account = current_book.get_account('Expenses', 'Necessary', 'Groceries')
+
+    new_budget = gcf.Budget(
+        name='My Budget',
+        period_count=12,
+        recurrence_multiplier=1,
+        recurrence_period_type=gcf.RecurrencePeriodType.MONTHS,
+        recurrence_start=datetime(2019, 1, 1, tzinfo=timezone.utc),
+    )
+    new_budget.estimate(video_games_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    new_budget.estimate(groceries_account, current_book.transactions, datetime(2019, 1, 1, tzinfo=timezone.utc),
+                        average=True)
+    assert len(new_budget.slots) == 2
+
+    new_budget.clear(account=video_games_account, index=0)
+    assert len(new_budget.slots) == 2
+    assert len(new_budget.slots[0].value) == 11
+    assert len(new_budget.slots[1].value) == 12
