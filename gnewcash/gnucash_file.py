@@ -404,6 +404,158 @@ class Budget(GuidObject, SlottableObject):
             day = 28
         return date.replace(year=date.year + years, month=date.month, day=day)
 
+    def get_period_amount(self, account: Account, index: int) -> Optional[Decimal]:
+        """
+        Get the period amount of a specific account and index.
+
+        This method iterates through the slots to find a match for the specified account's
+        unique identifier (GUID) and the provided index. Upon locating a match, it converts
+        the fraction amount of the matched subslot into a decimal and returns it.
+
+        :param account: The account whose period amount is being retrieved.
+        :type account: Account
+        :param index: The index for which the period amount is being looked up.
+        :type index: int
+        :return: The period amount as a Decimal if the account and index match is found,
+            otherwise None.
+        :rtype: Optional[Decimal]
+        """
+        for slot in self.slots:
+            if slot.key != account.guid:
+                continue
+            for subslot in slot.value:
+                if subslot.key != index:
+                    continue
+                subslot_value = Fraction(subslot.value)
+                return Decimal(subslot_value.numerator) / Decimal(subslot_value.denominator)
+        return None
+
+    def set_period_amount(self, account: Account, index: int, amount: Decimal) -> None:
+        """
+        Sets the amount for a specific period in a specific account.
+
+        The amount is stored as a fraction in string representation. If the period or account does not already exist,
+        it gets created.
+
+        :param account: The account object where the period amount should be set.
+        :type account: Account
+        :param index: The index identifying the target period.
+        :type index: int
+        :param amount: The amount to be set for the specific period, as a Decimal.
+        :type amount: Decimal
+        :return: None
+        :rtype: None
+        :raises ValueError: If the "period_count" attribute is not set.
+        """
+        if self.period_count is None:
+            raise ValueError('"period_count" is required!')
+
+        amount_fraction = Fraction(amount)
+        amount_fraction_string = f'{amount_fraction.numerator}/{amount_fraction.denominator}'
+
+        for slot in self.slots:
+            if slot.key != account.guid:
+                continue
+            for period_slot in slot.value:
+                if period_slot.key != index:
+                    continue
+                period_slot.value = amount_fraction_string
+                break
+            else:
+                slot.value.append(Slot(
+                    key=index,
+                    value=amount_fraction_string,
+                    slot_type='numeric'
+                ))
+                break
+        else:
+            self.slots.append(
+                Slot(
+                    key=account.guid,
+                    value=[Slot(
+                        key=index,
+                        value=amount_fraction_string,
+                        slot_type='numeric'
+                    )],
+                    slot_type='frame'
+                )
+            )
+
+    def get_period_index(self, date: datetime) -> Optional[int]:
+        """
+        Determines the index of the recurrence period that contains the specified date.
+
+        This method iterates through generated recurrence periods and checks if the
+        provided date falls between the start and end date of any period. If a match
+        is found, the index of that period is returned. If no matching period is
+        found, the method returns None.
+
+        :param date: The date to evaluate against the recurrence periods.
+        :type date: datetime
+        :return: The index of the period containing the given date, or None if no
+                 matching period is found.
+        :rtype: Optional[int]
+        """
+        for start_date, end_date, index in self.__generate_recurrence_periods():
+            if start_date <= date <= end_date:
+                return index
+        return None
+
+    def get_budget_accounts(self, accounts: list[Account]) -> list[Account]:
+        """
+        Filters the given accounts to identify those that are associated with the budget.
+
+        The method iterates through the provided list of accounts and determines if
+        their GUIDs match with the keys of the existing slots. If a match is found,
+        the account is added to the resulting list.
+
+        :param accounts: A list of Account objects to be filtered.
+        :type accounts: list[Account]
+        :return: A list of Account objects that match against the budget accounts.
+        :rtype: list[Account]
+        """
+        slot_account_guids = set(map(lambda slot: slot.key, self.slots))
+        found_accounts: list[Account] = []
+        for account in accounts:
+            if account.guid not in slot_account_guids:
+                continue
+            found_accounts.append(account)
+        return found_accounts
+
+    def clear(self, account: Optional[Account] = None, index: Optional[int] = None) -> None:
+        """
+        Clear specific amounts or all slots in the budget.
+
+        This method allows clearing data from the internal slots based on the given
+        account and/or index parameters. If neither account nor index is provided,
+        it will clear all slots. Otherwise, it will selectively remove entries
+        matching the specified criteria.
+
+        :param account: The account instance to clear slots from. If None, the operation
+            is performed for all accounts.
+        :type account: Optional[Account]
+        :param index: The specific index in the slots of the account to clear. If None,
+            all indices in the account are cleared.
+        :type index: Optional[int]
+        :return: None
+        """
+        if account is None and index is None:
+            # Clear out everything
+            self.slots = []
+            return
+
+        for account_index, account_slot in enumerate(self.slots):
+            if account is not None and account != slot.key:
+                continue
+            if index is None:
+                account_slot.value = []
+                continue
+            for period_index, period_slot in enumerate(account_slot.value):
+                if period_index != index:
+                    continue
+                period_slot.value.pop(period_index)
+
+
 
 class RecurrencePeriodType(Enum):
     """Enumeration for the different recurrence period types."""
