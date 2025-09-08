@@ -100,12 +100,12 @@
 <h2>GnuCashFile<a class="headerlink" href="#gnucashfile" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="gnucash_file.html">GnuCashFile</a> is responsible for reading data from and writing data to GnuCash files.</p>
 <p>To read a GnuCash file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">XMLFileFormat</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">XMLFileFormat</span>
 <span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">XMLFileFormat</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To write a GnuCash file (recommend backing up beforehand if overwriting an existing file):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">Book</span><span class="p">,</span> <span class="n">XMLFileFormat</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">GnuCashFile</span><span class="p">,</span> <span class="n">Book</span><span class="p">,</span> <span class="n">XMLFileFormat</span>
 <span class="n">my_book</span> <span class="o">=</span> <span class="n">Book</span><span class="p">()</span>
 <span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="p">([</span><span class="n">my_book</span><span class="p">])</span>
 <span class="n">my_file</span><span class="o">.</span><span class="n">build_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="n">XMLFileFormat</span><span class="p">)</span>
@@ -121,7 +121,7 @@
 <h2>Book<a class="headerlink" href="#book" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="gnucash_file.html#gnucash_file.Book">Book</a> is a GnuCash entry that contains transactions, accounts, and their associated commodity.</p>
 <p>When you read an existing GnuCash file, the book object(s) are automatically generated from the XML. To create a book object:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">Book</span><span class="p">,</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">,</span> <span class="n">Commodity</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">Book</span><span class="p">,</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span><span class="p">,</span> <span class="n">TransactionManager</span><span class="p">,</span> <span class="n">Commodity</span>
 <span class="n">my_root_account</span> <span class="o">=</span> <span class="n">Account</span><span class="p">()</span>
 <span class="n">my_root_account</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">ROOT</span>
 <span class="n">my_commodity</span> <span class="o">=</span> <span class="n">Commodity</span><span class="p">(</span><span class="s1">&#39;USD&#39;</span><span class="p">,</span> <span class="s1">&#39;ISO4217&#39;</span><span class="p">)</span>
@@ -202,7 +202,7 @@ You can retrieve subaccounts by either accessing the <code class="code docutils 
 <section id="creating-accounts">
 <h3>Creating Accounts<a class="headerlink" href="#creating-accounts" title="Link to this heading"></a></h3>
 <p>There isn’t a default “loader” for accounts, as everyone’s requirements (or preferences) are different. To create it purely in code, you’d do the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span>
 <span class="n">my_root_account</span> <span class="o">=</span> <span class="n">Account</span><span class="p">()</span>
 <span class="n">my_root_account</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">ROOT</span>
 
@@ -229,7 +229,7 @@ You can retrieve subaccounts by either accessing the <code class="code docutils 
 </div>
 <p>As you can tell, the code above is unwieldy.
 GNewCash does support <a class="reference external" href="account.html#shortcut-accounts">shortcut accounts</a> that cuts down on the lines of code. Here’s the same example using shortcut accounts.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span><span class="p">,</span> <span class="n">AssetAccount</span><span class="p">,</span> <span class="n">BankAccount</span><span class="p">,</span> <span class="n">CreditAccount</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">AccountType</span><span class="p">,</span> <span class="n">AssetAccount</span><span class="p">,</span> <span class="n">BankAccount</span><span class="p">,</span> <span class="n">CreditAccount</span>
 <span class="n">my_root_account</span> <span class="o">=</span> <span class="n">Account</span><span class="p">()</span>
 <span class="n">my_root_account</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">AccountType</span><span class="o">.</span><span class="n">ROOT</span>
 
@@ -251,11 +251,11 @@ GNewCash does support <a class="reference external" href="account.html#shortcut-
 </pre></div>
 </div>
 <p>Better, but still a bit much. Here’s a JSON loader I wrote for personal usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">BankAccount</span><span class="p">,</span> <span class="n">IncomeAccount</span><span class="p">,</span> <span class="n">AssetAccount</span><span class="p">,</span> <span class="n">CreditAccount</span><span class="p">,</span> <span class="n">ExpenseAccount</span><span class="p">,</span> <span class="n">EquityAccount</span><span class="p">,</span> <span class="n">LiabilityAccount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">Account</span><span class="p">,</span> <span class="n">BankAccount</span><span class="p">,</span> <span class="n">IncomeAccount</span><span class="p">,</span> <span class="n">AssetAccount</span><span class="p">,</span> <span class="n">CreditAccount</span><span class="p">,</span> <span class="n">ExpenseAccount</span><span class="p">,</span> <span class="n">EquityAccount</span><span class="p">,</span> <span class="n">LiabilityAccount</span>
 
-<span class="k">def</span> <span class="nf">load_accounts_from_json</span><span class="p">(</span><span class="n">json_file</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_accounts_from_json</span><span class="p">(</span><span class="n">json_file</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">account_data_file</span><span class="p">:</span>
         <span class="n">account_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">account_data_file</span><span class="p">)</span>
 
@@ -263,7 +263,7 @@ GNewCash does support <a class="reference external" href="account.html#shortcut-
     <span class="k">return</span> <span class="n">accounts</span>
 
 
-<span class="k">def</span> <span class="nf">load_account_and_subaccounts</span><span class="p">(</span><span class="n">account_object</span><span class="p">,</span> <span class="n">account_parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_account_and_subaccounts</span><span class="p">(</span><span class="n">account_object</span><span class="p">,</span> <span class="n">account_parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">current_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">account_lookup</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="n">account_class</span> <span class="o">=</span> <span class="n">get_account_type</span><span class="p">(</span><span class="n">account_object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
 
@@ -286,7 +286,7 @@ GNewCash does support <a class="reference external" href="account.html#shortcut-
                                                                <span class="n">account_object</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">account_lookup</span>
 
-<span class="k">def</span> <span class="nf">get_account_type</span><span class="p">(</span><span class="n">account_type_string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_account_type</span><span class="p">(</span><span class="n">account_type_string</span><span class="p">):</span>
     <span class="n">account_type_mapping</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;ROOT&#39;</span><span class="p">:</span> <span class="n">Account</span><span class="p">,</span>
         <span class="s1">&#39;BANK&#39;</span><span class="p">:</span> <span class="n">BankAccount</span><span class="p">,</span>
@@ -386,10 +386,10 @@ Trying to add one of the special accounts to a GnuCash file would result in an e
 <p>There are two types of interest accounts: <a class="reference external" href="account.html#account.InterestAccount">InterestAccount</a> and <a class="reference external" href="account.html#account.InterestAccountWithSubaccounts">InterestAccountWithSubaccounts</a>.</p>
 <p>For most purposes you just need the InterestAccount class. For loans where your overall loan is comprised of several smaller loans, you’d use the InterestAccountWithSubaccounts.</p>
 <p>Here’s the general usage of an interest account:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">InterestAccount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterestAccount</span>
 
 <span class="n">my_loan</span> <span class="o">=</span> <span class="n">InterestAccount</span><span class="p">(</span><span class="n">starting_balance</span><span class="o">=</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;1000&#39;</span><span class="p">),</span>
                           <span class="n">starting_date</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
@@ -470,12 +470,12 @@ for a given account like so:</p>
 <h3>Creating Transactions<a class="headerlink" href="#creating-transactions" title="Link to this heading"></a></h3>
 <p>Like accounts, transactions can be unwieldy without some sort of loader (which depends on your implementation).</p>
 <p>Creating a transaction can be done like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">Split</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaction</span><span class="p">,</span> <span class="n">Split</span>
 
-<span class="kn">from</span> <span class="nn">pytz</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytz</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
 
 
 <span class="n">my_new_transaction</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">()</span>
@@ -514,12 +514,12 @@ of all splits on the transaction to “c” (for cleared).</p>
 <p>As of version 1.0.2, GNewCash provides a class called <a class="reference external" href="transaction.html#transaction.SimpleTransaction">SimpleTransaction</a>.
 The purpose of this class is to simplify creating transactions that consist of only two splits: “from” and “to”.</p>
 <p>When using SimpleTransaction, the code changes to this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 
-<span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">SimpleTransaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleTransaction</span>
 
-<span class="kn">from</span> <span class="nn">pytz</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytz</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
 
 
 <span class="n">my_new_transaction</span> <span class="o">=</span> <span class="n">SimpleTransaction</span><span class="p">()</span>
@@ -602,7 +602,7 @@ account is at the minimum balance, and the minimum balance itself.</p>
 <p>GNewCash supports a LINQ-like syntax for searching on transactions and accounts from your GnuCash files.
 For more information on LINQ, please see the <a class="reference external" href="https://learn.microsoft.com/en-us/dotnet/api/system.linq.queryable">official Microsoft documentation</a>.</p>
 <p>You can access these query objects using:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gnewcash</span> <span class="kn">import</span> <span class="n">GnuCashFile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gnewcash</span><span class="w"> </span><span class="kn">import</span> <span class="n">GnuCashFile</span>
 <span class="n">my_file</span> <span class="o">=</span> <span class="n">GnuCashFile</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s1">&#39;/path/to/my/file.gnucash&#39;</span><span class="p">)</span>
 <span class="n">query</span> <span class="o">=</span> <span class="n">my_file</span><span class="o">.</span><span class="n">books</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">transactions</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>  <span class="c1"># Query transactions</span>
 <span class="n">query</span> <span class="o">=</span> <span class="n">my_file</span><span class="o">.</span><span class="n">books</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">accounts_query</span><span class="p">()</span>      <span class="c1"># Query accounts</span>

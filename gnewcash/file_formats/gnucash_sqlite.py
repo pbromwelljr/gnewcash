@@ -11,6 +11,7 @@ import os.path
 import pathlib
 import sqlite3
 from datetime import datetime
+from decimal import Decimal
 from typing import Any, Optional
 
 from gnewcash.account import Account
@@ -228,6 +229,8 @@ class GnuCashSQLiteReader(BaseFileReader):
                 slot_value = slot['string_val']
             elif slot_type == 'gdate':
                 slot_value = datetime.strptime(slot['gdate_val'], '%Y%m%d')
+            elif slot_type == 'numeric':
+                slot_value = Decimal(slot['numeric_val_num']) / Decimal(slot['numeric_val_denom'])
             else:
                 raise NotImplementedError(f'Slot type {slot["slot_type"]} is not implemented.')
             new_slot = Slot(slot_name, slot_value, slot_type)
@@ -447,6 +450,7 @@ class GnuCashSQLiteReader(BaseFileReader):
                 quantity_num=split['quantity_num'],
                 quantity_denominator=split['quantity_denom'],
                 lot_guid=split['lot_guid'],
+                slots=cls.create_slots_from_sqlite(sqlite_cursor, split['guid'])
             )
             new_splits.append(new_split)
         return new_splits
@@ -677,6 +681,8 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             update_field_name = 'string_val'
         elif slot.type == 'gdate':
             update_field_name = 'gdate_val'
+        elif slot.type == 'numeric':
+            update_field_name = 'numeric_val_num'
         else:
             raise NotImplementedError(f'Slot type {slot.type} is not implemented.')
 
@@ -689,8 +695,13 @@ class GnuCashSQLiteWriter(BaseFileWriter):
             raise NotImplementedError(f'Slot type {slot.type} is not implemented.')
 
         if slot.sqlite_id is None:
-            sql = f'INSERT INTO slots (obj_guid, name, slot_type, {update_field_name}) VALUES(?, ?, ?, ?)'
-            sql_args = (object_guid, slot.key, slot_type_id, slot.value)
+            if slot.type == 'numeric':
+                sql = '''INSERT INTO slots (obj_guid, name, slot_type, numeric_val_num, numeric_val_denom)
+VALUES (?, ?, ?, ?, ?)'''
+                sql_args = (object_guid, slot.key, slot_type_id, slot.value, 100)
+            else:
+                sql = f'INSERT INTO slots (obj_guid, name, slot_type, {update_field_name}) VALUES(?, ?, ?, ?)'
+                sql_args = (object_guid, slot.key, slot_type_id, slot.value)
             sqlite_cursor.execute(sql, sql_args)
 
             # Populate the ID of the insert
@@ -702,7 +713,15 @@ class GnuCashSQLiteWriter(BaseFileWriter):
         else:
             sql = f'UPDATE slots SET obj_guid = ?, name = ?, slot_type = ?, {update_field_name} = ? ' \
                   'WHERE id = ?'
-            sql_args = (object_guid, slot.key, slot_type_id, slot.value, slot.sqlite_id)
+            if slot.type == 'numeric':
+                # Get the denominator first.
+                denom_sql = 'SELECT numeric_val_denom FROM slots WHERE id = ?'
+                sqlite_cursor.execute(denom_sql, (slot.sqlite_id,))
+                denominator = sqlite_cursor.fetchone()
+                sql_args = (object_guid, slot.key, slot_type_id, int(slot.value * (denominator or 100)), slot.sqlite_id)
+            else:
+                sql_args = (object_guid, slot.key, slot_type_id, slot.value, slot.sqlite_id)
+
             sqlite_cursor.execute(sql, sql_args)
 
     @classmethod
@@ -867,6 +886,9 @@ WHERE guid  = ?
                         split.lot_guid,
                         split.guid)
             sqlite_cursor.execute(sql, sql_args)
+
+        for slot in split.slots:
+            cls.write_slot_to_sqlite(slot, sqlite_cursor, split.guid)
 
     @classmethod
     def write_scheduled_transaction_to_sqlite(
